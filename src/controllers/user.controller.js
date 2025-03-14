@@ -1,72 +1,121 @@
 const userService = require("../services/user.service");
 const { logger } = require("../utils/logger");
 
-exports.getAllUsers = async (req, res, next) => {
+exports.getAllUsers = async (req, res) => {
   try {
     const users = await userService.getAllUsers();
-    res.status(200).json(users);
+
+    res.status(200).json({
+      success: true,
+      message: "Users found",
+      users,
+    });
   } catch (error) {
-    logger.error("Error getting all users:", error);
-    next(error);
+    logger.error("Get all users error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 };
 
-exports.getUserById = async (req, res, next) => {
+exports.getUserById = async (req, res) => {
   try {
     const userId = req.params.id;
-    const user = await userService.getUserById(userId);
+    const user = await userService.getById(userId);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
     }
 
-    res.status(200).json(user);
+    res.status(200).json({
+      success: true,
+      message: "User found",
+      user,
+    });
   } catch (error) {
-    logger.error(`Error getting user with ID ${req.params.id}:`, error);
-    next(error);
+    logger.error("Get user by id error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 };
 
-exports.createUser = async (req, res, next) => {
+exports.createUser = async (req, res) => {
   try {
     const userData = req.body;
-    const newUser = await userService.createUser(userData);
-    res.status(201).json(newUser);
+    const user = await userService.createUser(userData);
+
+    res.status(201).json({
+      success: true,
+      message: "User created successfully",
+      user,
+    });
   } catch (error) {
-    logger.error("Error creating user:", error);
-    next(error);
+    logger.error("Create user error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 };
 
-exports.updateUser = async (req, res, next) => {
+exports.updateUser = async (req, res) => {
   try {
     const userId = req.params.id;
     const userData = req.body;
-    const updated = await userService.updateUser(userId, userData);
+    const result = await userService.updateUser(userId, userData);
 
-    if (!updated) {
-      return res.status(404).json({ message: "User not found" });
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
     }
 
-    res.status(200).json({ message: "User updated successfully" });
+    res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+    });
   } catch (error) {
-    logger.error(`Error updating user with ID ${req.params.id}:`, error);
-    next(error);
+    logger.error("Update user error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 };
 
-exports.deleteUser = async (req, res, next) => {
+exports.deleteUser = async (req, res) => {
   try {
     const userId = req.params.id;
-    const deleted = await userService.deleteUser(userId);
+    const result = await userService.deleteUser(userId);
 
-    if (!deleted) {
-      return res.status(404).json({ message: "User not found" });
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
     }
 
-    res.status(200).json({ message: "User deleted successfully" });
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
   } catch (error) {
-    logger.error(`Error deleting user with ID ${req.params.id}:`, error);
-    next(error);
+    logger.error("Delete user error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 };

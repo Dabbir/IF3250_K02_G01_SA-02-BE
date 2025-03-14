@@ -4,9 +4,7 @@ const bcrypt = require("bcryptjs");
 class UserModel {
   async findAll() {
     try {
-      const [rows] = await pool.query(
-        "SELECT id, username, email, role, created_at FROM users"
-      );
+      const [rows] = await pool.query("SELECT * FROM pengguna");
       return rows;
     } catch (error) {
       throw error;
@@ -16,8 +14,21 @@ class UserModel {
   async findById(id) {
     try {
       const [rows] = await pool.query(
-        "SELECT id, username, email, role, created_at FROM users WHERE id = ?",
+        "SELECT p.*, m.nama_masjid FROM pengguna p LEFT JOIN masjid m ON p.masjid_id = m.id WHERE p.id = ?",
         [id]
+      );
+      return rows.length > 0 ? rows[0] : null;
+    } catch (error) {
+      console.error("Error in getUserById:", error);
+      throw error;
+    }
+  }
+
+  async findByEmail(email) {
+    try {
+      const [rows] = await pool.query(
+        "SELECT * FROM pengguna WHERE email = ?",
+        [email]
       );
       return rows.length > 0 ? rows[0] : null;
     } catch (error) {
@@ -25,11 +36,24 @@ class UserModel {
     }
   }
 
-  async findByEmail(email) {
+  async findByUsername(username) {
     try {
-      const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [
-        email,
-      ]);
+      const [rows] = await pool.query(
+        "SELECT * FROM pengguna WHERE username = ?",
+        [username]
+      );
+      return rows.length > 0 ? rows[0] : null;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findByUsernameOrEmail(username, email) {
+    try {
+      const [rows] = await pool.query(
+        "SELECT * FROM pengguna WHERE username = ? OR email = ?",
+        [username, email]
+      );
       return rows.length > 0 ? rows[0] : null;
     } catch (error) {
       throw error;
@@ -38,25 +62,34 @@ class UserModel {
 
   async create(userData) {
     try {
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(userData.password, salt);
+      const {
+        nama,
+        username,
+        email,
+        password,
+        masjid_id,
+        short_bio,
+        alasan_bergabung,
+        foto_profil,
+      } = userData;
 
       const [result] = await pool.query(
-        "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)",
+        `INSERT INTO pengguna 
+        (nama, username, email, password, masjid_id, short_bio, alasan_bergabung, foto_profil) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
-          userData.username,
-          userData.email,
-          hashedPassword,
-          userData.role || "user",
+          nama,
+          username,
+          email,
+          password,
+          masjid_id,
+          short_bio,
+          alasan_bergabung,
+          foto_profil,
         ]
       );
 
-      const [rows] = await pool.query(
-        "SELECT id, username, email, role, created_at FROM users WHERE id = ?",
-        [result.insertId]
-      );
-
-      return rows[0];
+      return result.insertId;
     } catch (error) {
       throw error;
     }
@@ -64,39 +97,28 @@ class UserModel {
 
   async update(id, userData) {
     try {
-      let query = "UPDATE users SET";
-      const values = [];
+      const { nama, email, short_bio, alasan_bergabung, foto_profil } =
+        userData;
 
-      if (userData.username) {
-        query += " username = ?,";
-        values.push(userData.username);
+      let query = `UPDATE pengguna SET
+        nama = ?,
+        email = ?,
+        short_bio = ?,
+        alasan_bergabung = ?`;
+
+      let params = [nama, email, short_bio, alasan_bergabung];
+
+      // Only update foto_profil if provided
+      if (foto_profil) {
+        query += `, foto_profil = ?`;
+        params.push(foto_profil);
       }
 
-      if (userData.email) {
-        query += " email = ?,";
-        values.push(userData.email);
-      }
+      query += ` WHERE id = ?`;
+      params.push(id);
 
-      if (userData.password) {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(userData.password, salt);
-        query += " password = ?,";
-        values.push(hashedPassword);
-      }
-
-      if (userData.role) {
-        query += " role = ?,";
-        values.push(userData.role);
-      }
-
-      query = query.slice(0, -1);
-
-      query += " WHERE id = ?";
-      values.push(id);
-
-      const [result] = await pool.query(query, values);
-
-      return result.affectedRows > 0;
+      await pool.query(query, params);
+      return true;
     } catch (error) {
       throw error;
     }
@@ -104,8 +126,23 @@ class UserModel {
 
   async delete(id) {
     try {
-      const [result] = await pool.query("DELETE FROM users WHERE id = ?", [id]);
+      const [result] = await pool.query("DELETE FROM pengguna WHERE id = ?", [
+        id,
+      ]);
       return result.affectedRows > 0;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updatePassword(id, newPassword) {
+    try {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await pool.query("UPDATE pengguna SET password = ? WHERE id = ?", [
+        hashedPassword,
+        id,
+      ]);
+      return true;
     } catch (error) {
       throw error;
     }

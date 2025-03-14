@@ -1,66 +1,87 @@
-const jwt = require('jsonwebtoken');
-const userModel = require('../models/user.model');
-const { jwtSecret, jwtExpiration } = require('../config/auth.config');
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const userService = require("../services/user.service");
 
-class AuthService {
-  async register(userData) {
-    const existingUser = await userModel.findByEmail(userData.email);
-    if (existingUser) {
-      const error = new Error('Email already in use');
-      error.statusCode = 409;
-      throw error;
-    }
-    
-    const user = await userModel.create(userData);
-    const token = this.generateToken(user);
-    
-    return {
-      message: 'User registered successfully',
-      user,
-      token
-    };
+exports.register = async (userData) => {
+  const { name, username, email, password, masjid_id } = userData;
+
+  const existingUser = await userService.getByUsernameOrEmail(username, email);
+  if (existingUser) {
+    const error = new Error("Username or email already in use");
+    error.statusCode = 409;
+    throw error;
   }
-  
-  async login(email, password) {
-    const user = await userModel.findByEmail(email);
-    
-    if (!user) {
-      return {
-        success: false,
-        message: 'Invalid email or password'
-      };
-    }
-    
-    const passwordIsValid = await userModel.verifyPassword(password, user.password);
-    
-    if (!passwordIsValid) {
-      return {
-        success: false,
-        message: 'Invalid email or password'
-      };
-    }
-    const token = this.generateToken(user);
-    const { password: _, ...userWithoutPassword } = user;
-    
-    return {
-      success: true,
-      message: 'Login successful',
-      user: userWithoutPassword,
-      token
-    };
-  }
-  
-  async getProfile(userId) {
-    return await userModel.findById(userId);
-  }
-  
-  generateToken(user) {
-    return jwt.sign(
-      { id: user.id, role: user.role },
-      jwtSecret,
-      { expiresIn: jwtExpiration }
-    );
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const userDataWithHash = {
+    ...userData,
+    password: hashedPassword,
+  };
+
+  const userId = await userService.createUser(userDataWithHash);
+
+  const token = jwt.sign(
+    { id: userId, username, email, masjid_id },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN }
+  );
+
+  return {
+    token,
+    user: {
+      id: userId,
+      name,
+      username,
+      email,
+      masjid_id,
+    },
   }
 }
 
-module.exports = new AuthService();
+exports.login = async (username, password) => {
+  const user = await userService.getByUsername(username);
+  if (!user) {
+    const error = new Error("User not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const isPasswordMatch = await bcrypt.compare(password, user.password);
+  if (!isPasswordMatch) {
+    const error = new Error("Invalid password");
+    error.statusCode = 401;
+    throw error
+  }
+
+  const token = jwt.sign(
+    { id: user.id, username: user.username, email: user.email, masjid_id: user.masjid_id },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN }
+  );
+
+  return {
+    token,
+    user: {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      masjid_id: user.masjid_id,
+    },
+  }
+}
+
+exports.verifyToken = async (userId) => {
+  const user = await userService.getById(userId);
+  if (!user) {
+    const error = new Error("User not found");
+    error.statusCode = 404;
+    throw error
+  }
+
+  const userCopy = { ...user };
+  delete userCopy.password;
+
+  return userCopy;
+}

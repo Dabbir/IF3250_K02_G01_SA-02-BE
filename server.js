@@ -3,6 +3,15 @@ const app = require('./src/app');
 const { logger } = require('./src/utils/logger');
 const db = require('./src/config/db.config');
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Authentication
+ *     description: Endpoint untuk autentikasi pengguna
+ *   - name: Users
+ *     description: Endpoint untuk manajemen data pengguna
+ */
+
 const PORT = process.env.PORT || 3000;
 
 async function startServer() {
@@ -10,6 +19,7 @@ async function startServer() {
     await db.testConnection();
     app.listen(PORT, () => {
       logger.info(`Server running on port ${PORT}`);
+      logger.info(`API documentation available at http://localhost:${PORT}/api-docs`);
     });
   } catch (error) {
     logger.error('Failed to start server:', error);

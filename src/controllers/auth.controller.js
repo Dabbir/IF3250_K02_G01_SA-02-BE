@@ -1,44 +1,100 @@
+const e = require("cors");
 const authService = require("../services/auth.service");
-const { logger } = require("../utils/logger");
+const { validationResult } = require("express-validator");
 
-exports.register = async (req, res, next) => {
+exports.register = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation errors",
+        errors: errors.array(),
+      })
+    }
+
     const userData = req.body;
-    const result = await authService.register(userData);
-    res.status(201).json(result);
+    if (req.file) {
+      userData.foto = req.file.filename;
+    }
+    
+    const { user, token } = await authService.register(userData);
+
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully",
+      token,
+      user,
+    });
   } catch (error) {
-    logger.error("Registration error:", error);
-    next(error);
+    console.error("Register error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error",
+    })
   }
 };
 
-exports.login = async (req, res, next) => {
+exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const result = await authService.login(email, password);
+    const { username, password } = req.body;
 
-    if (!result.success) {
-      return res.status(401).json({ message: result.message });
+    const { user, token } = await authService.login(username, password);
+
+    res.status(200).json({
+      success: true,
+      message: "User logged in successfully",
+      token,
+      user,
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error",
+    });
+  }
+};
+
+exports.logout = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        success: false,
+        message: "Access denied. No token provided",
+      });
     }
 
-    res.status(200).json(result);
+    res.status(200).json({
+      success: true,
+      message: "User logged out successfully",
+    });
   } catch (error) {
-    logger.error("Login error:", error);
-    next(error);
+    console.error("Logout error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error",
+    });
   }
 };
 
-exports.getProfile = async (req, res, next) => {
+exports.verifyToken = async (req, res) => {
   try {
-    const user = await authService.getProfile(req.userId);
+    const userId = req.userId;
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const user = await authService.verifyToken(userId);
 
-    res.status(200).json(user);
+    res.status(200).json({
+      success: true,
+      message: "Token verified",
+      user,
+    });
   } catch (error) {
-    logger.error("Get profile error:", error);
-    next(error);
+    console.error("Verify token error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error",
+    });
   }
-};
+}

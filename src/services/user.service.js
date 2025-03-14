@@ -1,46 +1,84 @@
-const userModel = require("../models/user.model");
+const userModels = require('../models/user.model');
 
-class UserService {
-  async getAllUsers() {
-    return await userModel.findAll();
+exports.getAllUsers = async () => {
+  try {
+    const users = await userModels.findAll();
+    return users;
+  } catch (error) {
+    console.error('Error in getAllUsers:', error);
+    throw error;
+  }
+}
+
+exports.getById = async (id) => {
+  try {
+    const user = await userModels.findById(id);
+    return user;
+  } catch (error) {
+    console.error('Error in getById:', error);
+    throw error;
+  }
+}
+
+exports.getByUsernameOrEmail = async (username, email) => {
+  try {
+    const user = await userModels.findByUsernameOrEmail(username, email);
+    return user;
+  } catch (error) {
+    console.error('Error in getByUsernameOrEmail:', error);
+    throw error;
+  }
+}
+
+exports.getByUsername = async (username) => {
+  try {
+    const user = await userModels.findByUsername(username);
+    return user;
+  } catch (error) {
+    console.error('Error in getByUsername:', error);
+    throw error;
+  }
+}
+
+exports.getByEmail = async (email) => {
+  try {
+    const user = await userModels.findByEmail(email);
+    return user;
+  } catch (error) {
+    console.error('Error in getByEmail:', error);
+    throw error;
+  }
+}
+
+exports.createUser = async (userData) => {
+  const existingUser = await userModels.findByEmail(userData.email);
+  if (existingUser) {
+    const error = new Error("Email already in use");
+    error.statusCode = 409;
+    throw error;
   }
 
-  async getUserById(id) {
-    return await userModel.findById(id);
+  return await userModels.create(userData);
+}
+
+exports.updateUser = async (id, userData) => {
+  const existingUser = await userModels.findById(id);
+  if (!existingUser) { 
+    return false;
   }
 
-  async createUser(userData) {
-    const existingUser = await userModel.findByEmail(userData.email);
-    if (existingUser) {
+  if (userData.email && userData.email !== existingUser.email) {
+    const userWithEmail = await userModels.findByEmail(userData.email);
+    if (userWithEmail) {
       const error = new Error("Email already in use");
       error.statusCode = 409;
       throw error;
     }
-
-    return await userModel.create(userData);
   }
 
-  async updateUser(id, userData) {
-    const existingUser = await userModel.findById(id);
-    if (!existingUser) {
-      return false;
-    }
-
-    if (userData.email && userData.email !== existingUser.email) {
-      const userWithEmail = await userModel.findByEmail(userData.email);
-      if (userWithEmail) {
-        const error = new Error("Email already in use");
-        error.statusCode = 409;
-        throw error;
-      }
-    }
-
-    return await userModel.update(id, userData);
-  }
-
-  async deleteUser(id) {
-    return await userModel.delete(id);
-  }
+  return await userModels.update(id, userData);
 }
 
-module.exports = new UserService();
+exports.deleteUser = async (id) => {
+  return await userModels.delete(id);
+}
