@@ -36,6 +36,19 @@ class UserModel {
     }
   }
 
+  async findByAuthProvider(provider, providerId) {
+    try {
+      const [rows] = await pool.query(
+        "SELECT p.*, m.nama_masjid FROM pengguna p LEFT JOIN masjid m ON p.masjid_id = m.id WHERE p.auth_provider = ? AND p.auth_provider_id = ?",
+        [provider, providerId]
+      );
+      return rows.length > 0 ? rows[0] : null;
+    } catch (error) {
+      console.error("Error in findByAuthProvider:", error);
+      throw error;
+    }
+  }
+
   async create(userData) {
     try {
       const {
@@ -47,12 +60,14 @@ class UserModel {
         short_bio,
         alasan_bergabung,
         foto_profil,
+        auth_provider,
+        auth_provider_id,
       } = userData;
 
       const [result] = await pool.query(
         `INSERT INTO pengguna 
-        (nama, email, password, masjid_id, nama_masjid, short_bio, alasan_bergabung, foto_profil) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        (nama, email, password, masjid_id, nama_masjid, short_bio, alasan_bergabung, foto_profil, auth_provider, auth_provider_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           nama,
           email,
@@ -62,6 +77,8 @@ class UserModel {
           short_bio,
           alasan_bergabung,
           foto_profil,
+          auth_provider,
+          auth_provider_id,
         ]
       );
 
@@ -73,27 +90,63 @@ class UserModel {
 
   async update(id, userData) {
     try {
-      const { nama, email, short_bio, alasan_bergabung, foto_profil } =
-        userData;
-
-      let query = `UPDATE pengguna SET
-        nama = ?,
-        email = ?,
-        short_bio = ?,
-        alasan_bergabung = ?`;
-
-      let params = [nama, email, short_bio, alasan_bergabung];
-
-      // Only update foto_profil if provided
-      if (foto_profil) {
-        query += `, foto_profil = ?`;
-        params.push(foto_profil);
+      const sets = [];
+      const params = [];
+      
+      if (userData.nama !== undefined) {
+        sets.push('nama = ?');
+        params.push(userData.nama);
       }
-
-      query += ` WHERE id = ?`;
+      
+      if (userData.email !== undefined) {
+        sets.push('email = ?');
+        params.push(userData.email);
+      }
+      
+      if (userData.short_bio !== undefined) {
+        sets.push('short_bio = ?');
+        params.push(userData.short_bio);
+      }
+      
+      if (userData.alasan_bergabung !== undefined) {
+        sets.push('alasan_bergabung = ?');
+        params.push(userData.alasan_bergabung);
+      }
+      
+      if (userData.foto_profil !== undefined) {
+        sets.push('foto_profil = ?');
+        params.push(userData.foto_profil);
+      }
+      
+      if (userData.masjid_id !== undefined) {
+        sets.push('masjid_id = ?');
+        params.push(userData.masjid_id);
+      }
+      
+      if (userData.nama_masjid !== undefined) {
+        sets.push('nama_masjid = ?');
+        params.push(userData.nama_masjid);
+      }
+      
+      if (userData.auth_provider !== undefined) {
+        sets.push('auth_provider = ?');
+        params.push(userData.auth_provider);
+      }
+      
+      if (userData.auth_provider_id !== undefined) {
+        sets.push('auth_provider_id = ?');
+        params.push(userData.auth_provider_id);
+      }
+      
+      if (sets.length === 0) {
+        return true;
+      }
+      
       params.push(id);
-
+      
+      const query = `UPDATE pengguna SET ${sets.join(', ')} WHERE id = ?`;
       await pool.query(query, params);
+      
       return true;
     } catch (error) {
       throw error;

@@ -56,6 +56,48 @@ exports.login = async (req, res) => {
   }
 };
 
+exports.callback = async (req, res) => {
+  try {
+    const token = jwt.sign(
+      { 
+        id: req.user.id, 
+        email: req.user.email,
+        peran: req.user.peran,
+        masjid_id: req.user.masjid_id
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+    );
+    
+    const redirectUrl = new URL('/auth/callback', process.env.FRONTEND_URL);
+    redirectUrl.searchParams.append('token', token);
+    console.log("redirectUrl", redirectUrl.toString());
+    
+    res.redirect(redirectUrl.toString());
+  } catch (error) {
+    console.error('Error during Google callback:', error);
+    res.redirect(`${process.env.FRONTEND_URL}/login?error=auth_failed`);
+  }
+}
+
+exports.me = async (req, res) => {
+  try {
+    const user = { ...req.user };
+    delete user.password;
+    
+    res.status(200).json({
+      success: true,
+      user
+    });
+  } catch (error) {
+    console.error('Get user error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
+    });
+  }
+}
+
 exports.logout = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;

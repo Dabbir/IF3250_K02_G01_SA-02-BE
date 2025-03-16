@@ -47,6 +47,12 @@ exports.login = async (email, password) => {
     throw error;
   }
 
+  if (user.auth_provider && !user.password) {
+    const error = new Error(`Please sign in with ${user.auth_provider}`);
+    error.statusCode = 401;
+    throw error;
+  }
+
   const isPasswordMatch = await bcrypt.compare(password, user.password);
   if (!isPasswordMatch) {
     const error = new Error("Invalid password");
@@ -83,4 +89,46 @@ exports.verifyToken = async (userId) => {
   delete userCopy.password;
 
   return userCopy;
+}
+
+exports.googleAuth = async (tokenPayload) => {
+  try {
+    const { name, email, sub: googleId, picture } = tokenPayload;
+    
+    const oauthData = {
+      name: name,
+      email: email,
+      provider: 'google',
+      providerId: googleId,
+      foto_profil: picture
+    };
+    
+    const user = await userService.findOrCreateByOAuth(oauthData);
+    
+    const token = jwt.sign(
+      { 
+        id: user.id, 
+        email: user.email, 
+        masjid_id: user.masjid_id,
+        peran: user.peran
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN }
+    );
+    
+    return {
+      token,
+      user: {
+        id: user.id,
+        name: user.nama,
+        email: user.email,
+        masjid_id: user.masjid_id,
+        nama_masjid: user.nama_masjid,
+        peran: user.peran
+      }
+    };
+  } catch (error) {
+    console.error('Error in googleAuth:', error);
+    throw error;
+  }
 }

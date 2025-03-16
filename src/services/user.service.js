@@ -62,3 +62,53 @@ exports.updateUser = async (id, userData) => {
 exports.deleteUser = async (id) => {
   return await userModels.delete(id);
 }
+
+exports.getByAuthProvider = async (provider, providerId) => {
+  try {
+    const user = await userModels.findByAuthProvider(provider, providerId);
+    return user;
+  } catch (error) {
+    console.error('Error in getByAuthProvider:', error);
+    throw error;
+  }
+}
+
+exports.findOrCreateByOAuth = async (oauthData) => {
+  try {
+    let user = await userModels.findByAuthProvider(oauthData.provider, oauthData.providerId);
+    
+    if (user) {
+      return user;
+    }
+    
+    user = await userModels.findByEmail(oauthData.email);
+    
+    if (user) {
+      await userModels.update(user.id, {
+        auth_provider: oauthData.provider,
+        auth_provider_id: oauthData.providerId
+      });
+      
+      return await userModels.findById(user.id);
+    }
+    
+    const userId = await userModels.create({
+      nama: oauthData.name,
+      email: oauthData.email,
+      password: null,
+      peran: 'Editor',
+      masjid_id: null,
+      nama_masjid: null,
+      short_bio: null,
+      alasan_bergabung: null,
+      foto_profil: oauthData.picture,
+      auth_provider: oauthData.provider,
+      auth_provider_id: oauthData.providerId
+    });
+    
+    return await userModels.findById(userId);
+  } catch (error) {
+    console.error('Error in findOrCreateByOAuth:', error);
+    throw error;
+  }
+}
