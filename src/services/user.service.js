@@ -20,26 +20,6 @@ exports.getById = async (id) => {
   }
 }
 
-exports.getByUsernameOrEmail = async (username, email) => {
-  try {
-    const user = await userModels.findByUsernameOrEmail(username, email);
-    return user;
-  } catch (error) {
-    console.error('Error in getByUsernameOrEmail:', error);
-    throw error;
-  }
-}
-
-exports.getByUsername = async (username) => {
-  try {
-    const user = await userModels.findByUsername(username);
-    return user;
-  } catch (error) {
-    console.error('Error in getByUsername:', error);
-    throw error;
-  }
-}
-
 exports.getByEmail = async (email) => {
   try {
     const user = await userModels.findByEmail(email);

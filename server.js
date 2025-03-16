@@ -13,13 +13,14 @@ const db = require('./src/config/db.config');
  */
 
 const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || 'localhost';
 
 async function startServer() {
   try {
     await db.testConnection();
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0' , () => {
       logger.info(`Server running on port ${PORT}`);
-      logger.info(`API documentation available at http://localhost:${PORT}/api-docs`);
+      logger.info(`API documentation available at http://${HOST}:${PORT}/api-docs`);
     });
   } catch (error) {
     logger.error('Failed to start server:', error);

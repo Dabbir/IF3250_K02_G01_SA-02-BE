@@ -76,7 +76,7 @@ router.put('/:id', [
 
 // router.delete('/:id', [verifyToken, isAdmin], userController.deleteUser); // Admin only
 
-/*
+/**
   * @swagger
   * /api/users/profile:
   *   get:

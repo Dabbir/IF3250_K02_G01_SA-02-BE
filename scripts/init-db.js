@@ -54,7 +54,6 @@ async function initializeDatabase() {
       CREATE TABLE IF NOT EXISTS pengguna (
         id INT AUTO_INCREMENT PRIMARY KEY,
         nama VARCHAR(100) NOT NULL,
-        username VARCHAR(50) NOT NULL UNIQUE,
         email VARCHAR(100) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
         peran ENUM('Viewer', 'Editor', 'Admin') DEFAULT 'Editor',
@@ -328,8 +327,8 @@ async function initializeDatabase() {
       
       // Insert admin user
       await connection.query(`
-        INSERT INTO pengguna (nama, username, email, password, peran, masjid_id) 
-        VALUES ('Admin', 'admin', 'admin@example.com', '$2b$10$xxxxxxxxxxxxxxxxxxxxxxxx', 'Admin', ${masjidId})
+        INSERT INTO pengguna (nama, email, password, peran, masjid_id) 
+        VALUES ('Admin', 'admin@example.com', '$2b$10$xxxxxxxxxxxxxxxxxxxxxxxx', 'Admin', ${masjidId})
       `);
       console.log("Sample admin user created");
     }
