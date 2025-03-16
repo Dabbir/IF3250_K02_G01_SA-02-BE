@@ -36,6 +36,19 @@ class UserModel {
     }
   }
 
+  async findByAuthProvider(provider, providerId) {
+    try {
+      const [rows] = await pool.query(
+        "SELECT p.*, m.nama_masjid FROM pengguna p LEFT JOIN masjid m ON p.masjid_id = m.id WHERE p.auth_provider = ? AND p.auth_provider_id = ?",
+        [provider, providerId]
+      );
+      return rows.length > 0 ? rows[0] : null;
+    } catch (error) {
+      console.error("Error in findByAuthProvider:", error);
+      throw error;
+    }
+  }
+
   async create(userData) {
     try {
       const {
@@ -47,12 +60,14 @@ class UserModel {
         short_bio,
         alasan_bergabung,
         foto_profil,
+        auth_provider,
+        auth_provider_id,
       } = userData;
 
       const [result] = await pool.query(
         `INSERT INTO pengguna 
-        (nama, email, password, masjid_id, nama_masjid, short_bio, alasan_bergabung, foto_profil) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        (nama, email, password, masjid_id, nama_masjid, short_bio, alasan_bergabung, foto_profil, auth_provider, auth_provider_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           nama,
           email,
@@ -62,6 +77,8 @@ class UserModel {
           short_bio,
           alasan_bergabung,
           foto_profil,
+          auth_provider,
+          auth_provider_id,
         ]
       );
 
@@ -91,11 +108,21 @@ class UserModel {
         query += `, foto_profil = ?`;
         params.push(null);
       }
-
-      query += ` WHERE id = ?`;
+      
+      if (userData.auth_provider_id !== undefined) {
+        sets.push('auth_provider_id = ?');
+        params.push(userData.auth_provider_id);
+      }
+      
+      if (sets.length === 0) {
+        return true;
+      }
+      
       params.push(id);
-
+      
+      const query = `UPDATE pengguna SET ${sets.join(', ')} WHERE id = ?`;
       await pool.query(query, params);
+      
       return true;
     } catch (error) {
       throw error;

@@ -6,7 +6,7 @@ const {
   registerValidation,
   loginValidation,
 } = require("../middlewares/validate.middleware");
-const { destroyToken } = require("../middlewares/auth.middleware");
+const { verifyToken, destroyToken, redirectIfAuthenticated, googleAuth, googleAuthCallback } = require("../middlewares/auth.middleware");
 
 // Auth routes
 
@@ -80,7 +80,11 @@ router.post("/register", [registerValidation, validate], authController.register
  *       401:
  *         description: Email atau password tidak valid
  */
-router.post("/login", [loginValidation, validate], authController.login);
+router.post("/login", [redirectIfAuthenticated, loginValidation, validate], authController.login);
+
+router.get('/google', googleAuth);
+router.get('/google/callback', googleAuthCallback, authController.callback);
+router.get('/me', verifyToken, authController.me);
 
 /**
  * @swagger
