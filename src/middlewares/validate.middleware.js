@@ -35,23 +35,21 @@ exports.logoutValidation = [
 ];
 
 exports.userUpdateValidation = [
-  body('nama').optional().notEmpty().withMessage('Nama is required'),
-  body('username')
+  body('nama')
     .optional()
-    .isLength({ min: 4 }).withMessage('Username must be at least 4 characters long')
-    .isAlphanumeric().withMessage('Username must contain only alphanumeric characters'),
+    .notEmpty()
+    .withMessage('Nama is required'),
   body('email')
     .optional()
-    .isEmail().withMessage('Must be a valid email address'),
-  body('password')
+    .notEmpty()
+    .isEmail()
+    .withMessage('Must be a valid email address'),
+  body('short_bio')
     .optional()
-    .isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
-  body('masjid_id')
+    .isLength({ min: 0, max: 300 })
+    .withMessage('Short bio must be between 0 and 300 characters'),
+  body('alasan_bergabung')
     .optional()
-    .isInt().withMessage('Masjid ID must be an integer'),
-  body('foto')
-    .optional()
-    .isString().withMessage('Foto must be a string'),
-  body('short_bio').optional(),
-  body('alasan_bergabung').optional(),
+    .isLength({ min: 8, max: 100 })
+    .withMessage('Alasan Bergabung must be between 8 and 100 characters'),
 ];

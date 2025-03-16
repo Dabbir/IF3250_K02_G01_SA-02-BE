@@ -1,4 +1,7 @@
 const userModels = require('../models/user.model');
+const path = require("path");
+const fs = require("fs");
+const { console } = require('inspector/promises');
 
 exports.getAllUsers = async () => {
   try {
@@ -62,21 +65,36 @@ exports.createUser = async (userData) => {
 }
 
 exports.updateUser = async (id, userData) => {
-  const existingUser = await userModels.findById(id);
-  if (!existingUser) { 
-    return false;
-  }
-
-  if (userData.email && userData.email !== existingUser.email) {
-    const userWithEmail = await userModels.findByEmail(userData.email);
-    if (userWithEmail) {
-      const error = new Error("Email already in use");
-      error.statusCode = 409;
-      throw error;
+  try {
+    const existingUser = await userModels.findById(id);
+    if (!existingUser) {
+      return false;
     }
-  }
 
-  return await userModels.update(id, userData);
+    if (userData.email && userData.email !== existingUser.email) {
+      const userWithEmail = await userModels.findByEmail(userData.email);
+      if (userWithEmail) {
+        const error = new Error("Email already in use");
+        error.statusCode = 409;
+        throw error;
+      }
+    }
+
+    if (existingUser.foto_profil) {
+      filePath = existingUser.foto_profil.split("/").pop();
+      if (userData.foto_profil || userData.deleteProfileImage) {
+        const oldPhotoPath = path.join(__dirname, "../uploads/", existingUser.foto_profil);
+        if (fs.existsSync(oldPhotoPath)) {
+          fs.unlinkSync(oldPhotoPath);
+        }
+      }
+    }
+
+    return await userModels.update(id, userData);
+  } catch (error) {
+    console.error('Error in updateing user:', error);
+    throw error;
+  }
 }
 
 exports.deleteUser = async (id) => {

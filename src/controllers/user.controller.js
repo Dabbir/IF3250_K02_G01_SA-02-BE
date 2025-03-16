@@ -1,5 +1,7 @@
 const userService = require("../services/user.service");
 const { logger } = require("../utils/logger");
+const fs = require("fs");
+const path = require("path");
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -59,18 +61,44 @@ exports.getProfile = async (req, res) => {
       });
     }
 
+    const formattedUser = {
+      id: user.id,
+      nama: user.nama,
+      email: user.email,
+      peran: user.peran,
+      short_bio: user.short_bio,
+      alasan_bergabung: user.alasan_bergabung,
+      foto_profil: user.foto_profil,
+      masjid_id: user.masjid_id,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      nama_masjid: user.nama_masjid,
+      alamat_masjid: user.nama_masjid,
+    };
+
     res.status(200).json({
       success: true,
       message: "User found",
-      user,
+      user: formattedUser,
     });
   } catch (error) {
     logger.error("Get profile error:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: error.message,
     });
+  }
+};
+
+exports.getProfilePhoto = (req, res) => {
+  const { filename } = req.params;
+  const filePath = path.join(__dirname, "../uploads", filename);
+  console.log("filePath", filePath);
+
+  if (fs.existsSync(filePath)) {
+      res.sendFile(filePath);
+  } else {
+      res.status(404).json({ message: "Foto tidak ditemukan" });
   }
 };
 
@@ -78,6 +106,11 @@ exports.updateProfile = async (req, res) => {
   try {
     const userId = req.user.id;
     const userData = req.body;
+
+    if (req.file) {
+      userData.foto_profil = req.file.Url;
+    }
+
     const result = await userService.updateUser(userId, userData);
 
     console.log("result", result);

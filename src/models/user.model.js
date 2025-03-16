@@ -14,7 +14,7 @@ class UserModel {
   async findById(id) {
     try {
       const [rows] = await pool.query(
-        "SELECT p.*, m.nama_masjid FROM pengguna p LEFT JOIN masjid m ON p.masjid_id = m.id WHERE p.id = ?",
+        "SELECT p.*, m.nama_masjid, m.alamat FROM pengguna p LEFT JOIN masjid m ON p.masjid_id = m.id WHERE p.id = ?",
         [id]
       );
       return rows.length > 0 ? rows[0] : null;
@@ -97,8 +97,8 @@ class UserModel {
 
   async update(id, userData) {
     try {
-      const { nama, email, short_bio, alasan_bergabung, foto_profil } =
-        userData;
+      console.log("userData-Model", userData);
+      const { nama, email, short_bio, alasan_bergabung, foto_profil, deleteProfileImage } = userData;
 
       let query = `UPDATE pengguna SET
         nama = ?,
@@ -108,10 +108,12 @@ class UserModel {
 
       let params = [nama, email, short_bio, alasan_bergabung];
 
-      // Only update foto_profil if provided
       if (foto_profil) {
         query += `, foto_profil = ?`;
         params.push(foto_profil);
+      } else if (deleteProfileImage) {
+        query += `, foto_profil = ?`;
+        params.push(null);
       }
 
       query += ` WHERE id = ?`;
