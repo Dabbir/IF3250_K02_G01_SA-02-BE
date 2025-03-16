@@ -120,7 +120,7 @@ class UserModel {
       
       params.push(id);
       
-      const query = `UPDATE pengguna SET ${sets.join(', ')} WHERE id = ?`;
+      query = `UPDATE pengguna SET ${sets.join(', ')} WHERE id = ?`;
       await pool.query(query, params);
       
       return true;
