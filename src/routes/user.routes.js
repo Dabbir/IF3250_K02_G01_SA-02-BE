@@ -5,8 +5,6 @@ const { verifyToken, isAdmin } = require('../middlewares/auth.middleware');
 const { validate, userUpdateValidation } = require('../middlewares/validate.middleware');
 const upload = require("../middlewares/upload.middleware");
 
-// router.get('/', [verifyToken, isAdmin], userController.getAllUsers); // Admin only
-
 /**
  * @swagger
  * /api/users/{id}:
@@ -33,6 +31,8 @@ const upload = require("../middlewares/upload.middleware");
  *         description: Pengguna tidak ditemukan
  *       401:
  *         description: Unauthorized
+ *       500:
+ *         description: Internal Server Error
  *
  *   put:
  *     summary: Memperbarui data pengguna
@@ -49,7 +49,7 @@ const upload = require("../middlewares/upload.middleware");
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -58,6 +58,19 @@ const upload = require("../middlewares/upload.middleware");
  *               email:
  *                 type: string
  *                 format: email
+ *               short_bio:
+ *                 type: string
+ *                 nullable: true
+ *               alasan_bergabung:
+ *                 type: string
+ *                 nullable: true
+ *               fotoProfil:
+ *                 type: string
+ *                 format: binary
+ *                 description: Foto profil pengguna (opsional)
+ *               deleteProfileImage:
+ *                 type: boolean
+ *                 description: Jika true, foto profil akan dihapus
  *     responses:
  *       200:
  *         description: Data pengguna berhasil diperbarui
@@ -67,7 +80,34 @@ const upload = require("../middlewares/upload.middleware");
  *         description: Unauthorized
  *       404:
  *         description: Pengguna tidak ditemukan
+ *       500:
+ *         description: Internal Server Error
+ *
+ * /api/users/photo/{filename}:
+ *   get:
+ *     summary: Mendapatkan foto profil pengguna
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: filename
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Nama file foto profil pengguna
+ *     responses:
+ *       200:
+ *         description: Foto profil ditemukan dan dikirim sebagai respons
+ *         content:
+ *           image/*:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       404:
+ *         description: Foto tidak ditemukan
+ *       500:
+ *         description: Internal Server Error
  */
+
 router.get('/', verifyToken, userController.getProfile);
 
 
