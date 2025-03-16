@@ -3,11 +3,11 @@ const jwt = require("jsonwebtoken");
 const userService = require("../services/user.service");
 
 exports.register = async (userData) => {
-  const { name, username, email, password, masjid_id } = userData;
+  const { name, email, password, masjid_id, nama_masjid } = userData;
 
-  const existingUser = await userService.getByUsernameOrEmail(username, email);
+  const existingUser = await userService.getByEmail(email);
   if (existingUser) {
-    const error = new Error("Username or email already in use");
+    const error = new Error("Email already in use");
     error.statusCode = 409;
     throw error;
   }
@@ -22,7 +22,7 @@ exports.register = async (userData) => {
   const userId = await userService.createUser(userDataWithHash);
 
   const token = jwt.sign(
-    { id: userId, username, email, masjid_id },
+    { id: userId, email, masjid_id },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN }
   );
@@ -32,15 +32,15 @@ exports.register = async (userData) => {
     user: {
       id: userId,
       name,
-      username,
       email,
       masjid_id,
+      nama_masjid,
     },
   }
 }
 
-exports.login = async (username, password) => {
-  const user = await userService.getByUsername(username);
+exports.login = async (email, password) => {
+  const user = await userService.getByEmail(email);
   if (!user) {
     const error = new Error("User not found");
     error.statusCode = 404;
@@ -55,7 +55,7 @@ exports.login = async (username, password) => {
   }
 
   const token = jwt.sign(
-    { id: user.id, username: user.username, email: user.email, masjid_id: user.masjid_id },
+    { id: user.id, email: user.email, nama_masjid: user.nama_masjid },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN }
   );
@@ -65,9 +65,8 @@ exports.login = async (username, password) => {
     user: {
       id: user.id,
       name: user.name,
-      username: user.username,
       email: user.email,
-      masjid_id: user.masjid_id,
+      nama_masjid: user.nama_masjid,
     },
   }
 }

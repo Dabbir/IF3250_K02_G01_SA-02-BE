@@ -80,14 +80,14 @@ exports.destroyToken = async (req, res, next) => {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // const user = await userService.getById(decoded.id);
+      const user = await userService.getById(decoded.id);
 
-      // if (!user) {
-      //   return res.status(401).json({
-      //     success: false,
-      //     message: "Invalid token. User not found",
-      //   });
-      // }
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: "Invalid token. User not found",
+        });
+      }
 
       req.user = decoded;
       next();

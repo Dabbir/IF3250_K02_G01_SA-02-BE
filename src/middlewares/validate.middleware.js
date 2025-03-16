@@ -10,10 +10,6 @@ exports.validate = (req, res, next) => {
 
 exports.registerValidation = [
   body('nama').notEmpty().withMessage('Nama is required'),
-  body('username')
-    .notEmpty().withMessage('Username is required')
-    .isLength({ min: 4 }).withMessage('Username must be at least 4 characters long')
-    .isAlphanumeric().withMessage('Username must contain only alphanumeric characters'),
   body('email')
     .notEmpty().withMessage('Email is required')
     .isEmail().withMessage('Must be a valid email address'),
@@ -22,11 +18,12 @@ exports.registerValidation = [
     .isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
   body('masjid_id')
     .optional()
-    .isInt().withMessage('Masjid ID must be an integer')
+    .isInt().withMessage('Masjid ID must be an integer'),
+  body('nama_masjid').optional()
 ];
 
 exports.loginValidation = [
-  body('username').notEmpty().withMessage('Username is required'),
+  body('email').notEmpty().withMessage('Email is required'),
   body('password').notEmpty().withMessage('Password is required')
 ];
 

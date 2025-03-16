@@ -36,38 +36,14 @@ class UserModel {
     }
   }
 
-  async findByUsername(username) {
-    try {
-      const [rows] = await pool.query(
-        "SELECT * FROM pengguna WHERE username = ?",
-        [username]
-      );
-      return rows.length > 0 ? rows[0] : null;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async findByUsernameOrEmail(username, email) {
-    try {
-      const [rows] = await pool.query(
-        "SELECT * FROM pengguna WHERE username = ? OR email = ?",
-        [username, email]
-      );
-      return rows.length > 0 ? rows[0] : null;
-    } catch (error) {
-      throw error;
-    }
-  }
-
   async create(userData) {
     try {
       const {
         nama,
-        username,
         email,
         password,
         masjid_id,
+        nama_masjid,
         short_bio,
         alasan_bergabung,
         foto_profil,
@@ -75,14 +51,14 @@ class UserModel {
 
       const [result] = await pool.query(
         `INSERT INTO pengguna 
-        (nama, username, email, password, masjid_id, short_bio, alasan_bergabung, foto_profil) 
+        (nama, email, password, masjid_id, nama_masjid, short_bio, alasan_bergabung, foto_profil) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           nama,
-          username,
           email,
           password,
           masjid_id,
+          nama_masjid,
           short_bio,
           alasan_bergabung,
           foto_profil,
