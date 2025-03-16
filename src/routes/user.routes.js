@@ -67,13 +67,63 @@ const { validate, userUpdateValidation } = require('../middlewares/validate.midd
  *       404:
  *         description: Pengguna tidak ditemukan
  */
-router.get('/:id', verifyToken, userController.getUserById);
+router.get('/:id', verifyToken, userController.getProfile);
 router.put('/:id', [
   verifyToken,
   userUpdateValidation,
   validate
-], userController.updateUser);
+], userController.updateProfile);
 
 // router.delete('/:id', [verifyToken, isAdmin], userController.deleteUser); // Admin only
+
+/*
+  * @swagger
+  * /api/users/profile:
+  *   get:
+  *     summary: Mendapatkan data profil pengguna
+  *     tags: [Users]
+  *     security:
+  *       - bearerAuth: []
+  *     responses:
+  *       200:
+  *         description: Data profil pengguna berhasil diambil
+  *         content:
+  *           application/json:
+  *             schema:
+  *               $ref: '#/components/schemas/User'
+  *       401:
+  *         description: Unauthorized
+  *
+  *   put:
+  *     summary: Memperbarui data profil pengguna
+  *     tags: [Users]
+  *     security:
+  *       - bearerAuth: []
+  *     requestBody:
+  *       required: true
+  *       content:
+  *         application/json:
+  *           schema:
+  *             type: object
+  *             properties:
+  *               name:
+  *                 type: string
+  *               email:
+  *                 type: string
+  *                 format: email
+  *     responses:
+  *       200:
+  *         description: Data profil pengguna berhasil diperbarui
+  *       400:
+  *         description: Data yang dikirim tidak valid
+  *       401:
+  *         description: Unauthorized
+  */
+router.get('/profile', verifyToken, userController.getProfile);
+router.put('/profile', [
+  verifyToken,
+  userUpdateValidation,
+  validate
+], userController.updateProfile);
 
 module.exports = router;

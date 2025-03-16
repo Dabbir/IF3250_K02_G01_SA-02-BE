@@ -24,7 +24,6 @@ exports.verifyToken = async (req, res, next) => {
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
       const user = await userService.getById(decoded.id);
 
       if (!user) {

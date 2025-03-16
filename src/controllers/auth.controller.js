@@ -59,6 +59,7 @@ exports.login = async (req, res) => {
 exports.logout = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
+    console.log("authHeader", authHeader);
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
         success: false,

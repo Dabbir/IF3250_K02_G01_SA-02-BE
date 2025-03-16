@@ -48,5 +48,10 @@ exports.userUpdateValidation = [
     .isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
   body('masjid_id')
     .optional()
-    .isInt().withMessage('Masjid ID must be an integer')
+    .isInt().withMessage('Masjid ID must be an integer'),
+  body('foto')
+    .optional()
+    .isString().withMessage('Foto must be a string'),
+  body('short_bio').optional(),
+  body('alasan_bergabung').optional(),
 ];
