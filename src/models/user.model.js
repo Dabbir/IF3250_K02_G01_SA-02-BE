@@ -14,7 +14,7 @@ class UserModel {
   async findById(id) {
     try {
       const [rows] = await pool.query(
-        "SELECT p.*, m.nama_masjid, m.alamat FROM pengguna p LEFT JOIN masjid m ON p.masjid_id = m.id WHERE p.id = ?",
+        "SELECT p.*, m.nama_masjid FROM pengguna p LEFT JOIN masjid m ON p.masjid_id = m.id WHERE p.id = ?",
         [id]
       );
       return rows.length > 0 ? rows[0] : null;
@@ -90,23 +90,47 @@ class UserModel {
 
   async update(id, userData) {
     try {
-      console.log("userData-Model", userData);
-      const { nama, email, short_bio, alasan_bergabung, foto_profil, deleteProfileImage } = userData;
-
-      let query = `UPDATE pengguna SET
-        nama = ?,
-        email = ?,
-        short_bio = ?,
-        alasan_bergabung = ?`;
-
-      let params = [nama, email, short_bio, alasan_bergabung];
-
-      if (foto_profil) {
-        query += `, foto_profil = ?`;
-        params.push(foto_profil);
-      } else if (deleteProfileImage) {
-        query += `, foto_profil = ?`;
-        params.push(null);
+      const sets = [];
+      const params = [];
+      
+      if (userData.nama !== undefined) {
+        sets.push('nama = ?');
+        params.push(userData.nama);
+      }
+      
+      if (userData.email !== undefined) {
+        sets.push('email = ?');
+        params.push(userData.email);
+      }
+      
+      if (userData.short_bio !== undefined) {
+        sets.push('short_bio = ?');
+        params.push(userData.short_bio);
+      }
+      
+      if (userData.alasan_bergabung !== undefined) {
+        sets.push('alasan_bergabung = ?');
+        params.push(userData.alasan_bergabung);
+      }
+      
+      if (userData.foto_profil !== undefined) {
+        sets.push('foto_profil = ?');
+        params.push(userData.foto_profil);
+      }
+      
+      if (userData.masjid_id !== undefined) {
+        sets.push('masjid_id = ?');
+        params.push(userData.masjid_id);
+      }
+      
+      if (userData.nama_masjid !== undefined) {
+        sets.push('nama_masjid = ?');
+        params.push(userData.nama_masjid);
+      }
+      
+      if (userData.auth_provider !== undefined) {
+        sets.push('auth_provider = ?');
+        params.push(userData.auth_provider);
       }
       
       if (userData.auth_provider_id !== undefined) {
@@ -120,7 +144,7 @@ class UserModel {
       
       params.push(id);
       
-      query = `UPDATE pengguna SET ${sets.join(', ')} WHERE id = ?`;
+      const query = `UPDATE pengguna SET ${sets.join(', ')} WHERE id = ?`;
       await pool.query(query, params);
       
       return true;

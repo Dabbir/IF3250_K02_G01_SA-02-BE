@@ -22,6 +22,17 @@ exports.registerValidation = [
   body('nama_masjid').optional()
 ];
 
+exports.updateDataValidation = [
+  body('email')
+    .optional()
+    .notEmpty()
+    .isEmail()
+    .withMessage('Must be a valid email address'),
+  body('nama_masjid').optional(),
+  body('alasan_bergabung').optional(),
+  body('short_bio').optional(),
+];
+
 exports.loginValidation = [
   body('email').notEmpty().withMessage('Email is required'),
   body('password').notEmpty().withMessage('Password is required')
@@ -49,4 +60,5 @@ exports.userUpdateValidation = [
     .optional()
     .isLength({ min: 8, max: 100 })
     .withMessage('Alasan Bergabung must be between 8 and 100 characters'),
+  body('nama_masjid').optional(),
 ];

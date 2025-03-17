@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const userModels = require('../models/user.model');
 const path = require("path");
 const fs = require("fs");
@@ -34,14 +35,19 @@ exports.getByEmail = async (email) => {
 }
 
 exports.createUser = async (userData) => {
-  const existingUser = await userModels.findByEmail(userData.email);
-  if (existingUser) {
-    const error = new Error("Email already in use");
-    error.statusCode = 409;
+  try {
+    const existingUser = await userModels.findByEmail(userData.email);
+    if (existingUser) {
+      const error = new Error("Email already in use");
+      error.statusCode = 409;
+      throw error;
+    }
+
+    return await userModels.create(userData);
+  } catch (error) {
+    console.error('Error in createUser:', error);
     throw error;
   }
-
-  return await userModels.create(userData);
 }
 
 exports.updateUser = async (id, userData) => {
@@ -110,10 +116,12 @@ exports.findOrCreateByOAuth = async (oauthData) => {
       return await userModels.findById(user.id);
     }
     
+    const randomPassword = crypto.randomBytes(20).toString('hex');
+    
     const userId = await userModels.create({
-      nama: oauthData.name,
+      nama: oauthData.nama,
       email: oauthData.email,
-      password: null,
+      password: randomPassword,
       peran: 'Editor',
       masjid_id: null,
       nama_masjid: null,

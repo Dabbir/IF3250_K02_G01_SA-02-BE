@@ -158,7 +158,7 @@ exports.createUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.params.id
     const userData = req.body;
     const result = await userService.updateUser(userId, userData);
 

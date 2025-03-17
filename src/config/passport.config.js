@@ -10,8 +10,19 @@ passport.use(new GoogleStrategy({
   },
   async (req, accessToken, refreshToken, profile, done) => {
     try {
+      console.log("Google profile received:", {
+        id: profile.id,
+        displayName: profile.displayName,
+        emails: profile.emails,
+        photos: profile.photos
+      });
+      
+      if (!profile.emails || profile.emails.length === 0) {
+        return done(new Error("No email found"), null);
+      }
+
       const email = profile.emails[0].value;
-      const name = profile.displayName;
+      const name = profile.displayName || email.split('@')[0];
       const googleId = profile.id;
       let profilePhoto = null;
       
@@ -27,30 +38,7 @@ passport.use(new GoogleStrategy({
         foto_profil: profilePhoto
       };
       
-      let user = await userService.getByEmail(email);
-      
-      if (user) {
-        if (!user.auth_provider || !user.auth_provider_id) {
-          await userService.updateUser(user.id, {
-            auth_provider: 'google',
-            auth_provider_id: googleId
-          });
-          
-          user = await userService.getById(user.id);
-        }
-      } else {
-        const userData = {
-          nama: name,
-          email: email,
-          auth_provider: 'google',
-          auth_provider_id: googleId,
-          foto_profil: profilePhoto,
-          peran: 'Editor' // Default role
-        };
-        
-        const userId = await userService.createUser(userData);
-        user = await userService.getById(userId);
-      }
+      const user = await userService.findOrCreateByOAuth(oauthData);
       
       return done(null, user);
     } catch (error) {

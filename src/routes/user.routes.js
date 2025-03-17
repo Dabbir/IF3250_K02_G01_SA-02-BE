@@ -116,4 +116,7 @@ router.put("/", [verifyToken, upload.single("fotoProfil"), userUpdateValidation,
 
 router.get("/photo/:filename", userController.getProfilePhoto);
 
+router.get("/:id", verifyToken, userController.getUserById);
+router.put("/:id", userController.updateUser);
+
 module.exports = router;
