@@ -1,5 +1,4 @@
 const userService = require("../services/user.service");
-const userModels = require('../models/user.model');
 const { logger } = require("../utils/logger");
 const fs = require("fs");
 const path = require("path");
