@@ -73,7 +73,6 @@ class UserModel {
 
   async update(id, userData) {
     try {
-      console.log("userData-Model", userData);
       const { nama, email, short_bio, alasan_bergabung, foto_profil, deleteProfileImage } = userData;
 
       let query = `UPDATE pengguna SET

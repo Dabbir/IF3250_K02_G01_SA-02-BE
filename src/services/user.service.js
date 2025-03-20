@@ -63,7 +63,7 @@ exports.updateUser = async (id, userData) => {
     if (existingUser.foto_profil) {
       filePath = existingUser.foto_profil.split("/").pop();
       if (userData.foto_profil || userData.deleteProfileImage) {
-        const oldPhotoPath = path.join(__dirname, "../uploads/", existingUser.foto_profil);
+        const oldPhotoPath = path.join(__dirname, "../uploads/", filePath);
         if (fs.existsSync(oldPhotoPath)) {
           fs.unlinkSync(oldPhotoPath);
         }
