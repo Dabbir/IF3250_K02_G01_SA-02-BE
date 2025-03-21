@@ -110,13 +110,10 @@ const upload = require("../middlewares/upload.middleware");
 
 router.get('/', verifyToken, userController.getProfile);
 
-
 router.put("/", [verifyToken, upload.single("fotoProfil"), userUpdateValidation, validate], userController.updateProfile);
-
 
 router.get("/photo/:filename", userController.getProfilePhoto);
 
-router.get("/:id", verifyToken, userController.getUserById);
 router.put("/:id", userController.updateUser);
 
 module.exports = router;

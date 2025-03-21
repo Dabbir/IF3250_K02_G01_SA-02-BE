@@ -173,7 +173,7 @@ exports.googleAuth = (req, res, next) => {
 
 exports.googleAuthCallback = (req, res, next) => {
   return passport.authenticate("google", { 
-    failureRedirect: `${process.env.FRONTEND_URL}/login?error=auth_failed`, 
+    failureRedirect: `${process.env.ORIGIN}/login?error=auth_failed`, 
     session: false 
   })(req, res, next);
 };

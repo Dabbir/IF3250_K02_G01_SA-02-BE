@@ -60,7 +60,7 @@ exports.login = async (req, res) => {
 exports.callback = async (req, res) => {
   try {
     if (!req.user) {
-      return res.redirect(`${process.env.FRONTEND_URL}/login?error=auth_failed`);
+      return res.redirect(`${process.env.ORIGIN}/login?error=auth_failed`);
     }
 
     const token = jwt.sign(
@@ -74,14 +74,14 @@ exports.callback = async (req, res) => {
       { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
     );
     
-    const redirectUrl = new URL('/auth/callback', process.env.FRONTEND_URL);
+    const redirectUrl = new URL('/auth/callback', process.env.ORIGIN);
     redirectUrl.searchParams.append('token', token);
     console.log("redirectUrl", redirectUrl.toString());
     
     res.redirect(redirectUrl.toString());
   } catch (error) {
     console.error('Error during Google callback:', error);
-    res.redirect(`${process.env.FRONTEND_URL}/login?error=auth_failed`);
+    res.redirect(`${process.env.ORIGIN}/login?error=auth_failed`);
   }
 }
 
