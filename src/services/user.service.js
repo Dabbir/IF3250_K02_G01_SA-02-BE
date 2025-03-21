@@ -50,6 +50,15 @@ exports.createUser = async (userData) => {
   }
 }
 
+exports.createUserAgain = async (userData) => {
+  try {
+    return await userModels.createAgain(userData);
+  } catch (error) {
+    console.error('Error in createUser:', error);
+    throw error;
+  }
+}
+
 exports.updateUser = async (id, userData) => {
   try {
     const existingUser = await userModels.findById(id);

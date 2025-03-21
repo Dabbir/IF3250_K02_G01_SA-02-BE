@@ -88,6 +88,57 @@ class UserModel {
     }
   }
 
+  async createAgain(userData) {
+    try {
+      const {
+        nama,
+        email,
+        password,
+        masjid_id,
+        nama_masjid,
+        short_bio,
+        alasan_bergabung,
+        foto_profil,
+        auth_provider,
+        auth_provider_id,
+      } = userData;
+  
+      const [result] = await pool.query(
+        `UPDATE pengguna 
+        SET nama = ?, 
+            password = COALESCE(?, password), 
+            masjid_id = ?, 
+            nama_masjid = ?, 
+            short_bio = ?, 
+            alasan_bergabung = ?, 
+            foto_profil = ?, 
+            auth_provider = ?, 
+            auth_provider_id = ?
+        WHERE email = ?`,
+        [
+          nama,
+          password,
+          masjid_id,
+          nama_masjid,
+          short_bio,
+          alasan_bergabung,
+          foto_profil,
+          auth_provider,
+          auth_provider_id,
+          email,
+        ]
+      );
+  
+      if (result.affectedRows > 0) {
+        return result.insertId;
+      } else {
+        throw new Error("User with this email not found");
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async update(id, userData) {
     try {
       const { nama, email, short_bio, alasan_bergabung, foto_profil, deleteProfileImage } = userData;
