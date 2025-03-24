@@ -14,7 +14,7 @@ class UserModel {
   async findById(id) {
     try {
       const [rows] = await pool.query(
-        "SELECT p.*, m.nama_masjid FROM pengguna p LEFT JOIN masjid m ON p.masjid_id = m.id WHERE p.id = ?",
+        "SELECT p.* FROM pengguna p LEFT JOIN masjid m ON p.masjid_id = m.id WHERE p.id = ?",
         [id]
       );
       return rows.length > 0 ? rows[0] : null;
@@ -88,35 +88,114 @@ class UserModel {
     }
   }
 
-  async update(id, userData) {
+  async createAgain(userData) {
     try {
-      const { nama, email, short_bio, alasan_bergabung, foto_profil, deleteProfileImage } = userData;
-
-      let query = `UPDATE pengguna SET
-        nama = ?,
-        email = ?,
-        short_bio = ?,
-        alasan_bergabung = ?`;
-
-      let params = [nama, email, short_bio, alasan_bergabung];
-
-      if (foto_profil) {
-        query += `, foto_profil = ?`;
-        params.push(foto_profil);
-      } else if (deleteProfileImage) {
-        query += `, foto_profil = ?`;
-        params.push(null);
+      const {
+        nama,
+        email,
+        password,
+        masjid_id,
+        nama_masjid,
+        short_bio,
+        alasan_bergabung,
+        foto_profil,
+        auth_provider,
+        auth_provider_id,
+      } = userData;
+  
+      const [result] = await pool.query(
+        `UPDATE pengguna 
+        SET nama = ?, 
+            password = COALESCE(?, password), 
+            short_bio = ?, 
+            alasan_bergabung = ?, 
+            foto_profil = ?, 
+            masjid_id = ?, 
+            nama_masjid = ?, 
+            auth_provider = ?, 
+            auth_provider_id = ?
+        WHERE email = ?`,
+        [
+          nama,
+          password,
+          short_bio,
+          alasan_bergabung,
+          foto_profil,
+          masjid_id,
+          nama_masjid,
+          auth_provider,
+          auth_provider_id,
+          email,
+        ]
+      );
+  
+      if (result.affectedRows > 0) {
+        return result.insertId;
+      } else {
+        throw new Error("User with this email not found");
       }
-
-      query += ` WHERE id = ?`;
-      params.push(id);
-
-      await pool.query(query, params);
-      return true;
     } catch (error) {
       throw error;
     }
   }
+
+  async update(id, userData) {
+    try {
+        console.log(userData);
+        const { nama, email, short_bio, alasan_bergabung, foto_profil, nama_masjid, auth_provider, auth_provider_id, deleteProfileImage } = userData;
+
+        let updates = [];
+        let params = [];
+
+        if (nama) {
+            updates.push(`nama = ?`);
+            params.push(nama);
+        }
+        if (email) {
+            updates.push(`email = ?`);
+            params.push(email);
+        }
+        if (short_bio) {
+            updates.push(`short_bio = ?`);
+            params.push(short_bio);
+        }
+        if (alasan_bergabung) {
+            updates.push(`alasan_bergabung = ?`);
+            params.push(alasan_bergabung);
+        }
+        if (nama_masjid) {
+            updates.push(`nama_masjid = ?`);
+            params.push(nama_masjid);
+        }
+        if (auth_provider) {
+            updates.push(`auth_provider = ?`);
+            params.push(auth_provider);
+        }
+        if (auth_provider_id) {
+            updates.push(`auth_provider_id = ?`);
+            params.push(auth_provider_id);
+        }
+        if (foto_profil) {
+            updates.push(`foto_profil = ?`);
+            params.push(foto_profil);
+        } else if (deleteProfileImage == 'true') {
+            updates.push(`foto_profil = ?`);
+            params.push(null);
+        }
+
+        if (updates.length === 0) {
+            throw new Error("No fields provided to update.");
+        }
+
+        let query = `UPDATE pengguna SET ${updates.join(", ")} WHERE id = ?`;
+        params.push(id);
+
+        await pool.query(query, params);
+        return true;
+    } catch (error) {
+        throw error;
+    }
+}
 
   async delete(id) {
     try {

@@ -50,6 +50,15 @@ exports.createUser = async (userData) => {
   }
 }
 
+exports.createUserAgain = async (userData) => {
+  try {
+    return await userModels.createAgain(userData);
+  } catch (error) {
+    console.error('Error in createUser:', error);
+    throw error;
+  }
+}
+
 exports.updateUser = async (id, userData) => {
   try {
     const existingUser = await userModels.findById(id);
@@ -68,7 +77,7 @@ exports.updateUser = async (id, userData) => {
 
     if (existingUser.foto_profil) {
       filePath = existingUser.foto_profil.split("/").pop();
-      if (userData.foto_profil || userData.deleteProfileImage) {
+      if (userData.foto_profil || userData.deleteProfileImage == 'true') {
         const oldPhotoPath = path.join(__dirname, "../uploads/", filePath);
         if (fs.existsSync(oldPhotoPath)) {
           fs.unlinkSync(oldPhotoPath);
@@ -106,13 +115,7 @@ exports.findOrCreateByOAuth = async (oauthData) => {
     }
     
     user = await userModels.findByEmail(oauthData.email);
-    
-    if (user) {
-      await userModels.update(user.id, {
-        auth_provider: oauthData.provider,
-        auth_provider_id: oauthData.providerId
-      });
-      
+    if (user) {      
       return await userModels.findById(user.id);
     }
     

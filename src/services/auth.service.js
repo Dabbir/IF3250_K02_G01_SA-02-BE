@@ -4,45 +4,61 @@ const userService = require("../services/user.service");
 
 exports.register = async (userData) => {
   const { name, email, password, masjid_id, nama_masjid } = userData;
-
-  const existingUser = await userService.getByEmail(email);
-  if (existingUser) {
-    const error = new Error("Email already in use");
-    error.statusCode = 409;
-    throw error;
-  }
-
   const hashedPassword = await bcrypt.hash(password, 10);
-
   const userDataWithHash = {
     ...userData,
     password: hashedPassword,
   };
-
-  const userId = await userService.createUser(userDataWithHash);
-
-  const token = jwt.sign(
-    { id: userId, email, masjid_id },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN }
-  );
-
-  return {
-    token,
-    user: {
-      id: userId,
-      name,
-      email,
-      masjid_id,
-      nama_masjid,
-    },
+  const existingUser = await userService.getByEmail(email);
+  if (existingUser) {
+    if(!existingUser.shot_bio){
+      const userId = await userService.createUserAgain(userDataWithHash);
+      const token = jwt.sign(
+        { id: userId, email, masjid_id },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES_IN }
+      );
+      return {
+        token,
+        user: {
+          id: userId,
+          name,
+          email,
+          masjid_id,
+          nama_masjid,
+        },
+      }
+    } else{
+      const error = new Error("Email already in use");
+      error.statusCode = 409;
+      throw error;
+    }
+  } else {
+    const userId = await userService.createUser(userDataWithHash);
+    const token = jwt.sign(
+      { id: userId, email, masjid_id },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN }
+    );
+    return {
+      token,
+      user: {
+        id: userId,
+        name,
+        email,
+        masjid_id,
+        nama_masjid,
+      },
+    }
   }
+
+
 }
 
 exports.login = async (email, password) => {
   const user = await userService.getByEmail(email);
   if (!user) {
-    const error = new Error("User not found");
+    const error = new Error("Invalid email/password");
     error.statusCode = 404;
     throw error;
   }
@@ -55,7 +71,7 @@ exports.login = async (email, password) => {
 
   const isPasswordMatch = await bcrypt.compare(password, user.password);
   if (!isPasswordMatch) {
-    const error = new Error("Invalid password");
+    const error = new Error("Invalid email/password");
     error.statusCode = 401;
     throw error
   }
