@@ -62,3 +62,47 @@ exports.userUpdateValidation = [
     .withMessage('Alasan Bergabung must be between 8 and 100 characters'),
   body('nama_masjid').optional(),
 ];
+
+exports.activityValidation = [
+  body("nama_aktivitas")
+    .optional()
+    .notEmpty()
+    .withMessage("Nama aktivitas is required"),
+  
+  body("deskripsi")
+    .optional()
+    .notEmpty()
+    .withMessage("Deskripsi is required")
+    .isLength({ min: 10 })
+    .withMessage("Deskripsi must be at least 10 characters"),
+  
+  body("tanggal_mulai")
+    .notEmpty()
+    .withMessage("Tanggal mulai is required")
+    .isISO8601()
+    .withMessage("Tanggal mulai must be a valid date (YYYY-MM-DD)"),
+
+  body("tanggal_selesai")
+    .notEmpty()
+    .withMessage("Tanggal selesai is required")
+    .isISO8601()
+    .withMessage("Tanggal selesai must be a valid date (YYYY-MM-DD)"),
+  
+  body("biaya_implementasi")
+    .notEmpty()
+    .withMessage("Biaya implementasi is required")
+    .isNumeric()
+    .withMessage("Biaya implementasi must be a number"),
+
+  body("status")
+    .notEmpty()
+    .withMessage("Status is required")
+    .isIn(["Unstarted", "Ongoing", "Finished"])
+    .withMessage("Status must be one of: Unstarted, Ongoing, Finished"),
+  
+  body("program_id")
+    .notEmpty()
+    .withMessage("Program ID is required")
+    .isInt()
+    .withMessage("Program ID must be an integer"),
+];

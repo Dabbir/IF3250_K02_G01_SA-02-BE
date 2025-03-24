@@ -1,0 +1,94 @@
+const activityService = require("../services/activity.service");
+
+exports.getByIdActivity = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const activityId = req.params.id;
+
+        const activity = await activityService.getByIdActivity(userId, activityId);
+
+        res.status(200).json({
+            success: true,
+            message: "Activity found",
+            activity,
+        })
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
+            success: false,
+            message: error.message || "Internal server error",
+        });
+    }
+}
+
+exports.getByIdProgram = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const programId = req.params.id;
+
+        const activity = await activityService.getByIdProgram(userId, programId);
+
+        res.status(200).json({
+            success: true,
+            message: "Activity found",
+            activity,
+        })
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
+            success: false,
+            message: error.message || "Internal server error",
+        });
+    }
+}
+
+exports.addActivity = async (req, res) => {
+    try {
+        const created_by = req.user.id;
+        const data = { ...req.body, created_by };
+
+        const result = await activityService.addActivity(data)
+
+        if (result) {
+            res.status(200).json({
+                success: true,
+                message: "Activity added successfully",
+            })
+        } else {
+            return res.status(400).json({
+                success: false,
+                message: "Add activity failed",
+              });
+        }
+    } catch (error) {
+        console.log(error);
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
+            success: false,
+            message: error.message || "Internal server error",
+        });
+    }
+}
+
+exports.deleteActivity = async (req, res) => {
+    try {
+        const activityId = req.params.id;
+        const userId = req.user.id;
+
+        const result = await activityService.deleteActivity(userId, activityId);
+
+        if (result) {
+            res.status(200).json({
+                success: true,
+                message: "Activity deleted successfully",
+            })
+        }
+    } catch (error) {
+        console.log(error);
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
+            success: false,
+            message: error.message || "Internal server error",
+        });
+    }
+}

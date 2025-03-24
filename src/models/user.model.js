@@ -14,7 +14,20 @@ class UserModel {
   async findById(id) {
     try {
       const [rows] = await pool.query(
-        "SELECT p.* FROM pengguna p LEFT JOIN masjid m ON p.masjid_id = m.id WHERE p.id = ?",
+        "SELECT p.*, m.nama_masjid, m.alamat FROM pengguna p LEFT JOIN masjid m ON p.masjid_id = m.id WHERE p.id = ?",
+        [id]
+      );
+      return rows.length > 0 ? rows[0] : null;
+    } catch (error) {
+      console.error("Error in getUserById:", error);
+      throw error;
+    }
+  }
+
+  async findMasjidUser(id) {
+    try {
+      const [rows] = await pool.query(
+        "SELECT masjid_id FROM pengguna WHERE id = ?",
         [id]
       );
       return rows.length > 0 ? rows[0] : null;

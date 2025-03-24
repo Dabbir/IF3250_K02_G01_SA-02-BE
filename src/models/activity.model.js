@@ -10,13 +10,26 @@ class ActivityModel {
         }
     }
 
-    async findById(id) {
+    async findByIdActivity(id) {
         try {
             const [rows] = await pool.query(
-                "SELECT a.*, p.nama_masjid FROM aktivitas a LEFT JOIN program p ON a.program_id = p.id WHERE a.id = ?",
+                "SELECT * FROM aktivitas WHERE id = ?",
                 [id]
             );
             return rows.length > 0 ? rows[0] : null;
+        } catch (error) {
+            console.error("Error in getUserById:", error);
+            throw error;
+        }
+    }
+
+    async findByIdProgram(id) {
+        try {
+            const [rows] = await pool.query(
+                "SELECT id, nama_aktivitas, tanggal_mulai, tanggal_selesai, status, biaya_implementasi, program_id FROM aktivitas WHERE program_id = ?",
+                [id]
+            );
+            return rows.length > 0 ? rows : null;
         } catch (error) {
             console.error("Error in getUserById:", error);
             throw error;
@@ -47,32 +60,37 @@ class ActivityModel {
         }
     }
 
-    async create(userData) {
+    async create(activityData) {
         try {
             const {
                 nama_aktivitas,
-                program_id,
+                deskripsi,
+                dokumentasi,
                 tanggal_mulai,
                 tanggal_selesai,
                 biaya_implementasi,
                 status,
-                deskripsi,
-                dokumentasi,
-            } = userData;
+                program_id,
+                created_by
+            } = activityData;
+
+            const dokumentasiJson = JSON.stringify(dokumentasi);
 
             const [result] = await pool.query(
                 `INSERT INTO aktivitas 
-                (nama_aktivitas, program_id, tanggal_mulai, tanggal_selesai, biaya_implementasi, status, deskripsi, dokumentasi)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                    (nama_aktivitas, deskripsi, dokumentasi, tanggal_mulai, tanggal_selesai, biaya_implementasi, status, program_id, created_by)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                `,
                 [
                     nama_aktivitas,
-                    program_id,
+                    deskripsi,
+                    dokumentasiJson,
                     tanggal_mulai,
                     tanggal_selesai,
                     biaya_implementasi,
                     status,
-                    deskripsi,
-                    dokumentasi,
+                    program_id,
+                    created_by
                 ]
             );
 
@@ -82,7 +100,7 @@ class ActivityModel {
         }
     }
 
-    async update(id, userData) {
+    async update(id, activityData) {
         try {
             // TODO: implement query
             return true;
