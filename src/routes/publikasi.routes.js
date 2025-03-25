@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const publikasiController = require('../controllers/publikasi.controller');
 const { verifyToken, isAdmin } = require('../middlewares/auth.middleware');
-const { validate, publikasiValidation } = require('../middlewares/validate.middleware');
+const { validate, publikasiValidation } = require('../middlewares/publikasi.middleware');
 const upload = require("../middlewares/upload.middleware");
 
 /**
@@ -47,7 +47,7 @@ const upload = require("../middlewares/upload.middleware");
  *         description: Internal Server Error
  */
 router.get('/', publikasiController.getAllPublikasi);
-router.post('/', [verifyToken, isAdmin, upload.single("file"), publikasiValidation, validate], publikasiController.createPublikasi);
+router.post('/', [verifyToken, upload.single("file"), publikasiValidation, validate], publikasiController.createPublikasi);
 
 /**
  * @swagger
@@ -125,7 +125,7 @@ router.post('/', [verifyToken, isAdmin, upload.single("file"), publikasiValidati
  *         description: Internal Server Error
  */
 router.get('/:id', publikasiController.getPublikasiById);
-router.put('/:id', [verifyToken, isAdmin, publikasiValidation, validate], publikasiController.updatePublikasi);
-router.delete('/:id', [verifyToken, isAdmin], publikasiController.deletePublikasi);
+router.put('/:id', [verifyToken, publikasiValidation, validate], publikasiController.updatePublikasi);
+router.delete('/:id', [verifyToken, publikasiValidation], publikasiController.deletePublikasi);
 
 module.exports = router;
