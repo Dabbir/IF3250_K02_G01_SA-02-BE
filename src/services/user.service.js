@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const userModels = require('../models/user.model');
 const path = require("path");
 const fs = require("fs");
@@ -34,14 +35,28 @@ exports.getByEmail = async (email) => {
 }
 
 exports.createUser = async (userData) => {
-  const existingUser = await userModels.findByEmail(userData.email);
-  if (existingUser) {
-    const error = new Error("Email already in use");
-    error.statusCode = 409;
+  try {
+    const existingUser = await userModels.findByEmail(userData.email);
+    if (existingUser) {
+      const error = new Error("Email already in use");
+      error.statusCode = 409;
+      throw error;
+    }
+
+    return await userModels.create(userData);
+  } catch (error) {
+    console.error('Error in createUser:', error);
     throw error;
   }
+}
 
-  return await userModels.create(userData);
+exports.createUserAgain = async (userData) => {
+  try {
+    return await userModels.createAgain(userData);
+  } catch (error) {
+    console.error('Error in createUser:', error);
+    throw error;
+  }
 }
 
 exports.updateUser = async (id, userData) => {
@@ -62,8 +77,8 @@ exports.updateUser = async (id, userData) => {
 
     if (existingUser.foto_profil) {
       filePath = existingUser.foto_profil.split("/").pop();
-      if (userData.foto_profil || userData.deleteProfileImage) {
-        const oldPhotoPath = path.join(__dirname, "../uploads/", existingUser.foto_profil);
+      if (userData.foto_profil || userData.deleteProfileImage == 'true') {
+        const oldPhotoPath = path.join(__dirname, "../uploads/", filePath);
         if (fs.existsSync(oldPhotoPath)) {
           fs.unlinkSync(oldPhotoPath);
         }
@@ -100,20 +115,16 @@ exports.findOrCreateByOAuth = async (oauthData) => {
     }
     
     user = await userModels.findByEmail(oauthData.email);
-    
-    if (user) {
-      await userModels.update(user.id, {
-        auth_provider: oauthData.provider,
-        auth_provider_id: oauthData.providerId
-      });
-      
+    if (user) {      
       return await userModels.findById(user.id);
     }
     
+    const randomPassword = crypto.randomBytes(20).toString('hex');
+    
     const userId = await userModels.create({
-      nama: oauthData.name,
+      nama: oauthData.nama,
       email: oauthData.email,
-      password: null,
+      password: randomPassword,
       peran: 'Editor',
       masjid_id: null,
       nama_masjid: null,

@@ -93,7 +93,6 @@ exports.getProfile = async (req, res) => {
 exports.getProfilePhoto = (req, res) => {
   const { filename } = req.params;
   const filePath = path.join(__dirname, "../uploads", filename);
-  console.log("filePath", filePath);
 
   if (fs.existsSync(filePath)) {
       res.sendFile(filePath);
@@ -108,12 +107,10 @@ exports.updateProfile = async (req, res) => {
     const userData = req.body;
 
     if (req.file) {
-      userData.foto_profil = req.file.Url;
+      userData.foto_profil = req.fileUrl;
     }
 
     const result = await userService.updateUser(userId, userData);
-
-    console.log("result", result);
 
     if (!result) {
       return res.status(404).json({
@@ -158,7 +155,7 @@ exports.createUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.params.id
     const userData = req.body;
     const result = await userService.updateUser(userId, userData);
 

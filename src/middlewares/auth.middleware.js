@@ -3,6 +3,20 @@ const db = require("../config/db.config");
 const userService = require("../services/user.service");
 const passport = require("../config/passport.config");
 
+exports.authenticate = (req, res, next) => {
+  try {
+    const token = req.headers.authorization.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: 'Authentication failed',
+    });
+  }
+};
+
 exports.verifyToken = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -159,7 +173,7 @@ exports.googleAuth = (req, res, next) => {
 
 exports.googleAuthCallback = (req, res, next) => {
   return passport.authenticate("google", { 
-    failureRedirect: `${process.env.FRONTEND_URL}/login?error=auth_failed`, 
+    failureRedirect: `${process.env.ORIGIN}/login?error=auth_failed`, 
     session: false 
   })(req, res, next);
 };

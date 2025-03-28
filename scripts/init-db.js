@@ -62,6 +62,8 @@ async function initializeDatabase() {
         foto_profil VARCHAR(255),
         masjid_id INT,
         nama_masjid VARCHAR(100),
+        auth_provider VARCHAR(100) NULL,
+        auth_provider_id VARCHAR(100) NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (masjid_id) REFERENCES masjid(id) ON DELETE SET NULL
