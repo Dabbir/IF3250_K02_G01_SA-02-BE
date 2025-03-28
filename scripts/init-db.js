@@ -103,7 +103,6 @@ async function initializeDatabase() {
         dokumentasi TEXT,
         tanggal_mulai DATE,
         tanggal_selesai DATE,
-        target_tercapai TEXT,
         biaya_implementasi DECIMAL(15,2),
         status ENUM('Unstarted', 'Ongoing', 'Finished') DEFAULT 'Unstarted',
         program_id INT,
