@@ -77,7 +77,7 @@ exports.login = async (email, password) => {
   }
 
   const token = jwt.sign(
-    { id: user.id, email: user.email, nama_masjid: user.nama_masjid, peran: user.peran },
+    { id: user.id, email: user.email, masjid_id: user.masjid_id, peran: user.peran },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN }
   );
@@ -88,7 +88,7 @@ exports.login = async (email, password) => {
       id: user.id,
       name: user.name,
       email: user.email,
-      nama_masjid: user.nama_masjid,
+      masjid_id: user.masjid_id,
       peran: user.peran,
     },
   }

@@ -3,6 +3,7 @@ const { verifyToken } = require('../middlewares/auth.middleware');
 const activityController = require('../controllers/activity.controller');
 const { activityValidation, validate } = require('../middlewares/validate.middleware');
 const router = express.Router();
+const upload = require("../middlewares/upload.middleware");
 
 /**
  * @swagger
@@ -168,7 +169,7 @@ router.get('/program/:id', verifyToken, activityController.getByIdProgram);
  *       500:
  *         description: Internal Server Error
  */
-router.post('/add', [verifyToken, activityValidation, validate], activityController.addActivity);
+router.post('/add', [verifyToken, upload.array('dokumentasi'), activityValidation, validate], activityController.addActivity);
 
 /**
  * @swagger

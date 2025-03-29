@@ -23,7 +23,14 @@ const storage = multer.diskStorage({
 
     const fullPath = `${BASEURL}api/users/photo/${uniqueSuffix}${ext}`;
 
-    req.fileUrl = fullPath;
+    if (req.files) {
+      if (!req.fileUrls) {
+        req.fileUrls = [];
+      }
+      req.fileUrls.push(fullPath);
+    } else {
+      req.fileUrl = fullPath;
+    }
   },
 });
 
