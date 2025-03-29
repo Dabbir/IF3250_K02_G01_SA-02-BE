@@ -20,6 +20,7 @@ exports.getByIdActivity = async (req, res) => {
         });
     }
 }
+
 exports.getAllActivity = async (req, res) => {
     try {
         const masjidID = req.user.masjid_id;
@@ -31,6 +32,26 @@ exports.getAllActivity = async (req, res) => {
             success: true,
             message: "Activity found",
             activity,
+        })
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
+            success: false,
+            message: error.message || "Internal server error",
+        });
+    }
+}
+
+exports.getIdProgram = async (req, res) => {
+    try {
+        const masjidID = req.user.masjid_id;
+
+        const idProgram = await activityService.getIdProgram(masjidID);
+
+        res.status(200).json({
+            success: true,
+            message: "Activity found",
+            idProgram,
         })
     } catch (error) {
         const statusCode = error.statusCode || 500;

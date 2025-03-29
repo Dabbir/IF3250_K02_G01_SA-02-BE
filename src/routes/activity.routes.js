@@ -38,6 +38,7 @@ const upload = require("../middlewares/upload.middleware");
  */
 router.get('/getactivity/:id', verifyToken, activityController.getByIdActivity);
 router.get('/getactivity/', verifyToken, activityController.getAllActivity);
+router.get('/idprogram/', verifyToken, activityController.getIdProgram);
 
 /**
  * @swagger

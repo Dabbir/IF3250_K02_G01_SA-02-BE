@@ -18,10 +18,11 @@ class ActivityModel {
             );
             return rows.length > 0 ? rows[0] : null;
         } catch (error) {
-            console.error("Error in getUserById:", error);
+            console.error("Error in findByIdActivity:", error);
             throw error;
         }
     }
+
     async findAllActivity(id) {
         try {
             const [rows] = await pool.query(
@@ -30,7 +31,20 @@ class ActivityModel {
             );
             return rows;
         } catch (error) {
-            console.error("Error in getUserById:", error);
+            console.error("Error in findAllActivity:", error);
+            throw error;
+        }
+    }
+
+    async getIdProgram(id) {
+        try {
+            const [rows] = await pool.query(
+                "SELECT id, nama_program FROM program WHERE masjid_id = ?",
+                [id]
+            );
+            return rows;
+        } catch (error) {
+            console.error("Error in getIdProgram:", error);
             throw error;
         }
     }
