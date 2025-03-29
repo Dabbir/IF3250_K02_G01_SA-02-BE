@@ -22,9 +22,8 @@ exports.getByIdActivity = async (req, res) => {
 }
 exports.getAllActivity = async (req, res) => {
     try {
-        const userId = req.user.id;
-        const masjidID = await activityService.getmasjidID(userId);
-
+        const masjidID = req.user.masjid_id;
+        console.log(masjidID)
 
         const activity = await activityService.getAllActivity(masjidID);
 
@@ -100,8 +99,7 @@ exports.addActivity = async (req, res) => {
 exports.deleteActivity = async (req, res) => {
     try {
         const activityId = req.params.id;
-        const userId = req.user.id;
-        const masjidID = await activityService.getmasjidID(userId);
+        const masjidID = req.user.masjid_id;
 
         const result = await activityService.deleteActivity(masjidID, activityId);
 
