@@ -40,6 +40,7 @@ module.exports = {
         email, 
         password, 
         peran, 
+        status,
         masjid_id,
         short_bio,
         alasan_bergabung
@@ -49,6 +50,7 @@ module.exports = {
         'aktivitas@gmail.com', 
         ?, 
         'Editor', 
+        'Approved',
         1,
         'Test Aktivitasssss',
         'Test Aktivitasssss'

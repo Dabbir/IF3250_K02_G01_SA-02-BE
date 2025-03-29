@@ -41,6 +41,7 @@ app.get("/", (req, res) => {
       auth: "/api/auth",
       account: "/api/account",
       publikasi: "/api/publikasi",
+      masjid: "/api/masjid",
     },
   });
 });

@@ -11,7 +11,7 @@ exports.register = async (userData) => {
   };
   const existingUser = await userService.getByEmail(email);
   if (existingUser) {
-    if(!existingUser.shot_bio){
+    if(!existingUser.short_bio){
       const userId = await userService.createUserAgain(userDataWithHash);
       const token = jwt.sign(
         { id: userId, email, masjid_id },
@@ -25,7 +25,7 @@ exports.register = async (userData) => {
           name,
           email,
           masjid_id,
-          nama_masjid,
+          // nama_masjid,
         },
       }
     } else{
@@ -72,6 +72,12 @@ exports.login = async (email, password) => {
   const isPasswordMatch = await bcrypt.compare(password, user.password);
   if (!isPasswordMatch) {
     const error = new Error("Invalid email/password");
+    error.statusCode = 401;
+    throw error
+  }
+
+  if (user.status != 'Approved'){
+    const error = new Error("Account belum diverifikasi");
     error.statusCode = 401;
     throw error
   }
