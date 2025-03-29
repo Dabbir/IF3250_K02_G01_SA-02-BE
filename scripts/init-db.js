@@ -37,6 +37,9 @@ async function initializeDatabase() {
         id INT AUTO_INCREMENT PRIMARY KEY,
         nama_masjid VARCHAR(100) NOT NULL,
         alamat TEXT,
+        kota VARCHAR(50),
+        provinsi VARCHAR(50),
+        negara VARCHAR(50),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )
