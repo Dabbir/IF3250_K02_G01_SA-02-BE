@@ -66,7 +66,9 @@ exports.getByIdProgram = async (req, res) => {
 exports.addActivity = async (req, res) => {
     try {
         const created_by = req.user.id;
-        const data = { ...req.body, created_by };
+        const masjid_id = req.user.masjid_id;
+        
+        const data = { ...req.body, created_by, masjid_id };
 
         if (req.files) {
             data.dokumentasi = req.fileUrls;

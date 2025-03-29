@@ -95,15 +95,16 @@ class ActivityModel {
                 biaya_implementasi,
                 status,
                 program_id,
-                created_by
+                created_by,
+                masjid_id
             } = activityData;
 
             const dokumentasiJson = JSON.stringify(dokumentasi);
 
             const [result] = await pool.query(
                 `INSERT INTO aktivitas 
-                    (nama_aktivitas, deskripsi, dokumentasi, tanggal_mulai, tanggal_selesai, biaya_implementasi, status, program_id, created_by)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    (nama_aktivitas, deskripsi, dokumentasi, tanggal_mulai, tanggal_selesai, biaya_implementasi, status, program_id, created_by, masjid_id)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 `,
                 [
                     nama_aktivitas,
@@ -114,7 +115,8 @@ class ActivityModel {
                     biaya_implementasi,
                     status,
                     program_id,
-                    created_by
+                    created_by,
+                    masjid_id
                 ]
             );
 
