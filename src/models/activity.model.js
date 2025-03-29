@@ -124,14 +124,6 @@ class ActivityModel {
         }
     }
 
-    async update(id, activityData) {
-        try {
-            // TODO: implement query
-            return true;
-        } catch (error) {
-            throw error;
-        }
-    }
 
     async delete(id) {
         try {
@@ -139,6 +131,83 @@ class ActivityModel {
                 id,
             ]);
             return result.affectedRows > 0;
+        } catch (error) {
+            throw error;
+        }
+    }
+    async update(id, activityData) {
+        try {
+            const {
+                nama_aktivitas,
+                deskripsi,
+                dokumentasi,
+                tanggal_mulai,
+                tanggal_selesai,
+                biaya_implementasi,
+                status,
+                program_id
+            } = activityData;
+    
+            // Build the query parts dynamically
+            const updateFields = [];
+            const values = [];
+    
+            if (nama_aktivitas !== undefined) {
+                updateFields.push("nama_aktivitas = ?");
+                values.push(nama_aktivitas);
+            }
+            if (deskripsi !== undefined) {
+                updateFields.push("deskripsi = ?");
+                values.push(deskripsi);
+            }
+            if (dokumentasi !== undefined) {
+                const dokumentasiJson = JSON.stringify(dokumentasi);
+                updateFields.push("dokumentasi = ?");
+                values.push(dokumentasiJson);
+            }
+            if (tanggal_mulai !== undefined) {
+                updateFields.push("tanggal_mulai = ?");
+                values.push(tanggal_mulai);
+            }
+            if (tanggal_selesai !== undefined) {
+                updateFields.push("tanggal_selesai = ?");
+                values.push(tanggal_selesai);
+            }
+            if (biaya_implementasi !== undefined) {
+                updateFields.push("biaya_implementasi = ?");
+                values.push(biaya_implementasi);
+            }
+            if (status !== undefined) {
+                updateFields.push("status = ?");
+                values.push(status);
+            }
+            if (program_id !== undefined) {
+                updateFields.push("program_id = ?");
+                values.push(program_id);
+            }
+    
+            // Add updated_at timestamp
+            updateFields.push("updated_at = CURRENT_TIMESTAMP()");
+    
+            // If nothing to update, return the current activity
+            if (updateFields.length === 1) {
+                const [rows] = await pool.query("SELECT * FROM aktivitas WHERE id = ?", [id]);
+                return rows.length > 0 ? rows[0] : null;
+            }
+    
+            // Build and execute the query
+            const query = `UPDATE aktivitas SET ${updateFields.join(", ")} WHERE id = ?`;
+            values.push(id);
+    
+            const [result] = await pool.query(query, values);
+            
+            if (result.affectedRows === 0) {
+                return null;
+            }
+    
+            // Get and return the updated activity
+            const [rows] = await pool.query("SELECT * FROM aktivitas WHERE id = ?", [id]);
+            return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             throw error;
         }

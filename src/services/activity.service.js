@@ -101,3 +101,30 @@ exports.deleteActivity = async (masjiID, activityId) => {
         throw error;
     }
 }
+
+exports.updateActivity = async (userId, activityId, activityData) => {
+    try {
+        const activity = await activityModel.findByIdActivity(activityId);
+
+        if (!activity) {
+            const error = new Error("Activity not found");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        const activityMasjid = await userModel.findMasjidUser(activity.created_by);
+        const userMasjid = await userModel.findMasjidUser(userId);
+
+        if (userMasjid.masjid_id !== activityMasjid.masjid_id) {
+            const error = new Error("You are not allowed to update this resource");
+            error.statusCode = 403;
+            throw error;
+        }
+
+        const updatedActivity = await activityModel.update(activityId, activityData);
+        
+        return updatedActivity;
+    } catch (error) {
+        throw error;
+    }
+}

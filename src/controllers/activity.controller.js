@@ -114,3 +114,26 @@ exports.deleteActivity = async (req, res) => {
         });
     }
 }
+
+exports.updateActivity = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const activityId = req.params.id;
+        const activityData = req.body;
+
+        const result = await activityService.updateActivity(userId, activityId, activityData);
+
+        res.status(200).json({
+            success: true,
+            message: "Activity updated successfully",
+            data: result
+        });
+    } catch (error) {
+        console.log(error);
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
+            success: false,
+            message: error.message || "Internal server error",
+        });
+    }
+}
