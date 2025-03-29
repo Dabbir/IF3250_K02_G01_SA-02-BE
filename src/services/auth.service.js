@@ -47,7 +47,7 @@ exports.register = async (userData) => {
         name,
         email,
         masjid_id,
-        nama_masjid,
+        // nama_masjid,
       },
     }
   }
@@ -77,7 +77,7 @@ exports.login = async (email, password) => {
   }
 
   const token = jwt.sign(
-    { id: user.id, email: user.email, nama_masjid: user.nama_masjid },
+    { id: user.id, email: user.email, nama_masjid: user.nama_masjid, peran: user.peran },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN }
   );
@@ -89,6 +89,7 @@ exports.login = async (email, password) => {
       name: user.name,
       email: user.email,
       nama_masjid: user.nama_masjid,
+      peran: user.peran,
     },
   }
 }

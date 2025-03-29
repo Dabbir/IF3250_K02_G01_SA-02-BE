@@ -41,6 +41,8 @@ module.exports = {
         alasan_bergabung TEXT,
         foto_profil VARCHAR(255),
         masjid_id INT,
+        nama_masjid VARCHAR(255),
+        auth_provider VARCHAR(255),
         auth_provider_id VARCHAR(255),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
