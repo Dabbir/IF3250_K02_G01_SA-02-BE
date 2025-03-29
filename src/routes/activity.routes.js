@@ -262,6 +262,6 @@ router.delete('/delete/:id', verifyToken, activityController.deleteActivity);
  *       500:
  *         description: Internal Server Error
  */
-router.put('/update/:id', verifyToken, activityController.updateActivity);
+router.put('/update/:id', [verifyToken, upload.array('dokumentasi'), activityValidation, validate], activityController.updateActivity);
 
 module.exports = router;

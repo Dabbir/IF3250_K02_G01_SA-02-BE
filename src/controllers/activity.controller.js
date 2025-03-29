@@ -146,6 +146,10 @@ exports.updateActivity = async (req, res) => {
         const activityId = req.params.id;
         const activityData = req.body;
 
+        if (req.files) {
+            activityData.dokumentasi = req.fileUrls;
+        }
+
         const result = await activityService.updateActivity(userId, activityId, activityData);
 
         res.status(200).json({
