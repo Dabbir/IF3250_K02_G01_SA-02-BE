@@ -25,6 +25,34 @@ exports.getByIdActivity = async (userId, activityId) => {
         throw error;
     }
 }
+exports.getAllActivity = async (masjidID) => {
+    try {
+        const activity = await activityModel.findAllActivity(masjidID);
+
+        if (!activity) {
+            const error = new Error("Actvity not found")
+            error.statusCode = 404;
+            throw error;
+        }
+        return activity;
+    } catch (error) {
+        throw error;
+    }
+}
+exports.getmasjidID = async (id) => {
+    try {
+        const masjidID = await activityModel.findmasjidID(id);
+
+        if (!masjidID) {
+            const error = new Error("masjidID not found")
+            error.statusCode = 404;
+            throw error;
+        }
+        return masjidID;
+    } catch (error) {
+        throw error;
+    }
+}
 
 exports.getByIdProgram = async (userId, programId) => {
     try {
@@ -52,7 +80,7 @@ exports.addActivity = async(activityData) => {
     }
 }
 
-exports.deleteActivity = async (userId, activityId) => {
+exports.deleteActivity = async (masjiID, activityId) => {
     try {
         const activity = await activityModel.findByIdActivity(activityId);
 
@@ -62,7 +90,7 @@ exports.deleteActivity = async (userId, activityId) => {
             throw error;
         }
 
-        if (activity.created_by !== userId) {
+        if (activity.masjid_id !== masjiID) {
             const error = new Error("You are not allowed to access this resource")
             error.statusCode = 403;
             throw error;

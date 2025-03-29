@@ -36,6 +36,7 @@ const router = express.Router();
  *         description: Internal Server Error
  */
 router.get('/getactivity/:id', verifyToken, activityController.getByIdActivity);
+router.get('/getactivity/', verifyToken, activityController.getAllActivity);
 
 /**
  * @swagger

@@ -22,6 +22,30 @@ class ActivityModel {
             throw error;
         }
     }
+    async findAllActivity(id) {
+        try {
+            const [rows] = await pool.query(
+                "SELECT * FROM aktivitas WHERE masjid_id = ?",
+                [id]
+            );
+            return rows;
+        } catch (error) {
+            console.error("Error in getUserById:", error);
+            throw error;
+        }
+    }
+    async findmasjidID(id) {
+        try {
+            const [rows] = await pool.query(
+                "SELECT masjid_id FROM pengguna WHERE id = ?",
+                [id]
+            );
+            return rows.length > 0 ? rows[0].masjid_id : null;
+        } catch (error) {
+            console.error("Error in findMasjidID:", error);
+            throw error;
+        }
+    }
 
     async findByIdProgram(id) {
         try {

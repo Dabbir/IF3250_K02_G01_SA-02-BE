@@ -20,6 +20,27 @@ exports.getByIdActivity = async (req, res) => {
         });
     }
 }
+exports.getAllActivity = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const masjidID =  await activityService.getmasjidID(userId);
+
+
+        const activity = await activityService.getAllActivity(masjidID);
+
+        res.status(200).json({
+            success: true,
+            message: "Activity found",
+            activity,
+        })
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
+            success: false,
+            message: error.message || "Internal server error",
+        });
+    }
+}
 
 exports.getByIdProgram = async (req, res) => {
     try {
@@ -74,8 +95,9 @@ exports.deleteActivity = async (req, res) => {
     try {
         const activityId = req.params.id;
         const userId = req.user.id;
+        const masjidID =  await activityService.getmasjidID(userId);
 
-        const result = await activityService.deleteActivity(userId, activityId);
+        const result = await activityService.deleteActivity(masjidID, activityId);
 
         if (result) {
             res.status(200).json({
