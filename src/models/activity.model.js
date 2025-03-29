@@ -13,7 +13,7 @@ class ActivityModel {
     async findByIdActivity(id) {
         try {
             const [rows] = await pool.query(
-                "SELECT * FROM aktivitas WHERE id = ?",
+                "SELECT *, p.nama_program FROM aktivitas a LEFT JOIN program p ON a.program_id = p.id WHERE a.id = ?",
                 [id]
             );
             return rows.length > 0 ? rows[0] : null;

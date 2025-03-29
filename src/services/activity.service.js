@@ -74,9 +74,9 @@ exports.getByIdProgram = async (userId, programId) => {
     }
 }
 
-exports.addActivity = async(activityData) => {
+exports.addActivity = async (activityData) => {
     try {
-        return await activityModel.create(activityData);       
+        return await activityModel.create(activityData);
     } catch (error) {
         throw error;
     }
@@ -104,6 +104,12 @@ exports.deleteActivity = async (masjiID, activityId) => {
     }
 }
 
+const formatDate = (isoDateString) => {
+    if (!isoDateString) return null;
+    const date = new Date(isoDateString);
+    return date.toISOString().slice(0, 19).replace("T", " ");
+};
+
 exports.updateActivity = async (userId, activityId, activityData) => {
     try {
         const activity = await activityModel.findByIdActivity(activityId);
@@ -123,8 +129,11 @@ exports.updateActivity = async (userId, activityId, activityData) => {
             throw error;
         }
 
+        activityData.tanggal_mulai = formatDate(activityData.tanggal_mulai);
+        activityData.tanggal_selesai = formatDate(activityData.tanggal_selesai);
+
         const updatedActivity = await activityModel.update(activityId, activityData);
-        
+
         return updatedActivity;
     } catch (error) {
         throw error;
