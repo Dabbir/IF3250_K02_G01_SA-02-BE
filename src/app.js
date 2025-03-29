@@ -40,6 +40,7 @@ app.get("/", (req, res) => {
       users: "/api/users",
       auth: "/api/auth",
       account: "/api/account",
+      publikasi: "/api/publikasi",
     },
   });
 });
