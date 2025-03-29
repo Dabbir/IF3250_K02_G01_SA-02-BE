@@ -23,7 +23,7 @@ exports.getByIdActivity = async (req, res) => {
 exports.getAllActivity = async (req, res) => {
     try {
         const userId = req.user.id;
-        const masjidID =  await activityService.getmasjidID(userId);
+        const masjidID = await activityService.getmasjidID(userId);
 
 
         const activity = await activityService.getAllActivity(masjidID);
@@ -68,6 +68,10 @@ exports.addActivity = async (req, res) => {
         const created_by = req.user.id;
         const data = { ...req.body, created_by };
 
+        if (req.files) {
+            data.dokumentasi = req.fileUrls;
+        }
+
         const result = await activityService.addActivity(data)
 
         if (result) {
@@ -79,7 +83,7 @@ exports.addActivity = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Add activity failed",
-              });
+            });
         }
     } catch (error) {
         console.log(error);
@@ -95,7 +99,7 @@ exports.deleteActivity = async (req, res) => {
     try {
         const activityId = req.params.id;
         const userId = req.user.id;
-        const masjidID =  await activityService.getmasjidID(userId);
+        const masjidID = await activityService.getmasjidID(userId);
 
         const result = await activityService.deleteActivity(masjidID, activityId);
 
