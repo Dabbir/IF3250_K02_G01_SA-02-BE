@@ -137,15 +137,15 @@ exports.updateActivity = async (userId, activityId, activityData) => {
         if (Array.isArray(activityData.deleted_images)) {
             await Promise.all(
                 activityData.deleted_images.map(async (imagePath) => {
-                    try {
-                        const fileName = imagePath.split("/").pop();
-                        const oldPhotoPath = path.join(__dirname, "../uploads/", fileName);
+                    const fileName = imagePath.split("/").pop();
+                    const oldPhotoPath = path.join(__dirname, "../uploads/", fileName);
+                    if (fs.existsSync(oldPhotoPath)) {
                         console.log(fileName);
                         console.log(oldPhotoPath);
                         await fs.unlinkSync(oldPhotoPath);
                         console.log(`Delete successed: ${oldPhotoPath}`);
-                    } catch (err) {
-                        console.warn(`Delete failed ${imagePath}: ${err.message}`);
+                    } else {
+                        console.warn(`Delete failed ${imagePath}`);
                     }
                 })
             );

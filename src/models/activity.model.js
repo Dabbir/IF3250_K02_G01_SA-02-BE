@@ -139,6 +139,7 @@ class ActivityModel {
             throw error;
         }
     }
+    
     async update(id, activityData) {
         try {
             const {
@@ -152,11 +153,11 @@ class ActivityModel {
                 program_id,
                 prev_dokumentasi,
             } = activityData;
-    
+
             // Build the query parts dynamically
             const updateFields = [];
             const values = [];
-    
+
             if (nama_aktivitas !== undefined) {
                 updateFields.push("nama_aktivitas = ?");
                 values.push(nama_aktivitas);
@@ -166,8 +167,13 @@ class ActivityModel {
                 values.push(deskripsi);
             }
             if (dokumentasi !== undefined) {
-                const mergedDokumentasi = prev_dokumentasi.concat(dokumentasi);
-                const dokumentasiJson = JSON.stringify(mergedDokumentasi);
+                let dokumentasiJson;
+                if (prev_dokumentasi !== undefined) {
+                    const mergedDokumentasi = prev_dokumentasi.concat(dokumentasi);
+                    dokumentasiJson = JSON.stringify(mergedDokumentasi);
+                } else {
+                    dokumentasiJson = JSON.stringify(dokumentasi);
+                }
                 updateFields.push("dokumentasi = ?");
                 values.push(dokumentasiJson);
             }
@@ -191,26 +197,26 @@ class ActivityModel {
                 updateFields.push("program_id = ?");
                 values.push(program_id);
             }
-    
+
             // Add updated_at timestamp
             updateFields.push("updated_at = CURRENT_TIMESTAMP()");
-    
+
             // If nothing to update, return the current activity
             if (updateFields.length === 1) {
                 const [rows] = await pool.query("SELECT * FROM aktivitas WHERE id = ?", [id]);
                 return rows.length > 0 ? rows[0] : null;
             }
-    
+
             // Build and execute the query
             const query = `UPDATE aktivitas SET ${updateFields.join(", ")} WHERE id = ?`;
             values.push(id);
-    
+
             const [result] = await pool.query(query, values);
-            
+
             if (result.affectedRows === 0) {
                 return null;
             }
-    
+
             // Get and return the updated activity
             const [rows] = await pool.query("SELECT * FROM aktivitas WHERE id = ?", [id]);
             return rows.length > 0 ? rows[0] : null;
