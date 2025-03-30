@@ -31,7 +31,8 @@ exports.createProgram = async (req, res, next) => {
 exports.updateProgram = async (req, res, next) => {
   try {
     await ProgramService.updateProgram(req.params.id, req.body);
-    res.json({ message: 'Program updated' });
+    const updatedProgram = await ProgramService.getProgramById(req.params.id);
+    res.json(updatedProgram);
   } catch (error) {
     next(error);
   }
