@@ -2,6 +2,8 @@ const { body, validationResult } = require('express-validator');
 
 exports.programValidationCreate = [
   body('nama_program').notEmpty().withMessage("Program's name is required"),
+  body('waktu_mulai').notEmpty().withMessage("Program's start time is required"),
+  body('waktu_selesai').notEmpty().withMessage("Program's end time is required"),
 ];
 
 exports.programValidationUpdate = [
