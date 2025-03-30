@@ -5,6 +5,14 @@ class ProgramService {
     return await Program.getAll();
   }
 
+  static async getProgramsPaginated(limit, offset) {
+    return await Program.getPaginated(limit, offset);
+  }
+  
+  static async countAllPrograms() {
+    return await Program.countAll();
+  }
+
   static async getProgramById(id) {
     return await Program.getById(id);
   }

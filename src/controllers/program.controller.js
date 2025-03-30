@@ -9,6 +9,23 @@ exports.getAllProgram = async (req, res, next) => {
   }
 };
 
+exports.getProgramsPaginated = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page || 1);
+    const limit = parseInt(req.query.limit || 10);
+    const offset = (page - 1) * limit;
+
+    const [programs, total] = await Promise.all([
+      ProgramService.getProgramsPaginated(limit, offset),
+      ProgramService.countAllPrograms()
+    ]);
+
+    res.json({ data: programs, total });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.getProgramById = async (req, res, next) => {
   try {
     const program = await ProgramService.getProgramById(req.params.id);

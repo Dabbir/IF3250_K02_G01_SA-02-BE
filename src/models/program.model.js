@@ -2,12 +2,29 @@ const { pool } = require("../config/db.config");
 
 class Program {
   static async getAll() {
-    const [rows] = await pool.query('SELECT * FROM program');
+    const [rows] = await pool.query('SELECT * FROM program ORDER BY created_at DESC');
     return rows.map((row) => ({
       ...row,
       pilar_program: JSON.parse(row.pilar_program || "[]"),
     }));
   }
+
+  static async getPaginated(limit, offset) {
+    const [rows] = await pool.query(
+      'SELECT * FROM program ORDER BY created_at DESC LIMIT ? OFFSET ?', 
+      [limit, offset]
+    );
+  
+    return rows.map((row) => ({
+      ...row,
+      pilar_program: JSON.parse(row.pilar_program || "[]"),
+    }));
+  }
+  
+  static async countAll() {
+    const [[{ count }]] = await pool.query('SELECT COUNT(*) as count FROM program');
+    return count;
+  }  
 
   static async getById(id) {
     const [rows] = await pool.query(`

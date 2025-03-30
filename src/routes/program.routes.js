@@ -60,6 +60,21 @@ router.post('/', [upload.none(), verifyToken, programValidationCreate, validate]
 
 /**
  * @swagger
+ * /api/program/paginated:
+ *   get:
+ *     summary: Mendapatkan program dengan paginasi
+ *     tags: [Program]
+ *     responses:
+ *       200:
+ *         description: Program berhasil ditemukan
+ *       500:
+ *         description: Internal Server Error
+ *
+  */
+router.get('/paginated', programController.getProgramsPaginated);
+
+/**
+ * @swagger
  * /api/program/{id}:
  *   get:
  *     summary: Mendapatkan program berdasarkan ID
