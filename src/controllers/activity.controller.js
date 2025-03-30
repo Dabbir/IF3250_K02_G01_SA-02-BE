@@ -166,3 +166,28 @@ exports.updateActivity = async (req, res) => {
         });
     }
 }
+
+exports.addActivitySheet = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const masjid_id = req.user.masjid_id;
+        const activityData = req.body.data;
+
+        console.log(activityData);
+
+        const result = await activityService.addActivitySheet(userId, masjid_id, activityData);
+
+        res.status(200).json({
+            success: true,
+            message: "Activity updated successfully",
+            data: result
+        });
+    } catch (error) {
+        console.log(error);
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
+            success: false,
+            message: error.message || "Internal server error",
+        });
+    }
+}

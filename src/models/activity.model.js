@@ -13,7 +13,7 @@ class ActivityModel {
     async findByIdActivity(id) {
         try {
             const [rows] = await pool.query(
-                "SELECT *, p.nama_program FROM aktivitas a LEFT JOIN program p ON a.program_id = p.id WHERE a.id = ?",
+                "SELECT a.*, p.nama_program FROM aktivitas a LEFT JOIN program p ON a.program_id = p.id WHERE a.id = ?",
                 [id]
             );
             return rows.length > 0 ? rows[0] : null;
@@ -26,7 +26,7 @@ class ActivityModel {
     async findAllActivity(id) {
         try {
             const [rows] = await pool.query(
-                "SELECT * FROM aktivitas WHERE masjid_id = ?",
+                "SELECT a.*, p.nama_program FROM aktivitas a LEFT JOIN program p ON a.program_id = p.id WHERE a.masjid_id = ?",
                 [id]
             );
             return rows;
@@ -139,7 +139,7 @@ class ActivityModel {
             throw error;
         }
     }
-    
+
     async update(id, activityData) {
         try {
             const {
@@ -224,6 +224,40 @@ class ActivityModel {
             throw error;
         }
     }
+
+    async createSheet(activityData) {
+        try {
+            const placeholders = activityData.map(() => "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").join(", ");
+
+            const sql = `
+            INSERT INTO aktivitas 
+            (nama_aktivitas, deskripsi, dokumentasi, tanggal_mulai, tanggal_selesai, 
+             biaya_implementasi, status, program_id, created_by, masjid_id)
+            VALUES ${placeholders}
+            `;
+
+            // Mengubah objek menjadi array nilai
+            const flatValues = activityData.flatMap(activity => [
+                activity.nama_aktivitas,
+                activity.deskripsi,
+                activity.dokumentasi || null,  // Jika tidak ada, masukkan NULL
+                activity.tanggal_mulai,
+                activity.tanggal_selesai,
+                activity.biaya_implementasi,
+                activity.status,
+                activity.program_id || null,  // Jika tidak ada, masukkan NULL
+                activity.created_by,
+                activity.masjid_id
+            ]);
+
+            const [result] = await pool.query(sql, flatValues);
+            return result.insertId;
+        } catch (error) {
+            console.error("Error inserting data:", error);
+            throw error;
+        }
+    }
+
 }
 
 module.exports = new ActivityModel();
