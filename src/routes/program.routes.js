@@ -4,6 +4,7 @@ const programController = require('../controllers/program.controller');
 const { verifyToken, isAdmin } = require('../middlewares/auth.middleware');
 const { validate, programValidationCreate, programValidationUpdate } = require('../middlewares/program.middleware');
 const upload = require("../middlewares/upload.middleware");
+const { authenticate } = require('../middlewares/auth.middleware');
 
 /**
  * @swagger
@@ -71,7 +72,7 @@ router.post('/', [upload.none(), verifyToken, programValidationCreate, validate]
  *         description: Internal Server Error
  *
   */
-router.get('/paginated', programController.getProgramsPaginated);
+router.get('/paginated', [authenticate], programController.getProgramsPaginated);
 
 /**
  * @swagger

@@ -1,18 +1,22 @@
 const { pool } = require("../config/db.config");
 
 class Program {
-  static async getAll() {
-    const [rows] = await pool.query('SELECT * FROM program ORDER BY created_at DESC');
+  static async getAll(masjid_id) {
+    const [rows] = await pool.query(
+      'SELECT * FROM program WHERE masjid_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?',
+      [masjid_id, limit, offset]
+    );
+    
     return rows.map((row) => ({
       ...row,
       pilar_program: JSON.parse(row.pilar_program || "[]"),
     }));
   }
 
-  static async getPaginated(limit, offset) {
+  static async getPaginated(limit, offset, masjid_id) {
     const [rows] = await pool.query(
-      'SELECT * FROM program ORDER BY created_at DESC LIMIT ? OFFSET ?', 
-      [limit, offset]
+      'SELECT * FROM program WHERE masjid_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?',
+      [masjid_id, limit, offset]
     );
   
     return rows.map((row) => ({
@@ -21,12 +25,16 @@ class Program {
     }));
   }
   
-  static async countAll() {
-    const [[{ count }]] = await pool.query('SELECT COUNT(*) as count FROM program');
+  static async countAll(masjid_id) {
+    const [[{ count }]] = await pool.query(
+      'SELECT COUNT(*) as count FROM program WHERE masjid_id = ?',
+      [masjid_id]
+    );
+
     return count;
   }  
 
-  static async getById(id) {
+  static async getById(id, masjid_id) {
     const [rows] = await pool.query(`
       SELECT 
       program.id,
@@ -44,8 +52,9 @@ class Program {
       program.created_at,
       program.updated_at
       FROM program LEFT JOIN pengguna ON program.created_by = pengguna.id 
-      WHERE program.id = ?
-    `, [id]);
+      WHERE program.id = ? AND program.masjid_id = ?`, 
+      [id, masjid_id]
+    );
     const row = rows[0];
 
     if (row) {
@@ -69,23 +78,37 @@ class Program {
     if (data.pilar_program && Array.isArray(data.pilar_program)) {
       data.pilar_program = JSON.stringify(data.pilar_program);
     }
-    const [result] = await pool.query('INSERT INTO program SET ?', [data]);
+    const [result] = await pool.query(
+      'INSERT INTO program SET ?', 
+      [data]
+    );
     return result.insertId;
   }
 
-  static async update(id, data) {
-    const { created_by, created_at, ...updateData } = data;
-
+  static async update(id, data, masjid_id) {
+    const { created_by, created_at, masjid_id: _ignoreMasjid, ...updateData } = data;
+  
     if (updateData.pilar_program && Array.isArray(updateData.pilar_program)) {
       updateData.pilar_program = JSON.stringify(updateData.pilar_program);
     }
-
+  
     delete updateData.updated_at;
-    await pool.query('UPDATE program SET ? WHERE id = ?', [updateData, id]);
+  
+    const [result] = await pool.query(
+      'UPDATE program SET ? WHERE id = ? AND masjid_id = ?',
+      [updateData, id, masjid_id]
+    );
+  
+    return result.affectedRows > 0;
   }
 
-  static async delete(id) {
-    await pool.query('DELETE FROM program WHERE id = ?', [id]);
+  static async delete(id, masjid_id) {
+    const [result] = await pool.query(
+      'DELETE FROM program WHERE id = ? AND masjid_id = ?',
+      [id, masjid_id]
+    );
+  
+    return result.affectedRows > 0;
   }
 }
 
