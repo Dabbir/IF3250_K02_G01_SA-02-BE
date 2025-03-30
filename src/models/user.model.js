@@ -212,7 +212,7 @@ class UserModel {
             params.push(null);
         }
 
-        updates.push(`status = 'Approved'`) //sementara langsung di approve
+        // updates.push(`status = 'Approved'`) //sementara langsung di approve
 
         if (updates.length === 0) {
             throw new Error("No fields provided to update.");
