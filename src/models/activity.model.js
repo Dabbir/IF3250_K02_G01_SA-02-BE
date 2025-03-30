@@ -139,7 +139,7 @@ class ActivityModel {
             throw error;
         }
     }
-    
+
     async update(id, activityData) {
         try {
             const {
@@ -224,6 +224,40 @@ class ActivityModel {
             throw error;
         }
     }
+
+    async createSheet(activityData) {
+        try {
+            const placeholders = activityData.map(() => "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").join(", ");
+
+            const sql = `
+            INSERT INTO aktivitas 
+            (nama_aktivitas, deskripsi, dokumentasi, tanggal_mulai, tanggal_selesai, 
+             biaya_implementasi, status, program_id, created_by, masjid_id)
+            VALUES ${placeholders}
+            `;
+
+            // Mengubah objek menjadi array nilai
+            const flatValues = activityData.flatMap(activity => [
+                activity.nama_aktivitas,
+                activity.deskripsi,
+                activity.dokumentasi || null,  // Jika tidak ada, masukkan NULL
+                activity.tanggal_mulai,
+                activity.tanggal_selesai,
+                activity.biaya_implementasi,
+                activity.status,
+                activity.program_id || null,  // Jika tidak ada, masukkan NULL
+                activity.created_by,
+                activity.masjid_id
+            ]);
+
+            const [result] = await pool.query(sql, flatValues);
+            return result.insertId;
+        } catch (error) {
+            console.error("Error inserting data:", error);
+            throw error;
+        }
+    }
+
 }
 
 module.exports = new ActivityModel();
