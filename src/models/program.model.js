@@ -30,6 +30,18 @@ class Program {
       WHERE program.id = ?
     `, [id]);
     const row = rows[0];
+
+    if (row) {
+      if (row.waktu_mulai) {
+        const date = new Date(row.waktu_mulai);
+        row.waktu_mulai = date.toISOString().split('T')[0];
+      }
+      if (row.waktu_selesai) {
+        const date = new Date(row.waktu_selesai);
+        row.waktu_selesai = date.toISOString().split('T')[0];
+      }
+    }
+    
     return {
       ...row,
       pilar_program: JSON.parse(row.pilar_program || "[]"),
