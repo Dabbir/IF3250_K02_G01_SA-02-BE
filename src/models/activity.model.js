@@ -149,7 +149,8 @@ class ActivityModel {
                 tanggal_selesai,
                 biaya_implementasi,
                 status,
-                program_id
+                program_id,
+                prev_dokumentasi,
             } = activityData;
     
             // Build the query parts dynamically
@@ -165,7 +166,8 @@ class ActivityModel {
                 values.push(deskripsi);
             }
             if (dokumentasi !== undefined) {
-                const dokumentasiJson = JSON.stringify(dokumentasi);
+                const mergedDokumentasi = prev_dokumentasi.concat(dokumentasi);
+                const dokumentasiJson = JSON.stringify(mergedDokumentasi);
                 updateFields.push("dokumentasi = ?");
                 values.push(dokumentasiJson);
             }

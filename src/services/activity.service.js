@@ -1,5 +1,7 @@
 const activityModel = require('../models/activity.model');
 const userModel = require('../models/user.model');
+const fs = require("fs");
+const path = require("path");
 
 exports.getByIdActivity = async (userId, activityId) => {
     try {
@@ -131,6 +133,23 @@ exports.updateActivity = async (userId, activityId, activityData) => {
 
         activityData.tanggal_mulai = formatDate(activityData.tanggal_mulai);
         activityData.tanggal_selesai = formatDate(activityData.tanggal_selesai);
+
+        if (Array.isArray(activityData.deleted_images)) {
+            await Promise.all(
+                activityData.deleted_images.map(async (imagePath) => {
+                    try {
+                        const fileName = imagePath.split("/").pop();
+                        const oldPhotoPath = path.join(__dirname, "../uploads/", fileName);
+                        console.log(fileName);
+                        console.log(oldPhotoPath);
+                        await fs.unlinkSync(oldPhotoPath);
+                        console.log(`Delete successed: ${oldPhotoPath}`);
+                    } catch (err) {
+                        console.warn(`Delete failed ${imagePath}: ${err.message}`);
+                    }
+                })
+            );
+        }
 
         const updatedActivity = await activityModel.update(activityId, activityData);
 
