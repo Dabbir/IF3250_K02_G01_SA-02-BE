@@ -74,7 +74,7 @@ async function initializeDatabase() {
         id INT AUTO_INCREMENT PRIMARY KEY,
         nama_program VARCHAR(100) NOT NULL,
         deskripsi_program TEXT,
-        pilar_program VARCHAR(100),
+        pilar_program TEXT,
         kriteria_program TEXT,
         waktu_mulai DATE,
         waktu_selesai DATE,
