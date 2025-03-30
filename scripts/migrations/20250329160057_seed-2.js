@@ -17,19 +17,10 @@ module.exports = {
         masjid_id, 
         created_by
       ) 
-      VALUES (
-        'Program Pemberdayaan Masjid', 
-        'Program untuk meningkatkan kualitas dan fungsi masjid sebagai pusat kegiatan umat', 
-        'Pemberdayaan', 
-        'Masjid dengan jamaah aktif minimal 50 orang', 
-        '2024-01-01', 
-        '2024-12-31', 
-        100000000.00, 
-        85000000.00, 
-        'Berjalan', 
-        1, 
-        1
-      )
+      VALUES ('Program Pemberdayaan Masjid', 'Program untuk meningkatkan kualitas dan fungsi masjid sebagai pusat kegiatan umat', 'Pemberdayaan', 'Masjid dengan jamaah aktif minimal 50 orang', '2024-01-01', '2024-12-31',  100000000.00, 85000000.00, 'Berjalan', 1, 1)
+      , ('Program Kedua Masjid', 'Program untuk nge test ada 2 program', 'Pemberdayaan', 'Masjid dengan jamaah aktif minimal 50 orang', '2024-01-01', '2024-12-31',  100000000.00, 85000000.00, 'Berjalan', 1, 1)
+      , ('Program Masjid', 'Program untuk nge test ada 2 program', 'Pemberdayaan', 'Masjid dengan jamaah aktif minimal 50 orang', '2024-01-01', '2024-12-31',  100000000.00, 85000000.00, 'Berjalan', 2, 1)
+      , ('Program Masjid', 'Program untuk nge test ada 2 program', 'Pemberdayaan', 'Masjid dengan jamaah aktif minimal 50 orang', '2024-01-01', '2024-12-31',  100000000.00, 85000000.00, 'Berjalan', 2, 1)
     `);
 
     const hashedPassword = await bcrypt.hash('aktivitas', 10);
