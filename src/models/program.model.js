@@ -41,7 +41,7 @@ class Program {
         row.waktu_selesai = date.toISOString().split('T')[0];
       }
     }
-    
+
     return {
       ...row,
       pilar_program: JSON.parse(row.pilar_program || "[]"),
@@ -57,10 +57,14 @@ class Program {
   }
 
   static async update(id, data) {
-    if (data.pilar_program && Array.isArray(data.pilar_program)) {
-      data.pilar_program = JSON.stringify(data.pilar_program);
+    const { created_by, created_at, ...updateData } = data;
+
+    if (updateData.pilar_program && Array.isArray(updateData.pilar_program)) {
+      updateData.pilar_program = JSON.stringify(updateData.pilar_program);
     }
-    await pool.query('UPDATE program SET ? WHERE id = ?', [data, id]);
+
+    delete updateData.updated_at;
+    await pool.query('UPDATE program SET ? WHERE id = ?', [updateData, id]);
   }
 
   static async delete(id) {
