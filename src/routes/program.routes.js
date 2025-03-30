@@ -4,6 +4,7 @@ const programController = require('../controllers/program.controller');
 const { verifyToken, isAdmin } = require('../middlewares/auth.middleware');
 const { validate, programValidationCreate, programValidationUpdate } = require('../middlewares/program.middleware');
 const upload = require("../middlewares/upload.middleware");
+const { authenticate } = require('../middlewares/auth.middleware');
 
 /**
  * @swagger
@@ -57,6 +58,21 @@ const upload = require("../middlewares/upload.middleware");
  */
 router.get('/', programController.getAllProgram);
 router.post('/', [upload.none(), verifyToken, programValidationCreate, validate], programController.createProgram);
+
+/**
+ * @swagger
+ * /api/program/paginated:
+ *   get:
+ *     summary: Mendapatkan program dengan paginasi
+ *     tags: [Program]
+ *     responses:
+ *       200:
+ *         description: Program berhasil ditemukan
+ *       500:
+ *         description: Internal Server Error
+ *
+  */
+router.get('/paginated', [authenticate], programController.getProgramsPaginated);
 
 /**
  * @swagger
