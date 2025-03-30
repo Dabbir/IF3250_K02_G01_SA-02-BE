@@ -12,34 +12,42 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-      const ext = path.extname(file.originalname).toLowerCase();
-      const filename = `../uploads/${uniqueSuffix}${ext}`;
-      cb(null, filename); 
-      
-      const fullPath = `${BASEURL}api/users/photo/${uniqueSuffix}${ext}`;
-      
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname).toLowerCase();
+    const filename = `../uploads/${uniqueSuffix}${ext}`;
+    cb(null, filename);
+
+    const fullPath = `${BASEURL}api/users/photo/${uniqueSuffix}${ext}`;
+
+    if (req.files) {
+      if (!req.fileUrls) {
+        req.fileUrls = [];
+      }
+      req.fileUrls.push(fullPath);
+    } else {
       req.fileUrl = fullPath;
-    },
-  });
+    }
+  },
+});
 
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+  const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml"];
+
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error("Only image files (JPG, PNG, GIF, WEBP) are allowed"), false);
+    cb(new Error("Only image files (JPG, PNG, GIF, WEBP, SVG) are allowed"), false);
   }
 };
 
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 2 * 1024 * 1024 }, 
+  limits: { fileSize: 2 * 1024 * 1024 },
 });
 
 module.exports = upload;

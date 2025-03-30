@@ -11,7 +11,7 @@ exports.register = async (userData) => {
   };
   const existingUser = await userService.getByEmail(email);
   if (existingUser) {
-    if(!existingUser.shot_bio){
+    if(!existingUser.short_bio){
       const userId = await userService.createUserAgain(userDataWithHash);
       const token = jwt.sign(
         { id: userId, email, masjid_id },
@@ -25,7 +25,7 @@ exports.register = async (userData) => {
           name,
           email,
           masjid_id,
-          nama_masjid,
+          // nama_masjid,
         },
       }
     } else{
@@ -47,7 +47,7 @@ exports.register = async (userData) => {
         name,
         email,
         masjid_id,
-        nama_masjid,
+        // nama_masjid,
       },
     }
   }
@@ -76,8 +76,14 @@ exports.login = async (email, password) => {
     throw error
   }
 
+  if (user.status != 'Approved'){
+    const error = new Error("Account belum diverifikasi");
+    error.statusCode = 401;
+    throw error
+  }
+
   const token = jwt.sign(
-    { id: user.id, email: user.email, nama_masjid: user.nama_masjid },
+    { id: user.id, email: user.email, masjid_id: user.masjid_id, peran: user.peran },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN }
   );
@@ -88,7 +94,8 @@ exports.login = async (email, password) => {
       id: user.id,
       name: user.name,
       email: user.email,
-      nama_masjid: user.nama_masjid,
+      masjid_id: user.masjid_id,
+      peran: user.peran,
     },
   }
 }

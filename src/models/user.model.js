@@ -14,7 +14,20 @@ class UserModel {
   async findById(id) {
     try {
       const [rows] = await pool.query(
-        "SELECT p.* FROM pengguna p LEFT JOIN masjid m ON p.masjid_id = m.id WHERE p.id = ?",
+        "SELECT p.*, m.nama_masjid, m.alamat FROM pengguna p LEFT JOIN masjid m ON p.masjid_id = m.id WHERE p.id = ?",
+        [id]
+      );
+      return rows.length > 0 ? rows[0] : null;
+    } catch (error) {
+      console.error("Error in getUserById:", error);
+      throw error;
+    }
+  }
+
+  async findMasjidUser(id) {
+    try {
+      const [rows] = await pool.query(
+        "SELECT masjid_id FROM pengguna WHERE id = ?",
         [id]
       );
       return rows.length > 0 ? rows[0] : null;
@@ -103,7 +116,8 @@ class UserModel {
         auth_provider_id,
       } = userData;
   
-      const [result] = await pool.query(
+      // First update the user data
+      const [updateResult] = await pool.query(
         `UPDATE pengguna 
         SET nama = ?, 
             password = COALESCE(?, password), 
@@ -129,10 +143,21 @@ class UserModel {
         ]
       );
   
-      if (result.affectedRows > 0) {
-        return result.insertId;
-      } else {
+      if (updateResult.affectedRows === 0) {
         throw new Error("User with this email not found");
+      }
+  
+      // Then get the user ID
+      const [rows] = await pool.query(
+        `SELECT id FROM pengguna WHERE email = ?`,
+        [email]
+      );
+  
+      // Return just the ID value from the first row
+      if (rows.length > 0) {
+        return rows[0].id;
+      } else {
+        throw new Error("Failed to retrieve user ID after update");
       }
     } catch (error) {
       throw error;
@@ -142,7 +167,7 @@ class UserModel {
   async update(id, userData) {
     try {
         console.log(userData);
-        const { nama, email, short_bio, alasan_bergabung, foto_profil, nama_masjid, auth_provider, auth_provider_id, deleteProfileImage } = userData;
+        const { nama, email, short_bio, alasan_bergabung, foto_profil, nama_masjid, masjid_id, auth_provider, auth_provider_id, deleteProfileImage } = userData;
 
         let updates = [];
         let params = [];
@@ -167,6 +192,10 @@ class UserModel {
             updates.push(`nama_masjid = ?`);
             params.push(nama_masjid);
         }
+        if (masjid_id) {
+            updates.push(`masjid_id = ?`);
+            params.push(masjid_id);
+        }
         if (auth_provider) {
             updates.push(`auth_provider = ?`);
             params.push(auth_provider);
@@ -182,6 +211,8 @@ class UserModel {
             updates.push(`foto_profil = ?`);
             params.push(null);
         }
+
+        updates.push(`status = 'Approved'`) //sementara langsung di approve
 
         if (updates.length === 0) {
             throw new Error("No fields provided to update.");

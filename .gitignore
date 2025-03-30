@@ -28,3 +28,9 @@ coverage/
 
 #ignore src/uploads file
 src/uploads/
+
+# Ignore log files
+*.log
+*.log.*
+src/logs/*.log
+src/logs/*.log.*

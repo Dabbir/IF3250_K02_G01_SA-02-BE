@@ -41,6 +41,8 @@ module.exports = {
         alasan_bergabung TEXT,
         foto_profil VARCHAR(255),
         masjid_id INT,
+        nama_masjid VARCHAR(255),
+        auth_provider VARCHAR(255),
         auth_provider_id VARCHAR(255),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -98,18 +100,20 @@ module.exports = {
         id INT AUTO_INCREMENT PRIMARY KEY,
         judul_publikasi VARCHAR(255) NOT NULL,
         media_publikasi ENUM('Televisi', 'Koran', 'Radio', 'Media Online', 'Sosial Media', 'Lainnya'),
-        nama_perusahaan_media VARCHAR(255),
+        nama_perusahaan_media VARCHAR(100),
+        tanggal_publikasi DATE,
         url_publikasi VARCHAR(255),
         pr_value DECIMAL(15,2),
-        program_id INT NOT NULL,
+        program_id INT,
         aktivitas_id INT,
-        created_by INT NOT NULL,
+        created_by INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (program_id) REFERENCES program(id) ON DELETE CASCADE,
-        FOREIGN KEY (aktivitas_id) REFERENCES aktivitas(id) ON DELETE SET NULL,
-        FOREIGN KEY (created_by) REFERENCES pengguna(id) ON DELETE CASCADE
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        nama_program VARCHAR(255) NOT NULL,
+        nama_aktivitas VARCHAR(255) NOT NULL,
+        tone ENUM('Positif', 'Negatif', 'Netral'),
+        FOREIGN KEY (created_by) REFERENCES pengguna(id) ON DELETE SET NULL
+      )
     `);
 
     // Create Stakeholder Table

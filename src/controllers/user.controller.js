@@ -73,7 +73,7 @@ exports.getProfile = async (req, res) => {
       created_at: user.created_at,
       updated_at: user.updated_at,
       nama_masjid: user.nama_masjid,
-      alamat_masjid: user.nama_masjid,
+      alamat_masjid: user.alamat,
     };
 
     res.status(200).json({

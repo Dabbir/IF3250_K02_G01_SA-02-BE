@@ -1,36 +1,67 @@
 const winston = require('winston');
+const path = require('path');
 
-// Configure the Winston logger
+// Mendefinisikan format logging
+const logFormat = winston.format.combine(
+  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+  winston.format.errors({ stack: true }),
+  winston.format.splat(),
+  winston.format.json()
+);
+
+// Konfigurasi logger
 const logger = winston.createLogger({
   level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
-  format: winston.format.combine(
-    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    winston.format.errors({ stack: true }),
-    winston.format.splat(),
-    winston.format.json()
-  ),
-  defaultMeta: { service: 'api' },
+  format: logFormat,
+  defaultMeta: { service: 'salman-sustainability' },
   transports: [
-    // Write to all logs with level 'info' and below to 'combined.log'
-    // Write all logs error (and below) to 'error.log'
-    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'logs/combined.log' })
-  ]
+    // Menulis log ke console
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.printf(
+          info => `${info.timestamp} ${info.level}: ${info.message}${info.stack ? '\n' + info.stack : ''}`
+        )
+      ),
+    }),
+    // Menulis semua log ke combined.log
+    new winston.transports.File({ 
+      filename: path.join(__dirname, '../logs/combined.log'),
+      maxsize: 5242880, // 5MB
+      maxFiles: 5,
+    }),
+    // Menulis log error ke error.log
+    new winston.transports.File({ 
+      filename: path.join(__dirname, '../logs/error.log'),
+      level: 'error',
+      maxsize: 5242880, // 5MB
+      maxFiles: 5,
+    }),
+  ],
 });
 
-// If we're not in production, also log to the console
+// Jika bukan production, log juga ke console dengan format yang lebih sederhana
 if (process.env.NODE_ENV !== 'production') {
   logger.add(new winston.transports.Console({
     format: winston.format.combine(
       winston.format.colorize(),
       winston.format.simple()
-    )
+    ),
   }));
 }
 
-// Create a stream object that can be used by Morgan
-const stream = {
-  write: (message) => logger.info(message.trim())
-};
+// Menangkap uncaught exceptions
+logger.exceptions.handle(
+  new winston.transports.File({ 
+    filename: path.join(__dirname, '../logs/exceptions.log'),
+    maxsize: 5242880, // 5MB
+    maxFiles: 5,
+  })
+);
 
-module.exports = { logger, stream };
+// Menangkap unhandled rejections
+process.on('unhandledRejection', (ex) => {
+  throw ex;
+});
+
+module.exports = { logger };
