@@ -5,6 +5,7 @@ module.exports = {
     const [masjidResult] = await connection.query(`
       INSERT INTO masjid (nama_masjid, alamat) 
       VALUES ('Masjid Salman ITB', 'Jl. Ganesha No.10, Lb. Siliwangi, Kecamatan Coblong, Kota Bandung, Jawa Barat 40132')
+      ,('Masjid 2 ITB', 'Gaada yang tau alamat masjid 2')
     `);
     
     const masjidId = masjidResult.insertId;
