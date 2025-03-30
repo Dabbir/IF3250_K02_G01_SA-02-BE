@@ -3,6 +3,7 @@ const { verifyToken } = require('../middlewares/auth.middleware');
 const activityController = require('../controllers/activity.controller');
 const { activityValidation, validate } = require('../middlewares/validate.middleware');
 const router = express.Router();
+const upload = require("../middlewares/upload.middleware");
 
 /**
  * @swagger
@@ -36,6 +37,8 @@ const router = express.Router();
  *         description: Internal Server Error
  */
 router.get('/getactivity/:id', verifyToken, activityController.getByIdActivity);
+router.get('/getactivity/', verifyToken, activityController.getAllActivity);
+router.get('/idprogram/', verifyToken, activityController.getIdProgram);
 
 /**
  * @swagger
@@ -167,7 +170,7 @@ router.get('/program/:id', verifyToken, activityController.getByIdProgram);
  *       500:
  *         description: Internal Server Error
  */
-router.post('/add', [verifyToken, activityValidation, validate], activityController.addActivity);
+router.post('/add', [verifyToken, upload.array('dokumentasi'), activityValidation, validate], activityController.addActivity);
 
 /**
  * @swagger
@@ -206,5 +209,59 @@ router.post('/add', [verifyToken, activityValidation, validate], activityControl
  *         description: Internal Server Error
  */
 router.delete('/delete/:id', verifyToken, activityController.deleteActivity);
+
+/**
+ * @swagger
+ * /api/activity/update/{id}:
+ *   put:
+ *     summary: Update an activity by ID
+ *     tags: [Activity]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the activity to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nama_aktivitas:
+ *                 type: string
+ *               deskripsi:
+ *                 type: string
+ *               tanggal_mulai:
+ *                 type: string
+ *                 format: date
+ *               tanggal_selesai:
+ *                 type: string
+ *                 format: date
+ *               biaya_implementasi:
+ *                 type: number
+ *               status:
+ *                 type: string
+ *               program_id:
+ *                 type: integer
+ *     responses:
+ *       200:
+ *         description: Activity updated successfully
+ *       400:
+ *         description: Bad request
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Activity not found
+ *       500:
+ *         description: Internal Server Error
+ */
+router.put('/update/:id', [verifyToken, upload.array('dokumentasi'), activityValidation, validate], activityController.updateActivity);
 
 module.exports = router;
