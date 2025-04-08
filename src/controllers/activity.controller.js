@@ -50,8 +50,28 @@ exports.getIdProgram = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: "Activity found",
+            message: "Program found",
             idProgram,
+        })
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
+            success: false,
+            message: error.message || "Internal server error",
+        });
+    }
+}
+
+exports.getIdAktivitas = async (req, res) => {
+    try {
+        const masjidID = req.user.masjid_id;
+
+        const idAktivitas = await activityService.getIdAktivitas(masjidID);
+
+        res.status(200).json({
+            success: true,
+            message: "Activity found",
+            idAktivitas,
         })
     } catch (error) {
         const statusCode = error.statusCode || 500;

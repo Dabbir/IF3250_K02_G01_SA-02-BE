@@ -49,6 +49,19 @@ class ActivityModel {
         }
     }
 
+    async getIdAktivitas(id) {
+        try {
+            const [rows] = await pool.query(
+                "SELECT id, nama_aktivitas FROM aktivitas WHERE masjid_id = ?",
+                [id]
+            );
+            return rows;
+        } catch (error) {
+            console.error("Error in getIdAktivitas:", error);
+            throw error;
+        }
+    }
+
     async findByIdProgram(id) {
         try {
             const [rows] = await pool.query(
