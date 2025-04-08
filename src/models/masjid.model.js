@@ -3,7 +3,7 @@ const { pool } = require("../config/db.config");
 class MasjidModel {
   async findAll() {
     try {
-      const [rows] = await pool.query("SELECT * FROM masjid");
+      const [rows] = await pool.query("SELECT id, nama_masjid, alamat FROM masjid");
       return rows;
     } catch (error) {
       throw error;
@@ -13,7 +13,7 @@ class MasjidModel {
   async findById(id) {
     try {
       const [rows] = await pool.query(
-        "SELECT * FROM masjid WHERE id = ?",
+        "SELECT id, nama_masjid, alamat FROM masjid WHERE id = ?",
         [id]
       );
       return rows.length > 0 ? rows[0] : null;
@@ -26,7 +26,7 @@ class MasjidModel {
   async findByNama(nama) {
     try {
       const [rows] = await pool.query(
-        "SELECT * FROM masjid WHERE nama_masjid LIKE ?",
+        "SELECT id, nama_masjid, alamat FROM masjid WHERE nama_masjid LIKE ?",
         [`%${nama}%`]
       );
       return rows;
@@ -37,31 +37,11 @@ class MasjidModel {
 
   async create(masjidData) {
     try {
-      const {
-        nama_masjid,
-        alamat,
-        kota,
-        provinsi,
-        kode_pos,
-        latitude,
-        longitude,
-        foto
-      } = masjidData;
+      const { nama_masjid, alamat } = masjidData;
 
       const [result] = await pool.query(
-        `INSERT INTO masjid 
-        (nama_masjid, alamat, kota, provinsi, kode_pos, latitude, longitude, foto) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          nama_masjid,
-          alamat,
-          kota,
-          provinsi,
-          kode_pos,
-          latitude,
-          longitude,
-          foto
-        ]
+        `INSERT INTO masjid (nama_masjid, alamat) VALUES (?, ?)`,
+        [nama_masjid, alamat]
       );
 
       return result.insertId;
@@ -72,16 +52,7 @@ class MasjidModel {
 
   async update(id, masjidData) {
     try {
-      const {
-        nama_masjid,
-        alamat,
-        kota,
-        provinsi,
-        kode_pos,
-        latitude,
-        longitude,
-        foto
-      } = masjidData;
+      const { nama_masjid, alamat } = masjidData;
 
       let updates = [];
       let params = [];
@@ -93,30 +64,6 @@ class MasjidModel {
       if (alamat) {
         updates.push(`alamat = ?`);
         params.push(alamat);
-      }
-      if (kota) {
-        updates.push(`kota = ?`);
-        params.push(kota);
-      }
-      if (provinsi) {
-        updates.push(`provinsi = ?`);
-        params.push(provinsi);
-      }
-      if (kode_pos) {
-        updates.push(`kode_pos = ?`);
-        params.push(kode_pos);
-      }
-      if (latitude) {
-        updates.push(`latitude = ?`);
-        params.push(latitude);
-      }
-      if (longitude) {
-        updates.push(`longitude = ?`);
-        params.push(longitude);
-      }
-      if (foto) {
-        updates.push(`foto = ?`);
-        params.push(foto);
       }
 
       if (updates.length === 0) {
@@ -140,6 +87,23 @@ class MasjidModel {
       ]);
       return result.affectedRows > 0;
     } catch (error) {
+      throw error;
+    }
+  }
+
+  async getEditorsByMasjidId(masjidId) {
+    try {
+      const [rows] = await pool.query(`
+        SELECT u.id, u.nama, u.email, u.peran, u.status, u.short_bio, 
+               u.alasan_bergabung, u.foto_profil, u.created_at
+        FROM pengguna u
+        WHERE u.masjid_id = ? AND u.peran = 'Editor'
+        ORDER BY u.created_at DESC
+      `, [masjidId]);
+      
+      return rows;
+    } catch (error) {
+      console.error("Error in getEditorsByMasjidId:", error);
       throw error;
     }
   }
