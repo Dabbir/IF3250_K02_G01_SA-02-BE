@@ -56,7 +56,7 @@ const { authenticate } = require('../middlewares/auth.middleware');
  *       500:
  *         description: Internal Server Error
  */
-router.get('/', programController.getAllProgram);
+router.get('/', verifyToken, programController.getAllProgram);
 router.post('/', [upload.none(), verifyToken, programValidationCreate, validate], programController.createProgram);
 
 /**

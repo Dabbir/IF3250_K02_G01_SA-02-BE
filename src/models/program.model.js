@@ -3,8 +3,8 @@ const { pool } = require("../config/db.config");
 class Program {
   static async getAll(masjid_id) {
     const [rows] = await pool.query(
-      'SELECT * FROM program WHERE masjid_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?',
-      [masjid_id, limit, offset]
+      'SELECT * FROM program WHERE masjid_id = ? ORDER BY created_at DESC',
+      [masjid_id]
     );
     
     return rows.map((row) => ({
