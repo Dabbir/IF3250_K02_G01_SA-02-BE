@@ -1,9 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user.controller');
-const { verifyToken, isAdmin } = require('../middlewares/auth.middleware');
+const { verifyToken } = require('../middlewares/auth.middleware');
+const { isAdmin } = require('../middlewares/access.middleware');
 const { validate, userUpdateValidation } = require('../middlewares/validate.middleware');
 const upload = require("../middlewares/upload.middleware");
+
+
+router.get('/getall', verifyToken, isAdmin, userController.getAllUsers);
 
 /**
  * @swagger

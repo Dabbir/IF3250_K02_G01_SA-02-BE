@@ -1,5 +1,6 @@
 require("dotenv").config();
 const mysql = require("mysql2/promise");
+const bcrypt = require('bcryptjs');
 
 const dbConfig = {
   host: process.env.DB_HOST || "localhost",
@@ -35,11 +36,8 @@ async function initializeDatabase() {
     await connection.query(`
       CREATE TABLE IF NOT EXISTS masjid (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        nama_masjid VARCHAR(100) NOT NULL,
-        alamat TEXT,
-        kota VARCHAR(50),
-        provinsi VARCHAR(50),
-        negara VARCHAR(50),
+        nama_masjid VARCHAR(255) NOT NULL,
+        alamat TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )
@@ -50,17 +48,17 @@ async function initializeDatabase() {
     await connection.query(`
       CREATE TABLE IF NOT EXISTS pengguna (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        nama VARCHAR(100) NOT NULL,
-        email VARCHAR(100) NOT NULL UNIQUE,
-        password VARCHAR(255) NOT NULL,
+        nama VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password VARCHAR(255),
         peran ENUM('Viewer', 'Editor', 'Admin') DEFAULT 'Editor',
+        status ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending',
         short_bio TEXT,
         alasan_bergabung TEXT,
         foto_profil VARCHAR(255),
         masjid_id INT,
-        nama_masjid VARCHAR(100),
-        auth_provider VARCHAR(100) NULL,
-        auth_provider_id VARCHAR(100) NULL,
+        auth_provider VARCHAR(255),
+        auth_provider_id VARCHAR(255),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (masjid_id) REFERENCES masjid(id) ON DELETE SET NULL
@@ -74,13 +72,13 @@ async function initializeDatabase() {
         id INT AUTO_INCREMENT PRIMARY KEY,
         nama_program VARCHAR(100) NOT NULL,
         deskripsi_program TEXT,
-        pilar_program VARCHAR(100),
+        pilar_program TEXT,
         kriteria_program TEXT,
         waktu_mulai DATE,
         waktu_selesai DATE,
         rancangan_anggaran DECIMAL(15,2),
         aktualisasi_anggaran DECIMAL(15,2),
-        status_program ENUM('Berjalan', 'Selesai') DEFAULT 'Berjalan',
+        status_program ENUM('Belum Mulai', 'Berjalan', 'Selesai') DEFAULT 'Berjalan',
         masjid_id INT,
         created_by INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -101,7 +99,7 @@ async function initializeDatabase() {
         tanggal_mulai DATE,
         tanggal_selesai DATE,
         biaya_implementasi DECIMAL(15,2),
-        status ENUM('Unstarted', 'Ongoing', 'Finished') DEFAULT 'Unstarted',
+        status ENUM('Belum Mulai', 'Berjalan', 'Selesai') DEFAULT 'Berjalan',
         program_id INT,
         created_by INT,
         masjid_id INT,
@@ -121,11 +119,13 @@ async function initializeDatabase() {
         judul_publikasi VARCHAR(255) NOT NULL,
         media_publikasi ENUM('Televisi', 'Koran', 'Radio', 'Media Online', 'Sosial Media', 'Lainnya'),
         nama_perusahaan_media VARCHAR(100),
+        tanggal_publikasi DATE,
         url_publikasi VARCHAR(255),
         pr_value DECIMAL(15,2),
         program_id INT,
         aktivitas_id INT,
         created_by INT,
+        tone ENUM('Positif', 'Negatif', 'Netral'),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (program_id) REFERENCES program(id) ON DELETE CASCADE,
@@ -297,7 +297,7 @@ async function initializeDatabase() {
         id INT AUTO_INCREMENT PRIMARY KEY,
         viewer_id INT NOT NULL,
         masjid_id INT NOT NULL,
-        granted_by INT NOT NULL,
+        granted_by INT,
         status ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -314,22 +314,41 @@ async function initializeDatabase() {
     const [masjids] = await connection.query(
       "SELECT COUNT(*) as count FROM masjid"
     );
-    
+
     if (masjids[0].count === 0) {
       // Insert sample masjid
       const [masjidResult] = await connection.query(`
-        INSERT INTO masjid (nama_masjid, alamat, kota, provinsi, negara) 
-        VALUES ('Masjid Salman ITB', 'Jl. Ganesha No.10', 'Bandung', 'Jawa Barat', 'Indonesia')
+        INSERT INTO masjid (nama_masjid, alamat) 
+        VALUES ('Masjid Salman ITB', 'Jl. Ganesha No.10, Lb. Siliwangi, Kecamatan Coblong, Kota Bandung, Jawa Barat 40132')
       `);
-      
+
       const masjidId = masjidResult.insertId;
       console.log(`Sample masjid created with ID: ${masjidId}`);
-      
+
       // Insert admin user
+      const hashedPassword = await bcrypt.hash('admin123', 10);
       await connection.query(`
-        INSERT INTO pengguna (nama, email, password, peran, masjid_id) 
-        VALUES ('Admin', 'admin@example.com', '$2b$10$xxxxxxxxxxxxxxxxxxxxxxxx', 'Admin', ${masjidId})
-      `);
+            INSERT INTO pengguna (
+              nama, 
+              email, 
+              password, 
+              peran, 
+              status,
+              masjid_id,
+              short_bio,
+              alasan_bergabung
+            ) 
+            VALUES (
+              'Admin Salman', 
+              'admin@salman.org', 
+              ?, 
+              'Admin', 
+              'Approved',
+              ?,
+              'Administrator Sistem Sustainability Report Salman',
+              'Mengelola platform pelaporan sustainability Masjid Salman ITB'
+            )
+          `, [hashedPassword, masjidId]);
       console.log("Sample admin user created");
     }
 

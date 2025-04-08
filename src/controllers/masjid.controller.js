@@ -183,3 +183,31 @@ exports.deleteMasjid = async (req, res) => {
     });
   }
 };
+
+exports.getEditorsByMasjidId = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Masjid ID is required'
+      });
+    }
+    
+    const editors = await masjidService.getEditorsByMasjidId(id);
+    
+    return res.status(200).json({
+      success: true,
+      message: 'Editors retrieved successfully',
+      data: editors
+    });
+  } catch (error) {
+    logger.error('Get editors by masjid id error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
+};

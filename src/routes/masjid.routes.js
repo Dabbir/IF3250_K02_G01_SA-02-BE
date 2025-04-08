@@ -65,6 +65,29 @@ router.get('/:id', masjidController.getMasjidById);
 
 /**
  * @swagger
+ * /api/masjid/{id}/editors:
+ *   get:
+ *     summary: Get all editors of a masjid
+ *     tags: [Masjid]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: ID of the masjid
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved editors
+ *       400:
+ *         description: Masjid ID is required
+ *       500:
+ *         description: Server error
+ */
+router.get('/:id/editors', verifyToken, hasRole(['Admin']), masjidController.getEditorsByMasjidId);
+
+/**
+ * @swagger
  * /api/masjid:
  *   post:
  *     summary: Create a new masjid
@@ -84,18 +107,6 @@ router.get('/:id', masjidController.getMasjidById);
  *               nama_masjid:
  *                 type: string
  *               alamat:
- *                 type: string
- *               kota:
- *                 type: string
- *               provinsi:
- *                 type: string
- *               kode_pos:
- *                 type: string
- *               latitude:
- *                 type: number
- *               longitude:
- *                 type: number
- *               foto:
  *                 type: string
  *     responses:
  *       201:
@@ -134,18 +145,6 @@ router.post('/', verifyToken, hasRole(['Admin']), masjidController.createMasjid)
  *               nama_masjid:
  *                 type: string
  *               alamat:
- *                 type: string
- *               kota:
- *                 type: string
- *               provinsi:
- *                 type: string
- *               kode_pos:
- *                 type: string
- *               latitude:
- *                 type: number
- *               longitude:
- *                 type: number
- *               foto:
  *                 type: string
  *     responses:
  *       200:
