@@ -1,7 +1,7 @@
 const express = require('express');
 const { verifyToken } = require('../middlewares/auth.middleware');
 const activityController = require('../controllers/activity.controller');
-const { activityValidation, validate } = require('../middlewares/validate.middleware');
+const { activityValidation, validate, activityValidationSheet } = require('../middlewares/validate.middleware');
 const router = express.Router();
 const upload = require("../middlewares/upload.middleware");
 
@@ -263,5 +263,7 @@ router.delete('/delete/:id', verifyToken, activityController.deleteActivity);
  *         description: Internal Server Error
  */
 router.put('/update/:id', [verifyToken, upload.array('dokumentasi'), activityValidation, validate], activityController.updateActivity);
+
+router.post('/add/sheet', verifyToken, activityController.addActivitySheet);
 
 module.exports = router;

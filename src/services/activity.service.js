@@ -158,3 +158,31 @@ exports.updateActivity = async (userId, activityId, activityData) => {
         throw error;
     }
 }
+
+const excelSerialToDate = (serial) => {
+    if (!serial || isNaN(serial)) return null;
+    const excelEpoch = new Date(1899, 11, 30);
+    return new Date(excelEpoch.getTime() + serial * 86400000).toISOString().split("T")[0];
+};
+
+exports.addActivitySheet = async (userId, masjid_id, activityData) => {
+    try {
+        const activities = activityData.map(activity => ({
+            created_by: userId,
+            masjid_id: masjid_id,
+            nama_aktivitas: activity.nama_aktivitas,
+            deskripsi: activity.deskripsi,
+            tanggal_mulai: excelSerialToDate(activity.tanggal_mulai),
+            tanggal_selesai: excelSerialToDate(activity.tanggal_selesai),
+            biaya_implementasi: parseFloat(activity.biaya_implementasi),
+            status: activity.status.charAt(0).toUpperCase() + activity.status.slice(1).toLowerCase(),
+        }));
+
+        console.log(activities);
+        return await activityModel.createSheet(activities);
+    } catch (error) {
+        console.error("Error inserting data:", error);
+        throw error; // Biarkan controller yang menangani response
+    }
+};
+
