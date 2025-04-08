@@ -21,7 +21,15 @@ exports.getPublikasiById = async (req, res, next) => {
 
 exports.createPublikasi = async (req, res, next) => {
   try {
-    const id = await PublikasiService.createPublikasi(req.body);
+    const userId = req.user.id;
+    const data = req.body;
+
+    const dataWithUserId = {
+      ...data,
+      created_by: userId,
+    };
+
+    const id = await PublikasiService.createPublikasi(dataWithUserId);
     res.status(201).json({ id });
   } catch (error) {
     next(error);
