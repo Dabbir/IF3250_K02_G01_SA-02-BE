@@ -1,56 +1,21 @@
-const db = require('../config/db.config');
+const { pool } = require("../config/db.config");
 
-class Beneficiary {
-  constructor(beneficiary) {
-    this.nama_instansi = beneficiary.nama_instansi;
-    this.nama_kontak = beneficiary.nama_kontak;
-    this.alamat = beneficiary.alamat;
-    this.telepon = beneficiary.telepon;
-    this.email = beneficiary.email;
-    this.foto = beneficiary.foto;
-    this.created_by = beneficiary.created_by;
-  }
-
-  static create(newBeneficiary) {
-    return new Promise((resolve, reject) => {
-      db.query(
-        'INSERT INTO beneficiaries SET ?',
-        newBeneficiary,
-        (err, res) => {
-          if (err) {
-            console.log("Error: ", err);
-            reject(err);
-            return;
-          }
-          resolve({ id: res.insertId, ...newBeneficiary });
-        }
-      );
-    });
-  }
-
-  static findById(id) {
-    return new Promise((resolve, reject) => {
-      db.query(
+class BeneficiaryModel {
+  async findById(id) {
+    try {
+      const [rows] = await pool.query(
         'SELECT * FROM beneficiaries WHERE id = ?',
-        id,
-        (err, res) => {
-          if (err) {
-            console.log("Error: ", err);
-            reject(err);
-            return;
-          }
-          if (res.length) {
-            resolve(res[0]);
-          } else {
-            resolve(null);
-          }
-        }
+        [id]
       );
-    });
+      return rows.length > 0 ? rows[0] : null;
+    } catch (error) {
+      console.error("Error in findById:", error);
+      throw error;
+    }
   }
 
-  static getAll(params = {}) {
-    return new Promise((resolve, reject) => {
+  async findAll(params = {}) {
+    try {
       let query = 'SELECT * FROM beneficiaries';
       
       // Add WHERE clause if there are filtering parameters
@@ -69,6 +34,8 @@ class Beneficiary {
       // Add ORDER BY if specified
       if (params.orderBy) {
         query += ` ORDER BY ${params.orderBy} ${params.orderDirection || 'ASC'}`;
+      } else {
+        query += ` ORDER BY created_at DESC`;
       }
       
       // Add pagination
@@ -78,19 +45,16 @@ class Beneficiary {
         values.push(parseInt(params.limit), offset);
       }
       
-      db.query(query, values, (err, res) => {
-        if (err) {
-          console.log("Error: ", err);
-          reject(err);
-          return;
-        }
-        resolve(res);
-      });
-    });
+      const [rows] = await pool.query(query, values);
+      return rows;
+    } catch (error) {
+      console.error("Error in findAll:", error);
+      throw error;
+    }
   }
 
-  static getTotalCount(params = {}) {
-    return new Promise((resolve, reject) => {
+  async getTotalCount(params = {}) {
+    try {
       let query = 'SELECT COUNT(*) as total FROM beneficiaries';
       
       // Add WHERE clause if there are filtering parameters
@@ -106,80 +70,156 @@ class Beneficiary {
         query += ' WHERE ' + conditions.join(' AND ');
       }
       
-      db.query(query, values, (err, res) => {
-        if (err) {
-          console.log("Error: ", err);
-          reject(err);
-          return;
-        }
-        resolve(res[0].total);
-      });
-    });
+      const [rows] = await pool.query(query, values);
+      return rows[0].total;
+    } catch (error) {
+      console.error("Error in getTotalCount:", error);
+      throw error;
+    }
   }
 
-  static update(id, beneficiary) {
-    return new Promise((resolve, reject) => {
-      db.query(
-        'UPDATE beneficiaries SET ? WHERE id = ?',
-        [beneficiary, id],
-        (err, res) => {
-          if (err) {
-            console.log("Error: ", err);
-            reject(err);
-            return;
-          }
-          if (res.affectedRows === 0) {
-            // If no rows were affected, then the ID doesn't exist
-            resolve({ kind: "not_found" });
-            return;
-          }
-          resolve({ id: id, ...beneficiary });
-        }
+  async create(beneficiaryData) {
+    try {
+      const {
+        nama_instansi,
+        nama_kontak,
+        alamat,
+        telepon,
+        email,
+        foto,
+        created_by
+      } = beneficiaryData;
+
+      const [result] = await pool.query(
+        `INSERT INTO beneficiaries 
+          (nama_instansi, nama_kontak, alamat, telepon, email, foto, created_by)
+          VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [
+          nama_instansi,
+          nama_kontak || null,
+          alamat || null,
+          telepon || null,
+          email || null,
+          foto || null,
+          created_by || null
+        ]
       );
-    });
+
+      return {
+        id: result.insertId,
+        ...beneficiaryData
+      };
+    } catch (error) {
+      console.error("Error in create:", error);
+      throw error;
+    }
   }
 
-  static remove(id) {
-    return new Promise((resolve, reject) => {
-      db.query(
-        'DELETE FROM beneficiaries WHERE id = ?',
-        id,
-        (err, res) => {
-          if (err) {
-            console.log("Error: ", err);
-            reject(err);
-            return;
-          }
-          if (res.affectedRows === 0) {
-            // If no rows were deleted, then the ID doesn't exist
-            resolve({ kind: "not_found" });
-            return;
-          }
-          resolve(res);
-        }
-      );
-    });
+  async update(id, beneficiaryData) {
+    try {
+      const {
+        nama_instansi,
+        nama_kontak,
+        alamat,
+        telepon,
+        email,
+        foto
+      } = beneficiaryData;
+
+      // Build the query parts dynamically
+      const updateFields = [];
+      const values = [];
+
+      if (nama_instansi !== undefined) {
+        updateFields.push("nama_instansi = ?");
+        values.push(nama_instansi);
+      }
+      
+      if (nama_kontak !== undefined) {
+        updateFields.push("nama_kontak = ?");
+        values.push(nama_kontak);
+      }
+      
+      if (alamat !== undefined) {
+        updateFields.push("alamat = ?");
+        values.push(alamat);
+      }
+      
+      if (telepon !== undefined) {
+        updateFields.push("telepon = ?");
+        values.push(telepon);
+      }
+      
+      if (email !== undefined) {
+        updateFields.push("email = ?");
+        values.push(email);
+      }
+      
+      if (foto !== undefined) {
+        updateFields.push("foto = ?");
+        values.push(foto);
+      }
+
+      // Add updated_at timestamp
+      updateFields.push("updated_at = CURRENT_TIMESTAMP()");
+
+      // If nothing to update, return the current beneficiary
+      if (updateFields.length === 1) {
+        const [rows] = await pool.query("SELECT * FROM beneficiaries WHERE id = ?", [id]);
+        return rows.length > 0 ? rows[0] : null;
+      }
+
+      // Build and execute the query
+      const query = `UPDATE beneficiaries SET ${updateFields.join(", ")} WHERE id = ?`;
+      values.push(id);
+
+      const [result] = await pool.query(query, values);
+
+      if (result.affectedRows === 0) {
+        return { kind: "not_found" };
+      }
+
+      // Return the updated record
+      return {
+        id: id,
+        ...beneficiaryData
+      };
+    } catch (error) {
+      console.error("Error in update:", error);
+      throw error;
+    }
   }
 
-  static getByActivities(aktivitasId) {
-    return new Promise((resolve, reject) => {
-      db.query(
+  async delete(id) {
+    try {
+      const [result] = await pool.query("DELETE FROM beneficiaries WHERE id = ?", [id]);
+      
+      if (result.affectedRows === 0) {
+        return { kind: "not_found" };
+      }
+      
+      return { kind: "deleted" };
+    } catch (error) {
+      console.error("Error in delete:", error);
+      throw error;
+    }
+  }
+
+  async getByActivities(aktivitasId) {
+    try {
+      const [rows] = await pool.query(
         `SELECT b.*, ab.jumlah_penerima, ab.deskripsi_manfaat 
          FROM beneficiaries b
          JOIN aktivitas_beneficiaries ab ON b.id = ab.beneficiary_id
          WHERE ab.aktivitas_id = ?`,
-        aktivitasId,
-        (err, res) => {
-          if (err) {
-            console.log("Error: ", err);
-            reject(err);
-            return;
-          }
-          resolve(res);
-        }
+        [aktivitasId]
       );
-    });
+      return rows;
+    } catch (error) {
+      console.error("Error in getByActivities:", error);
+      throw error;
+    }
   }
 }
 
-module.exports = Beneficiary;
+module.exports = new BeneficiaryModel();
