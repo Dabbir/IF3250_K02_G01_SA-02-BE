@@ -77,3 +77,13 @@ exports.deleteMasjid = async (id) => {
     throw error;
   }
 };
+
+exports.getEditorsByMasjidId = async (masjidId) => {
+  try {
+    const editors = await masjidModel.getEditorsByMasjidId(masjidId);
+    return editors;
+  } catch (error) {
+    logger.error('Error in getEditorsByMasjidId:', error);
+    throw error;
+  }
+};

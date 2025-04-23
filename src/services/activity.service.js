@@ -58,6 +58,21 @@ exports.getIdProgram = async (masjidID) => {
     }
 }
 
+exports.getIdAktivitas = async (masjidID) => {
+    try {
+        const idAktivitas = await activityModel.getIdAktivitas(masjidID);
+
+        if (!idAktivitas) {
+            const error = new Error("Aktivitas not found")
+            error.statusCode = 404;
+            throw error;
+        }
+        return idAktivitas;
+    } catch (error) {
+        throw error;
+    }
+}
+
 exports.getByIdProgram = async (userId, programId) => {
     try {
         const activity = await activityModel.findByIdProgram(programId);
