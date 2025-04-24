@@ -44,6 +44,9 @@ exports.getByIdStakeholder = async (req, res) => {
 exports.createStakeholder = async (req, res) => {
     try {
         const data = req.body;
+        data.masjid_id = req.user.masjid_id;
+        data.created_by = req.user.id;
+
         const stakeholderId = await stakeholderService.create(data);
 
         res.status(201).json({
@@ -65,12 +68,14 @@ exports.updateStakeholder = async (req, res) => {
     try {
         const stakeholderId = req.params.id;
         const data = req.body;
-        const result = await stakeholderService.update(stakeholderId, data);
+        const masjidId = req.user.masjid_id;
+
+        const result = await stakeholderService.update(stakeholderId, data, masjidId);
 
         res.status(200).json({
             success: true,
-            message: "Stakeholder updated",
-            result,
+            message: "Stakeholder updated successfully",
+            data: result,
         });
     } catch (error) {
         console.error("Update stakeholder error:", error);

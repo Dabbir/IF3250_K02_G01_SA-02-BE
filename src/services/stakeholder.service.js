@@ -43,9 +43,9 @@ exports.create = async (data) => {
     }
 }
 
-exports.update = async (id, data) => {
+exports.update = async (id, data, masjidId) => {
     try {
-        const stakeholder = this.getById(id, data.masjidId);
+        const stakeholder = this.getById(id, masjidId);
 
         if (stakeholder) {
             const result = await stakeholderModel.update(id, data);

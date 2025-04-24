@@ -41,10 +41,17 @@ class StakeholderModel {
 
     async update(id, data) {
         try {
-            return await pool.query(
+            const [result] = await pool.query(
                 "UPDATE stakeholder SET ? WHERE id = ?",
                 [data, id]
-            )            
+            )
+
+            if (result.affectedRows === 0) {
+                return null;
+            }
+
+            const [rows] = await pool.query("SELECT * FROM stakeholder WHERE id = ?", [id]);
+            return rows.length > 0 ? rows[0] : null;
         } catch (error) {
             console.error("Error in update:", error);
             throw error;

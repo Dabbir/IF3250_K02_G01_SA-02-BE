@@ -106,3 +106,28 @@ exports.activityValidation = [
     .isInt()
     .withMessage("Program ID must be an integer"),
 ];
+
+exports.stakeholderValidation = [
+  body("nama_stakeholder")
+    .optional()
+    .notEmpty()
+    .withMessage("Nama aktivitas is required"),
+
+  body("jenis")
+    .notEmpty()
+    .withMessage("Jenis is required")
+    .isIn(["Individu", "Organisasi", "Perusahaan"])
+    .withMessage("Status must be one of: Individu, Organisasi, Perusahaan"),
+
+  body('telepon')
+    .optional()
+    .isLength({ min: 10, max: 15 })
+    .withMessage('Telepon must be between 10 and 15 length'),
+
+  body('email')
+    .optional()
+    .notEmpty()
+    .isEmail()
+    .withMessage('Must be a valid email address'),
+
+];
