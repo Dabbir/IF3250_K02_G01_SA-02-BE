@@ -13,7 +13,7 @@ exports.getAllGallery = async (req, res) => {
                 docs = JSON.parse(a.dokumentasi || '[]');
             } catch {}
             
-            docs.forEach(url => acc.push({ aktivitas_id: a.id, url, tanggal_mulai: a.tanggal_mulai }));
+            docs.forEach(url => acc.push({ aktivitas_id: a.id, nama_aktivitas: a.nama_aktivitas, deskripsi_aktivitas: a.deskripsi, url }));
             return acc;
         }, []);
 
@@ -48,7 +48,7 @@ exports.getGalleryPaginated = async (req, res) => {
                 docs = JSON.parse(a.dokumentasi || '[]');
             } catch {}
 
-            docs.forEach(url => acc.push({ aktivitas_id: a.id, url, tanggal_mulai: a.tanggal_mulai }));
+            docs.forEach(url => acc.push({ aktivitas_id: a.id, nama_aktivitas: a.nama_aktivitas, deskripsi_aktivitas: a.deskripsi, url }));
             return acc;
         }, []);
 
