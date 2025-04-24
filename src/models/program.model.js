@@ -1,22 +1,14 @@
 const { pool } = require("../config/db.config");
 
 class Program {
-  static async getAll(masjid_id) {
-    const [rows] = await pool.query(
-      'SELECT * FROM program WHERE masjid_id = ? ORDER BY created_at DESC',
-      [masjid_id]
-    );
-    
-    return rows.map((row) => ({
-      ...row,
-      pilar_program: JSON.parse(row.pilar_program || "[]"),
-    }));
-  }
+  static async getAll(limit, offset, masjid_id, search = "", sortBy = "created_at", sortOrder = "DESC") {
+    const search_param = `%${search}%`;
+    const order = `ORDER BY \`${sortBy}\` ${sortOrder}`;
+    const sql = `SELECT * FROM program WHERE masjid_id = ? AND nama_program LIKE ? ${order} LIMIT ? OFFSET ?`;
 
-  static async getPaginated(limit, offset, masjid_id) {
     const [rows] = await pool.query(
-      'SELECT * FROM program WHERE masjid_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?',
-      [masjid_id, limit, offset]
+      sql,
+      [masjid_id, search_param, limit, offset]
     );
   
     return rows.map((row) => ({
@@ -25,10 +17,11 @@ class Program {
     }));
   }
   
-  static async countAll(masjid_id) {
+  static async countAll(masjid_id, search = "") {
+    const search_param = `%${search}%`;
     const [[{ count }]] = await pool.query(
-      'SELECT COUNT(*) as count FROM program WHERE masjid_id = ?',
-      [masjid_id]
+      'SELECT COUNT(*) as count FROM program WHERE masjid_id = ? AND nama_program LIKE ?',
+      [masjid_id, search_param]
     );
 
     return count;

@@ -1,25 +1,25 @@
 const ProgramService = require('../services/program.service');
 
-exports.getAllProgram = async (req, res, next) => {
-  try {
-    const program = await ProgramService.getAllProgram(req.user.masjid_id);
-    res.json(program);
-  } catch (error) {
-    next(error);
-  }
-};
+const ALLOWED_SORT_FIELDS = [
+  "nama_program",
+  "waktu_mulai",
+  "waktu_selesai",
+  "created_at",
+];
 
-exports.getProgramsPaginated = async (req, res, next) => {
+exports.getAllPrograms = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page || 1);
     const limit = parseInt(req.query.limit || 10);
     const offset = (page - 1) * limit;
-
-    console.log('masjid_id', req.user);
+    const search = req.query.search || ""; 
+    const sortBy    = ALLOWED_SORT_FIELDS.includes(req.query.sortBy)? req.query.sortBy : "created_at";
+    const sortOrder = req.query.sortOrder === "ASC" ? "ASC" : "DESC";
+    console.log("sortBy", sortBy, "sortOrder", sortOrder);
 
     const [programs, total] = await Promise.all([
-      ProgramService.getProgramsPaginated(limit, offset, req.user.masjid_id),
-      ProgramService.countAllPrograms(req.user.masjid_id)
+      ProgramService.getAllPrograms(limit, offset, req.user.masjid_id, search, sortBy, sortOrder),
+      ProgramService.countAllPrograms(req.user.masjid_id, search)
     ]);
 
     res.json({ data: programs, total });

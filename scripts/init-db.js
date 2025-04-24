@@ -99,7 +99,7 @@ async function initializeDatabase() {
         tanggal_mulai DATE,
         tanggal_selesai DATE,
         biaya_implementasi DECIMAL(15,2),
-        status ENUM('Belum Mulai', 'Berjalan', 'Selesai') DEFAULT 'Berjalan',
+        status ENUM('Belum Mulai', 'Berjalan', 'Selesai') DEFAULT 'Belum Mulai',
         program_id INT,
         created_by INT,
         masjid_id INT,

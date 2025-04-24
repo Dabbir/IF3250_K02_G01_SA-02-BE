@@ -56,23 +56,8 @@ const { authenticate } = require('../middlewares/auth.middleware');
  *       500:
  *         description: Internal Server Error
  */
-router.get('/', verifyToken, programController.getAllProgram);
+router.get('/', authenticate, programController.getAllPrograms);
 router.post('/', [upload.none(), verifyToken, programValidationCreate, validate], programController.createProgram);
-
-/**
- * @swagger
- * /api/program/paginated:
- *   get:
- *     summary: Mendapatkan program dengan paginasi
- *     tags: [Program]
- *     responses:
- *       200:
- *         description: Program berhasil ditemukan
- *       500:
- *         description: Internal Server Error
- *
-  */
-router.get('/paginated', [authenticate], programController.getProgramsPaginated);
 
 /**
  * @swagger
