@@ -1,32 +1,28 @@
-const Employee = require('../models/employee.model');
+const Employee = require("../models/employee.model");
 
 class EmployeeService {
-  static async getAllEmployee(masjid_id) {
-    return await Employee.getAll(masjid_id);
+  static async getAllEmployees(limit, offset, masjid_id, search, sortBy, sortOrder, working) {
+    return Employee.getAll(limit, offset, masjid_id, search, sortBy, sortOrder, working);
   }
 
-  static async getEmployeesPaginated(limit, offset, masjid_id) {
-    return await Employee.getPaginated(limit, offset, masjid_id);
-  }
-
-  static async countAllEmployees(masjid_id) {
-    return await Employee.countAll(masjid_id);
+  static async countAllEmployees(masjid_id, search, working) {
+    return Employee.countAll(masjid_id, search, working);
   }
 
   static async getEmployeeById(id, masjid_id) {
-    return await Employee.getById(id, masjid_id);
+    return Employee.getById(id, masjid_id);
   }
 
   static async createEmployee(data) {
-    return await Employee.create(data);
+    return Employee.create(data);
   }
 
   static async updateEmployee(id, data, masjid_id) {
-    return await Employee.update(id, data, masjid_id);
+    return Employee.update(id, data, masjid_id);
   }
 
   static async deleteEmployee(id, masjid_id) {
-    return await Employee.delete(id, masjid_id);
+    return Employee.delete(id, masjid_id);
   }
 }
 

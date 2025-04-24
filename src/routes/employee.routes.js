@@ -51,34 +51,8 @@ const upload = require('../middlewares/upload.middleware');
  *       500:
  *         description: Internal Server Error
  */
-router.get('/', verifyToken, employeeController.getAllEmployee);
+router.get('/', authenticate, employeeController.getAllEmployees);
 router.post('/', [upload.none(), verifyToken, employeeValidationCreate, validate],employeeController.createEmployee);
-
-/**
- * @swagger
- * /api/employee/paginated:
- *   get:
- *     summary: Mendapatkan karyawan dengan paginasi
- *     tags: [Employee]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           default: 1
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Karyawan berhasil ditemukan
- *       500:
- *         description: Internal Server Error
- */
-router.get('/paginated', authenticate, employeeController.getEmployeesPaginated);
 
 /**
  * @swagger

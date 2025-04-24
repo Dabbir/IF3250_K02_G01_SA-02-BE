@@ -1,27 +1,51 @@
 const { pool } = require("../config/db.config");
 
 class Employee {
-  static async getAll(masjid_id) {
-    const [rows] = await pool.query(
-        `SELECT * FROM employee WHERE masjid_id = ? ORDER BY created_at DESC`,
-        [masjid_id]
-    );
+  static async getAll(limit, offset, masjid_id, search = "", sortBy = "created_at", sortOrder = "DESC", working = null) {
+    const searchParam = `%${search}%`;
+    let where = `e.masjid_id = ? AND e.nama LIKE ?`;
+
+    if (working === true) {
+      where += ` AND EXISTS (
+        SELECT 1
+        FROM aktivitas_employee ae JOIN aktivitas a ON ae.aktivitas_id = a.id
+        WHERE ae.employee_id = e.id AND a.status = 'Berjalan'
+      )`;
+    } else if (working === false) {
+      where += ` AND NOT EXISTS (
+        SELECT 1
+        FROM aktivitas_employee ae JOIN aktivitas a ON ae.aktivitas_id = a.id
+        WHERE ae.employee_id = e.id AND a.status = 'Berjalan'
+      )`;
+    }
+
+    const orderClause = `ORDER BY \`${sortBy}\` ${sortOrder}`;
+    const sql = `SELECT e.*, p.nama AS created_by FROM employee eLEFT JOIN pengguna p ON e.created_by = p.id WHERE ${where} ${orderClause}LIMIT ? OFFSET ?`;
+
+    const [rows] = await pool.query(sql, [masjid_id, searchParam, limit, offset]);
     return rows;
   }
 
-  static async getPaginated(limit, offset, masjid_id) {
-    const [rows] = await pool.query(
-        `SELECT * FROM employee WHERE masjid_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?`,
-        [masjid_id, limit, offset]
-    );
-    return rows;
-  }
+  static async countAll(masjid_id, search = "", working = null) {
+    const searchParam = `%${search}%`;
+    let where = `masjid_id = ? AND nama LIKE ?`;
 
-  static async countAll(masjid_id) {
-    const [[{ count }]] = await pool.query(
-        `SELECT COUNT(*) AS count FROM employee WHERE masjid_id = ?`,
-        [masjid_id]
-    );
+    if (working === true) {
+      where += ` AND EXISTS (
+        SELECT 1
+        FROM aktivitas_employee ae JOIN aktivitas a ON ae.aktivitas_id = a.id
+        WHERE ae.employee_id = e.id AND a.status = 'Berjalan'
+      )`;
+    } else if (working === false) {
+      where += ` AND NOT EXISTS (
+        SELECT 1
+        FROM aktivitas_employee ae JOIN aktivitas a ON ae.aktivitas_id = a.id
+        WHERE ae.employee_id = e.id AND a.status = 'Berjalan'
+      )`;
+    }
+
+    const sql = `SELECT COUNT(*) AS count FROM employee WHERE ${where}`;
+    const [[{ count }]] = await pool.query(sql, [masjid_id, searchParam]);
     return count;
   }
 
