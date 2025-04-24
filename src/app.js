@@ -42,6 +42,7 @@ app.get("/", (req, res) => {
       account: "/api/account",
       publikasi: "/api/publikasi",
       masjid: "/api/masjid",
+      beneficiary: "/api/beneficiary",
     },
   });
 });

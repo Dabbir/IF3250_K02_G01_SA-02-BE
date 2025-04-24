@@ -69,7 +69,6 @@ class UserModel {
         email,
         password,
         masjid_id,
-        nama_masjid,
         short_bio,
         alasan_bergabung,
         foto_profil,
@@ -79,14 +78,13 @@ class UserModel {
 
       const [result] = await pool.query(
         `INSERT INTO pengguna 
-        (nama, email, password, masjid_id, nama_masjid, short_bio, alasan_bergabung, foto_profil, auth_provider, auth_provider_id) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (nama, email, password, masjid_id, short_bio, alasan_bergabung, foto_profil, auth_provider, auth_provider_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           nama,
           email,
           password,
           masjid_id,
-          nama_masjid,
           short_bio,
           alasan_bergabung,
           foto_profil,
@@ -108,7 +106,6 @@ class UserModel {
         email,
         password,
         masjid_id,
-        nama_masjid,
         short_bio,
         alasan_bergabung,
         foto_profil,
@@ -125,7 +122,6 @@ class UserModel {
             alasan_bergabung = ?, 
             foto_profil = ?, 
             masjid_id = ?, 
-            nama_masjid = ?, 
             auth_provider = ?, 
             auth_provider_id = ?
         WHERE email = ?`,
@@ -136,7 +132,6 @@ class UserModel {
           alasan_bergabung,
           foto_profil,
           masjid_id,
-          nama_masjid,
           auth_provider,
           auth_provider_id,
           email,
