@@ -7,10 +7,10 @@ router.get("/getall", verifyToken, stakeholderController.getAllStakeholders);
 
 router.get("/:id", verifyToken, stakeholderController.getByIdStakeholder);
 
-router.post("/", verifyToken, stakeholderController.createStakeholder);
+router.post("/add", verifyToken, stakeholderController.createStakeholder);
 
-router.put("/:id", verifyToken, stakeholderController.updateStakeholder);
+router.put("/update/:id", verifyToken, stakeholderController.updateStakeholder);
 
-router.delete("/:id", verifyToken, stakeholderController.deleteStakeholder);
+router.delete("/delete/:id", verifyToken, stakeholderController.deleteStakeholder);
 
 module.exports = router;

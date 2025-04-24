@@ -97,8 +97,8 @@ exports.activityValidation = [
   body("status")
     .notEmpty()
     .withMessage("Status is required")
-    .isIn(["Unstarted", "Ongoing", "Finished"])
-    .withMessage("Status must be one of: Unstarted, Ongoing, Finished"),
+    .isIn(["Belum Mulai", "Berjalan", "Selesai"])
+    .withMessage("Status must be one of: Belum Mulai, Berjalan, Selesai"),
   
   body("program_id")
     .notEmpty()

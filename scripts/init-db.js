@@ -140,7 +140,7 @@ async function initializeDatabase() {
       CREATE TABLE IF NOT EXISTS stakeholder (
         id INT AUTO_INCREMENT PRIMARY KEY,
         nama_stakeholder VARCHAR(100) NOT NULL,
-        nama_kontak VARCHAR(100),
+        jenis ENUM('Individu', 'Organisasi', 'Perusahaan') DEFAULT 'Individu',
         telepon VARCHAR(20),
         email VARCHAR(100),
         foto VARCHAR(255),
