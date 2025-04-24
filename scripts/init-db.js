@@ -140,13 +140,15 @@ async function initializeDatabase() {
       CREATE TABLE IF NOT EXISTS stakeholder (
         id INT AUTO_INCREMENT PRIMARY KEY,
         nama_stakeholder VARCHAR(100) NOT NULL,
-        nama_kontak VARCHAR(100),
+        jenis ENUM('Individu', 'Organisasi', 'Perusahaan') DEFAULT 'Individu',
         telepon VARCHAR(20),
         email VARCHAR(100),
         foto VARCHAR(255),
+        masjid_id INT,
         created_by INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (masjid_id) REFERENCES masjid(id) ON DELETE CASCADE,
         FOREIGN KEY (created_by) REFERENCES pengguna(id) ON DELETE SET NULL
       )
     `);
