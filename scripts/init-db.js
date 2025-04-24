@@ -144,9 +144,11 @@ async function initializeDatabase() {
         telepon VARCHAR(20),
         email VARCHAR(100),
         foto VARCHAR(255),
+        masjid_id INT,
         created_by INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (masjid_id) REFERENCES masjid(id) ON DELETE CASCADE,
         FOREIGN KEY (created_by) REFERENCES pengguna(id) ON DELETE SET NULL
       )
     `);
