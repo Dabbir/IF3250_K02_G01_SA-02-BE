@@ -271,6 +271,18 @@ class ActivityModel {
         }
     }
 
+    async findActivityByEmployeeId(employeeId, masjidID) {
+        try {
+            const [rows] = await pool.query(
+                "SELECT a.*, p.nama_program FROM aktivitas a LEFT JOIN program p ON a.program_id = p.id WHERE a.masjid_id = ? AND a.created_by = ?",
+                [masjidID, employeeId]
+            );
+            return rows;
+        } catch (error) {
+            console.error("Error in findActivityByEmployeeId:", error);
+            throw error;
+        }
+    }
 }
 
 module.exports = new ActivityModel();

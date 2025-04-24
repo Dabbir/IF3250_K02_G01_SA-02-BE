@@ -12,7 +12,9 @@ exports.employeeValidationCreate = [
     .isEmail().withMessage('Invalid email format'),
 
     body('telepon')
-    .optional().isMobilePhone('any').withMessage('Invalid phone number'),
+    .notEmpty().withMessage("Employee's phone number is required")
+    .bail()
+    .isMobilePhone('any').withMessage('Invalid phone number'),
 
     body('alamat')
     .optional().isString().withMessage('Invalid address'),

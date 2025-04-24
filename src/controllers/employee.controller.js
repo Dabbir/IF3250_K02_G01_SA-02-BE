@@ -1,4 +1,5 @@
 const EmployeeService = require('../services/employee.service');
+const ActivityService = require('../services/activity.service');
 
 exports.getAllEmployee = async (req, res) => {
     try {
@@ -143,6 +144,34 @@ exports.deleteEmployee = async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Employee deleted successfully",
+        });
+    } catch (error) {
+        console.error(error);
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
+            success: false,
+            message: error.message || "Internal server error",
+        });
+    }
+};
+
+exports.getActivityByEmployeeId = async (req, res) => {
+    try {
+        const employeeId = req.params.id;
+        const masjidID   = req.user.masjid_id;
+
+        const activities = await ActivityService.getActivityByEmployeeId(employeeId, masjidID);
+        if (!activities) {
+            return res.status(404).json({
+                success: false,
+                message: "Activities not found",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Activities fetched successfully",
+            data: activities,
         });
     } catch (error) {
         console.error(error);

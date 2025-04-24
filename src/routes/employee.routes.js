@@ -82,6 +82,31 @@ router.get('/paginated', authenticate, employeeController.getEmployeesPaginated)
 
 /**
  * @swagger
+ * /api/employee/activity/{id}:
+ *   get:
+ *     summary: Mendapatkan aktivitas karyawan berdasarkan ID
+ *     tags: [Employee]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID unik karyawan
+ *     responses:
+ *       200:
+ *         description: Aktivitas karyawan berhasil diambil
+ *       404:
+ *         description: Karyawan tidak ditemukan
+ *       500:
+ *         description: Internal Server Error
+ */
+router.get('/activity/:id', verifyToken, employeeController.getActivityByEmployeeId);
+
+/**
+ * @swagger
  * /api/employee/{id}:
  *   get:
  *     summary: Mendapatkan karyawan berdasarkan ID

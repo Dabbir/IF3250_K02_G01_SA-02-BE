@@ -201,3 +201,17 @@ exports.addActivitySheet = async (userId, masjid_id, activityData) => {
     }
 };
 
+exports.getActivityByEmployeeId = async (employeeId, masjidID) => {
+    try {
+        const activity = await activityModel.findActivityByEmployeeId(employeeId, masjidID);
+
+        if (!activity) {
+            const error = new Error("Activity not found");
+            error.statusCode = 404;
+            throw error;
+        }
+        return activity;
+    } catch (error) {
+        throw error;
+    }
+}
