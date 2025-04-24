@@ -10,6 +10,7 @@ const masjidRoutes = require('./masjid.routes');
 const programRoutes = require('./program.routes');
 const stakeholderRoutes = require('./stakeholder.routes');
 const beneficiaryRoutes = require('./beneficiary.routes');
+const galleryRoutes = require('./gallery.routes');
 
 router.use('/users', userRoutes);
 router.use('/auth', authRoutes);
@@ -20,5 +21,6 @@ router.use('/masjid', masjidRoutes);
 router.use('/program', programRoutes);
 router.use('/stakeholder', stakeholderRoutes);
 router.use('/beneficiary', beneficiaryRoutes);
+router.use('/gallery', galleryRoutes);
 
 module.exports = router;

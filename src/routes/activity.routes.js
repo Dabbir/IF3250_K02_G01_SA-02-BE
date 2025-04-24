@@ -3,7 +3,8 @@ const { verifyToken } = require('../middlewares/auth.middleware');
 const activityController = require('../controllers/activity.controller');
 const { activityValidation, validate, activityValidationSheet } = require('../middlewares/validate.middleware');
 const router = express.Router();
-const upload = require("../middlewares/upload.middleware");
+// const { uploadImage } = require("../middlewares/multer.middleware");
+const { uploadFile } = require('../middlewares/cloud.middleware');
 
 /**
  * @swagger
@@ -171,7 +172,21 @@ router.get('/program/:id', verifyToken, activityController.getByIdProgram);
  *       500:
  *         description: Internal Server Error
  */
-router.post('/add', [verifyToken, upload.array('dokumentasi'), activityValidation, validate], activityController.addActivity);
+router.post('/add', [
+  verifyToken, 
+  uploadFile('image', 'dokumentasi', true, 10), 
+  (req, res, next) => {
+    // Compatibility layer untuk pastikan req.files sudah benar
+    if (req.files) {
+      const fileUrls = req.files.map(file => file.path);
+      req.fileUrls = fileUrls;
+      console.log("Uploaded files:", fileUrls);
+    }
+    next();
+  },
+  activityValidation, 
+  validate
+], activityController.addActivity);
 
 /**
  * @swagger
@@ -263,7 +278,20 @@ router.delete('/delete/:id', verifyToken, activityController.deleteActivity);
  *       500:
  *         description: Internal Server Error
  */
-router.put('/update/:id', [verifyToken, upload.array('dokumentasi'), activityValidation, validate], activityController.updateActivity);
+router.put('/update/:id', [
+  verifyToken, 
+  // uploadImage.array('dokumentasi'),  // Komentar dulu, gunakan setelah add berhasil
+  uploadFile('image', 'dokumentasi', true, 10),
+  (req, res, next) => {
+    if (req.files) {
+      const fileUrls = req.files.map(file => file.path);
+      req.fileUrls = fileUrls;
+    }
+    next();
+  },
+  activityValidation, 
+  validate
+], activityController.updateActivity);
 
 router.post('/add/sheet', verifyToken, activityController.addActivitySheet);
 

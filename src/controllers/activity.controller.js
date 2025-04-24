@@ -110,7 +110,7 @@ exports.addActivity = async (req, res) => {
         
         const data = { ...req.body, created_by, masjid_id };
 
-        if (req.files) {
+        if (req.fileUrls && req.fileUrls.length > 0) {
             data.dokumentasi = req.fileUrls;
         }
 
@@ -142,6 +142,21 @@ exports.deleteActivity = async (req, res) => {
         const activityId = req.params.id;
         const masjidID = req.user.masjid_id;
 
+        const activity = await activityService.getByIdActivity(req.user.id, activityId);
+        
+        if (activity && activity.dokumentasi && Array.isArray(activity.dokumentasi)) {
+            await Promise.all(
+                activity.dokumentasi.map(async (imageUrl) => {
+                    try {
+                        await deleteFileByUrl(imageUrl);
+                        console.log(`Deleted file: ${imageUrl}`);
+                    } catch (error) {
+                        console.warn(`Failed to delete file: ${imageUrl}`, error);
+                    }
+                })
+            );
+        }
+
         const result = await activityService.deleteActivity(masjidID, activityId);
 
         if (result) {
@@ -166,7 +181,7 @@ exports.updateActivity = async (req, res) => {
         const activityId = req.params.id;
         const activityData = req.body;
 
-        if (req.files) {
+        if (req.fileUrls && req.fileUrls.length > 0) {
             activityData.dokumentasi = req.fileUrls;
         }
 
