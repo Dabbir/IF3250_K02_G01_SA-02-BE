@@ -1,15 +1,19 @@
 const { pool } = require("../config/db.config");
 
 class Program {
-  static async getAll(limit, offset, masjid_id, search = "", sortBy = "created_at", sortOrder = "DESC") {
-    const search_param = `%${search}%`;
-    const order = `ORDER BY \`${sortBy}\` ${sortOrder}`;
-    const sql = `SELECT * FROM program WHERE masjid_id = ? AND nama_program LIKE ? ${order} LIMIT ? OFFSET ?`;
+  static async getAll(limit, offset, masjid_id, search = "", sortBy = "created_at", sortOrder = "DESC", statuses = []) {
+    let sql = `SELECT * FROM program WHERE masjid_id = ? AND nama_program LIKE ?`;
+    const params = [masjid_id, `%${search}%`];
 
-    const [rows] = await pool.query(
-      sql,
-      [masjid_id, search_param, limit, offset]
-    );
+    if (statuses.length) {
+      sql += ` AND status_program IN (${statuses.map(() => "?").join(",")})`;
+      params.push(...statuses);
+    }
+    
+    sql += ` ORDER BY \`${sortBy}\` ${sortOrder} LIMIT ? OFFSET ?`;
+    params.push(limit, offset);
+
+    const [rows] = await pool.query(sql, params);
   
     return rows.map((row) => ({
       ...row,
@@ -17,12 +21,16 @@ class Program {
     }));
   }
   
-  static async countAll(masjid_id, search = "") {
-    const search_param = `%${search}%`;
-    const [[{ count }]] = await pool.query(
-      'SELECT COUNT(*) as count FROM program WHERE masjid_id = ? AND nama_program LIKE ?',
-      [masjid_id, search_param]
-    );
+  static async countAll(masjid_id, search = "", statuses = []) {
+    let sql = `SELECT COUNT(*) as count FROM program WHERE masjid_id = ? AND nama_program LIKE ?`;
+    const params = [masjid_id, `%${search}%`];
+
+    if (statuses.length) {
+      sql += ` AND status_program IN (${statuses.map(() => "?").join(",")})`;
+      params.push(...statuses);
+    }
+
+    const [[{ count }]] = await pool.query(sql, params);
 
     return count;
   }  

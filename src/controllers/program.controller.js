@@ -10,16 +10,16 @@ const ALLOWED_SORT_FIELDS = [
 exports.getAllPrograms = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page || 1);
-    const limit = parseInt(req.query.limit || 10);
+    const limit = parseInt(req.query.limit || 15);
     const offset = (page - 1) * limit;
     const search = req.query.search || ""; 
     const sortBy    = ALLOWED_SORT_FIELDS.includes(req.query.sortBy)? req.query.sortBy : "created_at";
     const sortOrder = req.query.sortOrder === "ASC" ? "ASC" : "DESC";
-    console.log("sortBy", sortBy, "sortOrder", sortOrder);
+    const statuses = req.query.status ? req.query.status.split(",") : [];
 
     const [programs, total] = await Promise.all([
-      ProgramService.getAllPrograms(limit, offset, req.user.masjid_id, search, sortBy, sortOrder),
-      ProgramService.countAllPrograms(req.user.masjid_id, search)
+      ProgramService.getAllPrograms(limit, offset, req.user.masjid_id, search, sortBy, sortOrder, statuses),
+      ProgramService.countAllPrograms(req.user.masjid_id, search, statuses)
     ]);
 
     res.json({ data: programs, total });

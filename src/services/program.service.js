@@ -1,12 +1,12 @@
 const Program = require('../models/program.model');
 
 class ProgramService {
-  static async getAllPrograms(limit, offset, masjid_id, search, sortBy, sortOrder) {
-    return await Program.getAll(limit, offset, masjid_id, search, sortBy, sortOrder);
+  static async getAllPrograms(limit, offset, masjid_id, search, sortBy, sortOrder, statuses) {
+    return await Program.getAll(limit, offset, masjid_id, search, sortBy, sortOrder, statuses);
   }
   
-  static async countAllPrograms(masjid_id, search) {
-    return await Program.countAll(masjid_id, search);
+  static async countAllPrograms(masjid_id, search, statuses) {
+    return await Program.countAll(masjid_id, search, statuses);
   }
 
   static async getProgramById(id, masjid_id) {
