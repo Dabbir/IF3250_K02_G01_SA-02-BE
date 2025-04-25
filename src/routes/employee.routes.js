@@ -3,7 +3,6 @@ const router = express.Router();
 const employeeController = require('../controllers/employee.controller');
 const { verifyToken, authenticate } = require('../middlewares/auth.middleware');
 const { validate, employeeValidationCreate, employeeValidationUpdate } = require('../middlewares/employee.middleware');
-const upload = require('../middlewares/upload.middleware');
 const { uploadFile } = require('../middlewares/cloud.middleware');
 
 /**
@@ -52,9 +51,8 @@ const { uploadFile } = require('../middlewares/cloud.middleware');
  *       500:
  *         description: Internal Server Error
  */
-router.get('/', authenticate, employeeController.getAllEmployees);
-router.post('/', [
-    verifyToken, 
+router.get('/', verifyToken, authenticate, employeeController.getAllEmployees);
+router.post('/', [verifyToken, authenticate,
     uploadFile('image', 'foto', false), 
     (req, res, next) => {
       if (req.file) {
@@ -90,7 +88,7 @@ router.post('/', [
  *       500:
  *         description: Internal Server Error
  */
-router.get('/activity/:id', verifyToken, employeeController.getActivityByEmployeeId);
+router.get('/activity/:id', verifyToken, authenticate, employeeController.getActivityByEmployeeId);
 
 /**
  * @swagger
@@ -175,10 +173,9 @@ router.get('/activity/:id', verifyToken, employeeController.getActivityByEmploye
  *       500:
  *         description: Internal Server Error
  */
-router.get('/:id', verifyToken, employeeController.getEmployeeById);
-router.put('/:id', [
-    verifyToken, 
-    uploadFile('image', 'foto', false), 
+router.get('/:id', verifyToken, authenticate, employeeController.getEmployeeById);
+router.put('/:id', [verifyToken, authenticate,
+    uploadFile('image', 'foto', false),
     (req, res, next) => {
       if (req.file) {
         req.fileUrl = req.file.path;
@@ -189,6 +186,6 @@ router.put('/:id', [
     employeeValidationUpdate, 
     validate
 ], employeeController.updateEmployee);
-router.delete('/:id', verifyToken, employeeController.deleteEmployee);
+router.delete('/:id', verifyToken, authenticate, employeeController.deleteEmployee);
 
 module.exports = router;

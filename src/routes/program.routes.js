@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const programController = require('../controllers/program.controller');
-const { verifyToken, isAdmin } = require('../middlewares/auth.middleware');
+const { verifyToken } = require('../middlewares/auth.middleware');
 const { validate, programValidationCreate, programValidationUpdate } = require('../middlewares/program.middleware');
 const upload = require("../middlewares/upload.middleware");
+const { uploadFile } = require("../middlewares/cloud.middleware");
 const { authenticate } = require('../middlewares/auth.middleware');
 
 /**
@@ -56,23 +57,17 @@ const { authenticate } = require('../middlewares/auth.middleware');
  *       500:
  *         description: Internal Server Error
  */
-router.get('/', verifyToken, programController.getAllProgram);
-router.post('/', [upload.none(), verifyToken, programValidationCreate, validate], programController.createProgram);
-
-/**
- * @swagger
- * /api/program/paginated:
- *   get:
- *     summary: Mendapatkan program dengan paginasi
- *     tags: [Program]
- *     responses:
- *       200:
- *         description: Program berhasil ditemukan
- *       500:
- *         description: Internal Server Error
- *
-  */
-router.get('/paginated', [authenticate], programController.getProgramsPaginated);
+router.get('/', authenticate, programController.getAllPrograms);
+router.post('/', verifyToken, authenticate,
+    uploadFile('image', 'cover_image', false),
+    (req, res, next) => {
+      if (req.file) req.fileUrl = req.file.path;
+      next();
+    },
+    programValidationCreate,
+    validate,
+    programController.createProgram
+  );
 
 /**
  * @swagger
@@ -161,8 +156,17 @@ router.get('/paginated', [authenticate], programController.getProgramsPaginated)
  *       500:
  *         description: Internal Server Error
  */
-router.get('/:id', [verifyToken], programController.getProgramById);
-router.put('/:id', upload.none(), [verifyToken, programValidationUpdate, validate], programController.updateProgram);
-router.delete('/:id', [verifyToken], programController.deleteProgram);
+router.get('/:id', verifyToken, authenticate, programController.getProgramById);
+router.put('/:id', authenticate, verifyToken,
+    uploadFile('image', 'cover_image', false),
+    (req, res, next) => {
+      if (req.file) req.fileUrl = req.file.path;
+      next();
+    },
+    programValidationUpdate,
+    validate,
+    programController.updateProgram
+  );
+router.delete('/:id', verifyToken, authenticate, programController.deleteProgram);
 
 module.exports = router;

@@ -1,4 +1,3 @@
-// routes/gallery.routes.js
 const express = require('express');
 const router = express.Router();
 const galleryController = require('../controllers/gallery.controller');
