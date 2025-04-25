@@ -18,6 +18,7 @@ class Program {
     return rows.map((row) => ({
       ...row,
       pilar_program: JSON.parse(row.pilar_program || "[]"),
+      cover_image: row.cover_image || null,
     }));
   }
   
@@ -48,6 +49,7 @@ class Program {
       program.rancangan_anggaran,
       program.aktualisasi_anggaran,
       program.status_program,
+      program.cover_image,
       program.masjid_id,
       pengguna.nama AS created_by,
       program.created_at,
@@ -88,10 +90,14 @@ class Program {
 
   static async update(id, data, masjid_id) {
     const { created_by, created_at, masjid_id: _ignoreMasjid, ...updateData } = data;
+
+    console.log("pilar_program before: ", updateData.pilar_program);
   
     if (updateData.pilar_program && Array.isArray(updateData.pilar_program)) {
       updateData.pilar_program = JSON.stringify(updateData.pilar_program);
     }
+
+    console.log("pilar_program after: ", updateData.pilar_program);
   
     delete updateData.updated_at;
   

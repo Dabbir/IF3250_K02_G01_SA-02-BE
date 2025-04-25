@@ -79,6 +79,7 @@ async function initializeDatabase() {
         rancangan_anggaran DECIMAL(15,2),
         aktualisasi_anggaran DECIMAL(15,2),
         status_program ENUM('Belum Mulai', 'Berjalan', 'Selesai') DEFAULT 'Berjalan',
+        cover_image VARCHAR(255),
         masjid_id INT,
         created_by INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

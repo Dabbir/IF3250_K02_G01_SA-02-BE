@@ -1,4 +1,5 @@
 const ProgramService = require('../services/program.service');
+const cloudinary = require('cloudinary').v2;
 
 const ALLOWED_SORT_FIELDS = [
   "nama_program",
@@ -50,6 +51,10 @@ exports.createProgram = async (req, res, next) => {
       masjid_id,
     };
 
+    if (req.fileUrl) {
+      payload.cover_image = req.fileUrl;
+    }
+
     const id = await ProgramService.createProgram(payload);
     res.status(201).json({ id });
   } catch (error) {
@@ -68,15 +73,33 @@ exports.updateProgram = async (req, res, next) => {
       'waktu_selesai',
       'rancangan_anggaran',
       'aktualisasi_anggaran',
-      'status_program'
+      'status_program',
+      'cover_image',
     ];
 
     const updatePayload = Object.fromEntries(
       Object.entries(req.body).filter(([key]) => allowedFields.includes(key))
     );
 
+    if (req.fileUrl) {
+      updatePayload.cover_image = req.fileUrl;
+
+      const current = await ProgramService.getProgramById(req.params.id, req.user.masjid_id);
+      if (current && current.cover_image) {
+        deleteCoverImage(current.cover_image);
+      } else if (updatePayload.cover_image === "") {
+        updatePayload.cover_image = null;
+  
+        if (current.cover_image) {
+          deleteCoverImage(current.cover_image);
+        }
+      } else {
+        delete updatePayload.cover_image;
+      }
+    }
+
     await ProgramService.updateProgram(req.params.id, updatePayload, req.user.masjid_id);
-    const updatedProgram = await ProgramService.getProgramById(req.params.id);
+    const updatedProgram = await ProgramService.getProgramById(req.params.id, req.user.masjid_id);
     res.json(updatedProgram);
   } catch (error) {
     next(error);
@@ -85,9 +108,32 @@ exports.updateProgram = async (req, res, next) => {
 
 exports.deleteProgram = async (req, res, next) => {
   try {
-    await ProgramService.deleteProgram(req.params.id, req.user.masjid_id);
+    const current = await ProgramService.getProgramById(req.params.id, req.user.masjid_id);
+    const response = await ProgramService.deleteProgram(req.params.id, req.user.masjid_id);
+
+    if (!response) {
+      return res.status(400).json({ message: 'Program deletion failed' });
+    }
+
+    if (current && current.cover_image) {
+      deleteCoverImage(current.cover_image);
+    }
+
     res.json({ message: 'Program deleted' });
   } catch (error) {
     next(error);
   }
 };
+
+function getPublicIdFromUrl(url) {
+  if (!url) return null;
+  const m = url.match(/\/(?:image|raw|video)\/upload\/(?:v\d+\/)?(.+?)(?:\.\w+)?$/);
+  return m ? m[1] : null;
+}
+
+function deleteCoverImage(cover_image) {
+  if (cover_image) {
+    const publicId = getPublicIdFromUrl(cover_image);
+    if (publicId) cloudinary.uploader.destroy(publicId);
+  }
+}
