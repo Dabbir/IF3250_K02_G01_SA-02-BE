@@ -1,39 +1,6 @@
 const activityModel = require('../models/activity.model');
 const userModel = require('../models/user.model');
-const fs = require("fs");
-const path = require("path");
-const cloudinary = require('cloudinary').v2;
-
-const getPublicIdFromUrl = (url) => {
-    if (!url || typeof url !== 'string') return null;
-    
-    try {
-        const regex = /\/(?:image|raw|video)\/upload\/(?:v\d+\/)?(.+?)(?:\.\w+)?$/;
-        const match = url.match(regex);
-        
-        return match ? match[1] : null;
-    } catch (error) {
-        console.error('Error extracting public_id from URL:', error);
-        return null;
-    }
-};
-
-const deleteCloudinaryImage = async (imageUrl) => {
-    try {
-        const publicId = getPublicIdFromUrl(imageUrl);
-        if (!publicId) {
-        console.warn(`Could not extract public_id from URL: ${imageUrl}`);
-        return false;
-        }
-        
-        const result = await cloudinary.uploader.destroy(publicId);
-        console.log(`Deleted image from Cloudinary: ${publicId}`, result);
-        return result.result === 'ok';
-    } catch (error) {
-        console.error(`Error deleting image from Cloudinary: ${imageUrl}`, error);
-        return false;
-    }
-};
+const { deleteCloudinaryImage } = require('../utils/upload.utils')
 
 exports.getByIdActivity = async (userId, activityId) => {
     try {
@@ -147,7 +114,6 @@ exports.deleteActivity = async (masjiID, activityId) => {
             throw error;
         }
 
-        // Hapus semua gambar dokumentasi dari Cloudinary
         if (activity.dokumentasi && Array.isArray(activity.dokumentasi)) {
             await Promise.all(
                 activity.dokumentasi.map(async (imageUrl) => {
@@ -194,7 +160,6 @@ exports.updateActivity = async (userId, activityId, activityData) => {
         activityData.tanggal_mulai = formatDate(activityData.tanggal_mulai);
         activityData.tanggal_selesai = formatDate(activityData.tanggal_selesai);
 
-        // Ganti bagian penghapusan file lokal dengan penghapusan Cloudinary
         if (Array.isArray(activityData.deleted_images)) {
             await Promise.all(
                 activityData.deleted_images.map(async (imageUrl) => {

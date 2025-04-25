@@ -142,21 +142,6 @@ exports.deleteActivity = async (req, res) => {
         const activityId = req.params.id;
         const masjidID = req.user.masjid_id;
 
-        const activity = await activityService.getByIdActivity(req.user.id, activityId);
-        
-        if (activity && activity.dokumentasi && Array.isArray(activity.dokumentasi)) {
-            await Promise.all(
-                activity.dokumentasi.map(async (imageUrl) => {
-                    try {
-                        await deleteFileByUrl(imageUrl);
-                        console.log(`Deleted file: ${imageUrl}`);
-                    } catch (error) {
-                        console.warn(`Failed to delete file: ${imageUrl}`, error);
-                    }
-                })
-            );
-        }
-
         const result = await activityService.deleteActivity(masjidID, activityId);
 
         if (result) {
