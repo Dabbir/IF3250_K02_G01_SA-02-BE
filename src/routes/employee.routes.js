@@ -178,11 +178,10 @@ router.get('/activity/:id', verifyToken, employeeController.getActivityByEmploye
 router.get('/:id', verifyToken, employeeController.getEmployeeById);
 router.put('/:id', [
     verifyToken, 
-    uploadFile('image', 'foto', false), // Single file upload for 'foto' field
+    uploadFile('image', 'foto', false), 
     (req, res, next) => {
-      // Handle the uploaded file
       if (req.file) {
-        req.fileUrl = req.file.path; // Store the cloudinary URL
+        req.fileUrl = req.file.path;
         console.log("Updated profile photo:", req.fileUrl);
       }
       next();
