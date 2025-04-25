@@ -18,7 +18,6 @@ class BeneficiaryModel {
     try {
       let query = 'SELECT * FROM beneficiaries';
       
-      // Add WHERE clause if there are filtering parameters
       const conditions = [];
       const values = [];
       
@@ -31,14 +30,12 @@ class BeneficiaryModel {
         query += ' WHERE ' + conditions.join(' AND ');
       }
       
-      // Add ORDER BY if specified
       if (params.orderBy) {
         query += ` ORDER BY ${params.orderBy} ${params.orderDirection || 'ASC'}`;
       } else {
         query += ` ORDER BY created_at DESC`;
       }
       
-      // Add pagination
       if (params.limit && params.page) {
         const offset = (params.page - 1) * params.limit;
         query += ' LIMIT ? OFFSET ?';
@@ -57,7 +54,6 @@ class BeneficiaryModel {
     try {
       let query = 'SELECT COUNT(*) as total FROM beneficiaries';
       
-      // Add WHERE clause if there are filtering parameters
       const conditions = [];
       const values = [];
       
@@ -126,7 +122,6 @@ class BeneficiaryModel {
         foto
       } = beneficiaryData;
 
-      // Build the query parts dynamically
       const updateFields = [];
       const values = [];
 
@@ -160,16 +155,13 @@ class BeneficiaryModel {
         values.push(foto);
       }
 
-      // Add updated_at timestamp
       updateFields.push("updated_at = CURRENT_TIMESTAMP()");
 
-      // If nothing to update, return the current beneficiary
       if (updateFields.length === 1) {
         const [rows] = await pool.query("SELECT * FROM beneficiaries WHERE id = ?", [id]);
         return rows.length > 0 ? rows[0] : null;
       }
 
-      // Build and execute the query
       const query = `UPDATE beneficiaries SET ${updateFields.join(", ")} WHERE id = ?`;
       values.push(id);
 
@@ -179,7 +171,6 @@ class BeneficiaryModel {
         return { kind: "not_found" };
       }
 
-      // Return the updated record
       return {
         id: id,
         ...beneficiaryData

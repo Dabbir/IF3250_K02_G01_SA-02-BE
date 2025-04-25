@@ -5,6 +5,20 @@ class PublikasiService {
     return await Publikasi.getAll();
   }
 
+  static async getPaginatedPublikasi(page, limit, search, sortBy, sortOrder, toneFilters) {
+    const offset = (page - 1) * limit;
+    
+    return await Publikasi.getPaginated(
+      page, 
+      limit, 
+      offset, 
+      search, 
+      sortBy, 
+      sortOrder, 
+      toneFilters
+    );
+  }
+
   static async getPublikasiById(id) {
     return await Publikasi.getById(id);
   }

@@ -1,11 +1,8 @@
 const beneficiaryService = require('../services/beneficiary.service');
-const path = require('path');
-const fs = require('fs');
+const cloudinary = require('../config/cloudinary.config');
 
-// Create a new Beneficiary
 exports.create = async (req, res) => {
   try {
-    // Validate request
     if (!req.body.nama_instansi) {
       return res.status(400).json({
         success: false,
@@ -13,13 +10,11 @@ exports.create = async (req, res) => {
       });
     }
 
-    // Handle file upload if present
     let foto = null;
     if (req.file) {
-      foto = req.fileUrl; // Using the URL set by your middleware
+      foto = req.file.path; 
     }
 
-    // Create a Beneficiary object
     const beneficiaryData = {
       nama_instansi: req.body.nama_instansi,
       nama_kontak: req.body.nama_kontak,
@@ -30,7 +25,6 @@ exports.create = async (req, res) => {
       created_by: req.user ? req.user.id : null
     };
 
-    // Save Beneficiary in the database
     const data = await beneficiaryService.createBeneficiary(beneficiaryData);
     
     res.status(201).json({
@@ -47,7 +41,6 @@ exports.create = async (req, res) => {
   }
 };
 
-// Retrieve all Beneficiaries
 exports.findAll = async (req, res) => {
   try {
     const { nama_instansi, page = 1, limit = 10, orderBy, orderDirection } = req.query;
@@ -75,7 +68,6 @@ exports.findAll = async (req, res) => {
   }
 };
 
-// Find a single Beneficiary with an id
 exports.findOne = async (req, res) => {
   try {
     const data = await beneficiaryService.getBeneficiaryById(req.params.id);
@@ -94,10 +86,8 @@ exports.findOne = async (req, res) => {
   }
 };
 
-// Update a Beneficiary identified by the id
 exports.update = async (req, res) => {
   try {
-    // Validate Request
     if (!req.body.nama_instansi) {
       return res.status(400).json({
         success: false,
@@ -107,11 +97,10 @@ exports.update = async (req, res) => {
 
     const id = req.params.id;
     
-    // Handle file upload if present
     let beneficiaryData = { ...req.body };
     
     if (req.file) {
-      beneficiaryData.foto = req.fileUrl; // Using the URL set by your middleware
+      beneficiaryData.foto = req.file.path;
     }
 
     const data = await beneficiaryService.updateBeneficiary(id, beneficiaryData);
@@ -130,7 +119,6 @@ exports.update = async (req, res) => {
   }
 };
 
-// Delete a Beneficiary with the specified id
 exports.delete = async (req, res) => {
   try {
     const id = req.params.id;
@@ -150,7 +138,6 @@ exports.delete = async (req, res) => {
   }
 };
 
-// Get beneficiaries by aktivitas id
 exports.findByAktivitas = async (req, res) => {
   try {
     const aktivitasId = req.params.aktivitasId;
