@@ -4,6 +4,7 @@ const employeeController = require('../controllers/employee.controller');
 const { verifyToken, authenticate } = require('../middlewares/auth.middleware');
 const { validate, employeeValidationCreate, employeeValidationUpdate } = require('../middlewares/employee.middleware');
 const upload = require('../middlewares/upload.middleware');
+const { uploadFile } = require('../middlewares/cloud.middleware');
 
 /**
  * @swagger
@@ -52,7 +53,19 @@ const upload = require('../middlewares/upload.middleware');
  *         description: Internal Server Error
  */
 router.get('/', authenticate, employeeController.getAllEmployees);
-router.post('/', [upload.none(), verifyToken, employeeValidationCreate, validate],employeeController.createEmployee);
+router.post('/', [
+    verifyToken, 
+    uploadFile('image', 'foto', false), 
+    (req, res, next) => {
+      if (req.file) {
+        req.fileUrl = req.file.path; 
+        console.log("Uploaded profile photo:", req.fileUrl);
+      }
+      next();
+    },
+    employeeValidationCreate, 
+    validate
+], employeeController.createEmployee);
 
 /**
  * @swagger
@@ -163,7 +176,20 @@ router.get('/activity/:id', verifyToken, employeeController.getActivityByEmploye
  *         description: Internal Server Error
  */
 router.get('/:id', verifyToken, employeeController.getEmployeeById);
-router.put('/:id', upload.none(), [verifyToken, employeeValidationUpdate, validate], employeeController.updateEmployee);
+router.put('/:id', [
+    verifyToken, 
+    uploadFile('image', 'foto', false), // Single file upload for 'foto' field
+    (req, res, next) => {
+      // Handle the uploaded file
+      if (req.file) {
+        req.fileUrl = req.file.path; // Store the cloudinary URL
+        console.log("Updated profile photo:", req.fileUrl);
+      }
+      next();
+    },
+    employeeValidationUpdate, 
+    validate
+], employeeController.updateEmployee);
 router.delete('/:id', verifyToken, employeeController.deleteEmployee);
 
 module.exports = router;

@@ -20,7 +20,7 @@ class Employee {
     }
 
     const orderClause = `ORDER BY \`${sortBy}\` ${sortOrder}`;
-    const sql = `SELECT e.*, p.nama AS created_by FROM employee eLEFT JOIN pengguna p ON e.created_by = p.id WHERE ${where} ${orderClause}LIMIT ? OFFSET ?`;
+    const sql = `SELECT e.*, p.nama AS created_by FROM employee e LEFT JOIN pengguna p ON e.created_by = p.id WHERE ${where} ${orderClause} LIMIT ? OFFSET ?`;
 
     const [rows] = await pool.query(sql, [masjid_id, searchParam, limit, offset]);
     return rows;

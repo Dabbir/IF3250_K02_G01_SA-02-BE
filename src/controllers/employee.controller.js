@@ -1,5 +1,6 @@
 const EmployeeService = require("../services/employee.service");
 const ActivityService = require("../services/activity.service");
+const cloudinary = require('cloudinary').v2;
 
 const ALLOWED_SORT_FIELDS = [
   "nama",
@@ -66,6 +67,11 @@ exports.createEmployee = async (req, res, next) => {
       created_by: req.user.id,
       masjid_id:  req.user.masjid_id,
     };
+
+    if (req.fileUrl) {
+      payload.foto = req.fileUrl;
+    }
+
     const id = await EmployeeService.createEmployee(payload);
 
     if (!id) {
@@ -90,9 +96,20 @@ exports.updateEmployee = async (req, res, next) => {
     const employee_id    = req.params.id;
     const masjid_id = req.user.masjid_id;
     const allowed  = ["nama","telepon","alamat","email","foto"];
+
+    const currentEmployee = await EmployeeService.getEmployeeById(employee_id, masjid_id);
+
     const update_payload = Object.fromEntries(
       Object.entries(req.body).filter(([k]) => allowed.includes(k))
     );
+
+    if (req.fileUrl) {
+      update_payload.foto = req.fileUrl;
+      
+      if (currentEmployee && currentEmployee.foto) {
+        await deleteCloudinaryImage(currentEmployee.foto);
+      }
+    }
 
     const response = await EmployeeService.updateEmployee(employee_id, update_payload, masjid_id);
     res.status(200).json({
@@ -108,6 +125,9 @@ exports.deleteEmployee = async (req, res, next) => {
   try {
     const employee_id    = req.params.id;
     const masjid_id = req.user.masjid_id;
+
+    const employee = await EmployeeService.getEmployeeById(employee_id, masjid_id);
+
     const response = await EmployeeService.deleteEmployee(employee_id, masjid_id);
 
     if (!response) {
@@ -115,6 +135,10 @@ exports.deleteEmployee = async (req, res, next) => {
         success: false,
         message: "Employee deletion failed",
       });
+    }
+
+    if (employee && employee.foto) {
+      await deleteCloudinaryImage(employee.foto);
     }
 
     res.status(200).json({
@@ -147,4 +171,37 @@ exports.getActivityByEmployeeId = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+const getPublicIdFromUrl = (url) => {
+    if (!url || typeof url !== 'string') return null;
+    
+    try {
+      const regex = /\/(?:image|raw|video)\/upload\/(?:v\d+\/)?(.+?)(?:\.\w+)?$/;
+      const match = url.match(regex);
+      
+      return match ? match[1] : null;
+    } catch (error) {
+      console.error('Error extracting public_id from URL:', error);
+      return null;
+    }
+};
+
+const deleteCloudinaryImage = async (imageUrl) => {
+    try {
+      if (!imageUrl) return false;
+      
+      const publicId = getPublicIdFromUrl(imageUrl);
+      if (!publicId) {
+        console.warn(`Could not extract public_id from URL: ${imageUrl}`);
+        return false;
+      }
+      
+      const result = await cloudinary.uploader.destroy(publicId);
+      console.log(`Deleted image from Cloudinary: ${publicId}`, result);
+      return result.result === 'ok';
+    } catch (error) {
+      console.error(`Error deleting image from Cloudinary: ${imageUrl}`, error);
+      return false;
+    }
 };
