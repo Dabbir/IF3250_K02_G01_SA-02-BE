@@ -8,7 +8,10 @@ const activityRoutes = require('./activity.routes');
 const accessRoutes = require('./access.routes');
 const masjidRoutes = require('./masjid.routes');
 const programRoutes = require('./program.routes');
+const stakeholderRoutes = require('./stakeholder.routes');
 const beneficiaryRoutes = require('./beneficiary.routes');
+const galleryRoutes = require('./gallery.routes');
+const employeeRoutes = require('./employee.routes');
 
 router.use('/users', userRoutes);
 router.use('/auth', authRoutes);
@@ -17,6 +20,9 @@ router.use('/activity', activityRoutes);
 router.use('/access', accessRoutes);
 router.use('/masjid', masjidRoutes);
 router.use('/program', programRoutes);
+router.use('/stakeholder', stakeholderRoutes);
 router.use('/beneficiary', beneficiaryRoutes);
+router.use('/gallery', galleryRoutes);
+router.use('/employee', employeeRoutes);
 
 module.exports = router;

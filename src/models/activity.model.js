@@ -165,9 +165,9 @@ class ActivityModel {
                 status,
                 program_id,
                 prev_dokumentasi,
+                deleted_images
             } = activityData;
 
-            // Build the query parts dynamically
             const updateFields = [];
             const values = [];
 
@@ -179,13 +179,17 @@ class ActivityModel {
                 updateFields.push("deskripsi = ?");
                 values.push(deskripsi);
             }
-            if (dokumentasi !== undefined) {
+            if (dokumentasi !== undefined || deleted_images !== undefined) {
                 let dokumentasiJson;
-                if (prev_dokumentasi !== undefined) {
+                if (prev_dokumentasi !== undefined && dokumentasi !== undefined) {
                     const mergedDokumentasi = prev_dokumentasi.concat(dokumentasi);
                     dokumentasiJson = JSON.stringify(mergedDokumentasi);
-                } else {
+                } else if (prev_dokumentasi !== undefined) {
+                    dokumentasiJson = JSON.stringify(prev_dokumentasi);
+                } else if (prev_dokumentasi === undefined && dokumentasi !== undefined) {
                     dokumentasiJson = JSON.stringify(dokumentasi);
+                } else {
+                    dokumentasiJson = null;
                 }
                 updateFields.push("dokumentasi = ?");
                 values.push(dokumentasiJson);
@@ -211,16 +215,13 @@ class ActivityModel {
                 values.push(program_id);
             }
 
-            // Add updated_at timestamp
             updateFields.push("updated_at = CURRENT_TIMESTAMP()");
 
-            // If nothing to update, return the current activity
             if (updateFields.length === 1) {
                 const [rows] = await pool.query("SELECT * FROM aktivitas WHERE id = ?", [id]);
                 return rows.length > 0 ? rows[0] : null;
             }
 
-            // Build and execute the query
             const query = `UPDATE aktivitas SET ${updateFields.join(", ")} WHERE id = ?`;
             values.push(id);
 
@@ -230,7 +231,6 @@ class ActivityModel {
                 return null;
             }
 
-            // Get and return the updated activity
             const [rows] = await pool.query("SELECT * FROM aktivitas WHERE id = ?", [id]);
             return rows.length > 0 ? rows[0] : null;
         } catch (error) {
@@ -249,16 +249,15 @@ class ActivityModel {
             VALUES ${placeholders}
             `;
 
-            // Mengubah objek menjadi array nilai
             const flatValues = activityData.flatMap(activity => [
                 activity.nama_aktivitas,
                 activity.deskripsi,
-                activity.dokumentasi || null,  // Jika tidak ada, masukkan NULL
+                activity.dokumentasi || null,
                 activity.tanggal_mulai,
                 activity.tanggal_selesai,
                 activity.biaya_implementasi,
                 activity.status,
-                activity.program_id || null,  // Jika tidak ada, masukkan NULL
+                activity.program_id || null,
                 activity.created_by,
                 activity.masjid_id
             ]);
@@ -271,6 +270,18 @@ class ActivityModel {
         }
     }
 
+    async findActivityByEmployeeId(employeeId, masjidID) {
+        try {
+            const [rows] = await pool.query(
+                "SELECT a.*, p.nama_program FROM aktivitas a LEFT JOIN program p ON a.program_id = p.id WHERE a.masjid_id = ? AND a.created_by = ?",
+                [masjidID, employeeId]
+            );
+            return rows;
+        } catch (error) {
+            console.error("Error in findActivityByEmployeeId:", error);
+            throw error;
+        }
+    }
 }
 
 module.exports = new ActivityModel();

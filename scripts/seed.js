@@ -218,6 +218,17 @@ async function seedDatabase() {
 
     console.log("Viewer access seeded successfully!");
 
+    await connection.query(`
+      INSERT INTO stakeholder (nama_stakeholder, jenis, telepon, email, foto, masjid_id, created_by)
+      VALUES
+        ('Dinas Lingkungan Hidup', 'Individu', '081234567890', 'dinasLH@example.com', 'https://example.com/foto1.jpg', 1, 2),
+        ('Dinas Kesehatan', 'Perusahaan', '082345678901', 'dinasKes@example.com', 'https://example.com/foto2.jpg', 1, 2),
+        ('Dinas Pendidikan', 'Organisasi', '083456789012', 'dinasPend@example.com', 'https://example.com/foto3.jpg', 1, 2),
+        ('Dinas Adadeh', 'Organisasi', '083456789012', 'dinasadadeh@example.com', 'https://example.com/foto3.jpg', 2, 3),
+        ('Dinas Hihihihi', 'Perusahaan', '083456789012', 'dinashihihi@example.com', 'https://example.com/foto3.jpg', 2, 3),
+        ('Dinas WLeoeoe', 'Individu', '083456789012', 'dinaswlelel@example.com', 'https://example.com/foto3.jpg', 2, 3)
+      `);
+
 
     await connection.commit();
     console.log("DB seeded successfully!");

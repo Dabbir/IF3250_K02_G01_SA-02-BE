@@ -140,13 +140,15 @@ async function initializeDatabase() {
       CREATE TABLE IF NOT EXISTS stakeholder (
         id INT AUTO_INCREMENT PRIMARY KEY,
         nama_stakeholder VARCHAR(100) NOT NULL,
-        nama_kontak VARCHAR(100),
+        jenis ENUM('Individu', 'Organisasi', 'Perusahaan') DEFAULT 'Individu',
         telepon VARCHAR(20),
         email VARCHAR(100),
         foto VARCHAR(255),
+        masjid_id INT,
         created_by INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (masjid_id) REFERENCES masjid(id) ON DELETE CASCADE,
         FOREIGN KEY (created_by) REFERENCES pengguna(id) ON DELETE SET NULL
       )
     `);
@@ -233,24 +235,24 @@ async function initializeDatabase() {
     console.log("Aktivitas_Employee junction table created or already exists");
 
     // Create Gallery table
-    await connection.query(`
-      CREATE TABLE IF NOT EXISTS gallery (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        judul VARCHAR(100),
-        deskripsi TEXT,
-        file_path VARCHAR(255) NOT NULL,
-        file_type ENUM('Image', 'Video', 'Document') DEFAULT 'Image',
-        program_id INT,
-        aktivitas_id INT,
-        created_by INT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (program_id) REFERENCES program(id) ON DELETE SET NULL,
-        FOREIGN KEY (aktivitas_id) REFERENCES aktivitas(id) ON DELETE SET NULL,
-        FOREIGN KEY (created_by) REFERENCES pengguna(id) ON DELETE SET NULL
-      )
-    `);
-    console.log("Gallery table created or already exists");
+    // await connection.query(`
+    //   CREATE TABLE IF NOT EXISTS gallery (
+    //     id INT AUTO_INCREMENT PRIMARY KEY,
+    //     judul VARCHAR(100),
+    //     deskripsi TEXT,
+    //     file_path VARCHAR(255) NOT NULL,
+    //     file_type ENUM('Image', 'Video', 'Document') DEFAULT 'Image',
+    //     program_id INT,
+    //     aktivitas_id INT,
+    //     created_by INT,
+    //     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    //     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    //     FOREIGN KEY (program_id) REFERENCES program(id) ON DELETE SET NULL,
+    //     FOREIGN KEY (aktivitas_id) REFERENCES aktivitas(id) ON DELETE SET NULL,
+    //     FOREIGN KEY (created_by) REFERENCES pengguna(id) ON DELETE SET NULL
+    //   )
+    // `);
+    // console.log("Gallery table created or already exists");
 
     // Create Pelatihan table
     await connection.query(`
