@@ -99,11 +99,25 @@ exports.updateEmployee = async (req, res, next) => {
 
     const currentEmployee = await EmployeeService.getEmployeeById(employee_id, masjid_id);
 
+    if (!currentEmployee) {
+      return res.status(404).json({
+        success: false,
+        message: "Employee not found",
+      });
+    }
+
     const update_payload = Object.fromEntries(
       Object.entries(req.body).filter(([k]) => allowed.includes(k))
     );
 
-    if (req.fileUrl) {
+    if (req.body.deletePhoto === 'true' && currentEmployee.foto) {
+      console.log("Deleting photo:", currentEmployee.foto);
+      
+      await deleteCloudinaryImage(currentEmployee.foto);
+      
+      update_payload.foto = null;
+    } 
+    else if (req.fileUrl) {
       update_payload.foto = req.fileUrl;
       
       if (currentEmployee && currentEmployee.foto) {
@@ -117,6 +131,7 @@ exports.updateEmployee = async (req, res, next) => {
       message: response ? "Employee updated successfully" : "No changes made",
     });
   } catch (error) {
+    console.error("Error updating employee:", error);
     next(error);
   }
 };
