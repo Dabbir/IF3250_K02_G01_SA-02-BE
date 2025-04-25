@@ -93,8 +93,6 @@ exports.updateProgram = async (req, res, next) => {
         if (current.cover_image) {
           deleteCoverImage(current.cover_image);
         }
-      } else {
-        delete updatePayload.cover_image;
       }
     }
 
