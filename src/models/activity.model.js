@@ -273,7 +273,7 @@ class ActivityModel {
     async findActivityByEmployeeId(employeeId, masjidID) {
         try {
             const [rows] = await pool.query(
-                "SELECT a.*, p.nama_program FROM aktivitas a LEFT JOIN program p ON a.program_id = p.id WHERE a.masjid_id = ? AND a.created_by = ?",
+                "SELECT a.* FROM aktivitas a JOIN aktivitas_employee ae ON a.id = ae.aktivitas_id WHERE a.masjid_id = ? AND ae.employee_id = ?",
                 [masjidID, employeeId]
             );
             return rows;
