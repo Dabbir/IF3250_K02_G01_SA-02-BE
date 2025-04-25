@@ -94,6 +94,14 @@ exports.updateUser = async (id, userData) => {
       }
     }
 
+    if (existingUser.dokumen_pendaftaran && existingUser.dokumen_public_id) {
+      if (userData.dokumen_pendaftaran || userData.deleteDocument === 'true') {
+        if (existingUser.dokumen_pendaftaran.includes('cloudinary.com')) {
+          await deleteCloudinaryImage(existingUser.dokumen_pendaftaran);
+        }
+      }
+    }
+
     return await userModels.update(id, userData);
   } catch (error) {
     console.error('Error in updating user:', error);

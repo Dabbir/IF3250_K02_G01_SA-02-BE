@@ -136,6 +136,6 @@ router.put(
 
 router.get("/photo/:filename", userController.getProfilePhoto);
 
-router.put("/:id", userController.updateUser);
+router.put("/:id", uploadFile('document', 'dokumenPendaftaran', false, 1), userController.updateUser);
 
 module.exports = router;
