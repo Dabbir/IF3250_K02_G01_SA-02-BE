@@ -1,10 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const beneficiaryController = require('../controllers/beneficiary.controller');
-const { verifyToken } = require('../middlewares/auth.middleware');
+const { verifyToken, authenticate } = require('../middlewares/auth.middleware');
 const { uploadFile } = require('../middlewares/cloud.middleware');
-
-router.use(verifyToken);
 
 /**
  * @swagger
@@ -54,8 +52,8 @@ router.use(verifyToken);
  *       500:
  *         description: Internal Server Error
  */
-router.post('/', uploadFile('image', 'foto'), beneficiaryController.create);
-router.get('/', beneficiaryController.findAll);
+router.post('/', verifyToken, uploadFile('image', 'foto'), beneficiaryController.create);
+router.get('/', authenticate, beneficiaryController.findAll);
 
 /**
  * @swagger
@@ -79,7 +77,7 @@ router.get('/', beneficiaryController.findAll);
  *       500:
  *         description: Internal Server Error
  */
-router.get('/aktivitas/:aktivitasId', beneficiaryController.findByAktivitas);
+router.get('/aktivitas/:id', verifyToken, beneficiaryController.findByAktivitas);
 
 /**
  * @swagger
@@ -159,8 +157,8 @@ router.get('/aktivitas/:aktivitasId', beneficiaryController.findByAktivitas);
  *       500:
  *         description: Internal Server Error
  */
-router.get('/:id', beneficiaryController.findOne);
-router.put('/:id', uploadFile('image', 'foto'), beneficiaryController.update);
-router.delete('/:id', beneficiaryController.delete);
+router.get('/:id', verifyToken, beneficiaryController.findOne);
+router.put('/:id', verifyToken, uploadFile('image', 'foto'), beneficiaryController.update);
+router.delete('/:id', verifyToken, beneficiaryController.delete);
 
 module.exports = router;

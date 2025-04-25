@@ -2,8 +2,23 @@ const PublikasiService = require('../services/publikasi.service');
 
 exports.getAllPublikasi = async (req, res, next) => {
   try {
-    const publikasi = await PublikasiService.getAllPublikasi();
-    res.json(publikasi);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const search = req.query.search || '';
+    const sortBy = req.query.sortBy || 'tanggal_publikasi';
+    const sortOrder = req.query.sortOrder || 'desc';
+    const toneFilters = req.query.toneFilters ? req.query.toneFilters.split(',') : [];
+    
+    const result = await PublikasiService.getPaginatedPublikasi(
+      page, 
+      limit, 
+      search, 
+      sortBy, 
+      sortOrder, 
+      toneFilters
+    );
+    
+    res.json(result);
   } catch (error) {
     next(error);
   }
