@@ -1,13 +1,16 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const userController = require('../controllers/user.controller');
-const { verifyToken } = require('../middlewares/auth.middleware');
-const { isAdmin } = require('../middlewares/access.middleware');
-const { validate, userUpdateValidation } = require('../middlewares/validate.middleware');
-const upload = require("../middlewares/upload.middleware");
+const userController = require("../controllers/user.controller");
+const { verifyToken } = require("../middlewares/auth.middleware");
+const { isAdmin } = require("../middlewares/access.middleware");
+const {
+  validate,
+  userUpdateValidation,
+} = require("../middlewares/validate.middleware");
+// const upload = require("../middlewares/upload.middleware");
+const { uploadFile } = require("../middlewares/cloud.middleware");
 
-
-router.get('/getall', verifyToken, isAdmin, userController.getAllUsers);
+router.get("/getall", verifyToken, isAdmin, userController.getAllUsers);
 
 /**
  * @swagger
@@ -112,9 +115,24 @@ router.get('/getall', verifyToken, isAdmin, userController.getAllUsers);
  *         description: Internal Server Error
  */
 
-router.get('/', verifyToken, userController.getProfile);
+router.get("/", verifyToken, userController.getProfile);
 
-router.put("/", [verifyToken, upload.single("fotoProfil"), userUpdateValidation, validate], userController.updateProfile);
+router.put(
+  "/",
+  verifyToken,
+  uploadFile('image', 'fotoProfil', false, 1),
+  (req, res, next) => {
+    if (req.files) {
+      const fileUrls = req.files.map(file => file.path);
+      req.fileUrls = fileUrls;
+      console.log(req.fileUrls);
+    }
+    next();
+  },
+  userUpdateValidation,
+  validate,
+  userController.updateProfile
+);
 
 router.get("/photo/:filename", userController.getProfilePhoto);
 

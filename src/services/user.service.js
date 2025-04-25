@@ -3,6 +3,7 @@ const userModels = require('../models/user.model');
 const path = require("path");
 const fs = require("fs");
 const { console } = require('inspector/promises');
+const { deleteCloudinaryImage } = require('../utils/upload.utils');
 
 exports.getAllUsers = async () => {
   try {
@@ -76,24 +77,58 @@ exports.updateUser = async (id, userData) => {
     }
 
     if (existingUser.foto_profil) {
-      filePath = existingUser.foto_profil.split("/").pop();
-      if (userData.foto_profil || userData.deleteProfileImage == 'true') {
-        const oldPhotoPath = path.join(__dirname, "../uploads/", filePath);
-        if (fs.existsSync(oldPhotoPath)) {
-          fs.unlinkSync(oldPhotoPath);
+      if (userData.foto_profil || userData.deleteProfileImage === 'true') {
+        if (existingUser.foto_profil.includes('cloudinary.com')) {
+          await deleteCloudinaryImage(existingUser.foto_profil);
+        } else {
+          try {
+            const filePath = existingUser.foto_profil.split("/").pop();
+            const oldPhotoPath = path.join(__dirname, "../uploads/", filePath);
+            if (fs.existsSync(oldPhotoPath)) {
+              fs.unlinkSync(oldPhotoPath);
+            }
+          } catch (error) {
+            console.error('Error deleting local file:', error);
+          }
         }
       }
     }
 
     return await userModels.update(id, userData);
   } catch (error) {
-    console.error('Error in updateing user:', error);
+    console.error('Error in updating user:', error);
     throw error;
   }
 }
 
 exports.deleteUser = async (id) => {
-  return await userModels.delete(id);
+  try {
+    const user = await userModels.findById(id);
+    if (!user) {
+      return false;
+    }
+
+    if (user.foto_profil) {
+      if (user.foto_profil.includes('cloudinary.com')) {
+        await deleteCloudinaryImage(user.foto_profil);
+      } else {
+        try {
+          const filePath = user.foto_profil.split("/").pop();
+          const oldPhotoPath = path.join(__dirname, "../uploads/", filePath);
+          if (fs.existsSync(oldPhotoPath)) {
+            fs.unlinkSync(oldPhotoPath);
+          }
+        } catch (error) {
+          console.error('Error deleting local file during user deletion:', error);
+        }
+      }
+    }
+
+    return await userModels.delete(id);
+  } catch (error) {
+    console.error('Error in deleteUser:', error);
+    throw error;
+  }
 }
 
 exports.getByAuthProvider = async (provider, providerId) => {

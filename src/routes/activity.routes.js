@@ -176,7 +176,6 @@ router.post('/add', [
   verifyToken, 
   uploadFile('image', 'dokumentasi', true, 10), 
   (req, res, next) => {
-    // Compatibility layer untuk pastikan req.files sudah benar
     if (req.files) {
       const fileUrls = req.files.map(file => file.path);
       req.fileUrls = fileUrls;
@@ -280,7 +279,6 @@ router.delete('/delete/:id', verifyToken, activityController.deleteActivity);
  */
 router.put('/update/:id', [
   verifyToken, 
-  // uploadImage.array('dokumentasi'),  // Komentar dulu, gunakan setelah add berhasil
   uploadFile('image', 'dokumentasi', true, 10),
   (req, res, next) => {
     if (req.files) {

@@ -107,7 +107,11 @@ exports.updateProfile = async (req, res) => {
     const userData = req.body;
 
     if (req.file) {
-      userData.foto_profil = req.fileUrl;
+      userData.foto_profil = req.file.path;
+    }
+
+    if (userData.deleteProfileImage === 'true') {
+      userData.foto_profil = null;
     }
 
     const result = await userService.updateUser(userId, userData);
