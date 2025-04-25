@@ -1,35 +1,37 @@
 const { pool } = require("../config/db.config");
 
 class Program {
-  static async getAll(masjid_id) {
-    const [rows] = await pool.query(
-      'SELECT * FROM program WHERE masjid_id = ? ORDER BY created_at DESC',
-      [masjid_id]
-    );
-    
-    return rows.map((row) => ({
-      ...row,
-      pilar_program: JSON.parse(row.pilar_program || "[]"),
-    }));
-  }
+  static async getAll(limit, offset, masjid_id, search = "", sortBy = "created_at", sortOrder = "DESC", statuses = []) {
+    let sql = `SELECT * FROM program WHERE masjid_id = ? AND nama_program LIKE ?`;
+    const params = [masjid_id, `%${search}%`];
 
-  static async getPaginated(limit, offset, masjid_id) {
-    const [rows] = await pool.query(
-      'SELECT * FROM program WHERE masjid_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?',
-      [masjid_id, limit, offset]
-    );
+    if (statuses.length) {
+      sql += ` AND status_program IN (${statuses.map(() => "?").join(",")})`;
+      params.push(...statuses);
+    }
+    
+    sql += ` ORDER BY \`${sortBy}\` ${sortOrder} LIMIT ? OFFSET ?`;
+    params.push(limit, offset);
+
+    const [rows] = await pool.query(sql, params);
   
     return rows.map((row) => ({
       ...row,
       pilar_program: JSON.parse(row.pilar_program || "[]"),
+      cover_image: row.cover_image || null,
     }));
   }
   
-  static async countAll(masjid_id) {
-    const [[{ count }]] = await pool.query(
-      'SELECT COUNT(*) as count FROM program WHERE masjid_id = ?',
-      [masjid_id]
-    );
+  static async countAll(masjid_id, search = "", statuses = []) {
+    let sql = `SELECT COUNT(*) as count FROM program WHERE masjid_id = ? AND nama_program LIKE ?`;
+    const params = [masjid_id, `%${search}%`];
+
+    if (statuses.length) {
+      sql += ` AND status_program IN (${statuses.map(() => "?").join(",")})`;
+      params.push(...statuses);
+    }
+
+    const [[{ count }]] = await pool.query(sql, params);
 
     return count;
   }  
@@ -47,6 +49,7 @@ class Program {
       program.rancangan_anggaran,
       program.aktualisasi_anggaran,
       program.status_program,
+      program.cover_image,
       program.masjid_id,
       pengguna.nama AS created_by,
       program.created_at,
@@ -87,10 +90,14 @@ class Program {
 
   static async update(id, data, masjid_id) {
     const { created_by, created_at, masjid_id: _ignoreMasjid, ...updateData } = data;
+
+    console.log("pilar_program before: ", updateData.pilar_program);
   
     if (updateData.pilar_program && Array.isArray(updateData.pilar_program)) {
       updateData.pilar_program = JSON.stringify(updateData.pilar_program);
     }
+
+    console.log("pilar_program after: ", updateData.pilar_program);
   
     delete updateData.updated_at;
   
