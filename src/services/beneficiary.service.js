@@ -1,6 +1,5 @@
 const beneficiaryModel = require('../models/beneficiary.model');
-const fs = require("fs");
-const path = require("path");
+const cloudinary = require('../config/cloudinary.config');
 
 exports.getBeneficiaryById = async (id) => {
   try {
@@ -20,6 +19,8 @@ exports.getBeneficiaryById = async (id) => {
 
 exports.getAllBeneficiaries = async (params = {}) => {
   try {
+    if (!params.limit) params.limit = 10;
+    
     const beneficiaries = await beneficiaryModel.findAll(params);
     const total = await beneficiaryModel.getTotalCount(params);
     
@@ -28,8 +29,8 @@ exports.getAllBeneficiaries = async (params = {}) => {
       pagination: {
         total,
         page: parseInt(params.page) || 1,
-        limit: parseInt(params.limit) || 10,
-        totalPages: Math.ceil(total / (parseInt(params.limit) || 10))
+        limit: parseInt(params.limit),
+        totalPages: Math.ceil(total / parseInt(params.limit))
       }
     };
   } catch (error) {
@@ -55,18 +56,15 @@ exports.updateBeneficiary = async (id, beneficiaryData) => {
       throw error;
     }
 
-    // If there's a new photo and an old one exists, delete the old one
     if (beneficiaryData.foto && beneficiary.foto && beneficiaryData.foto !== beneficiary.foto) {
       try {
-        const oldPhotoFilename = beneficiary.foto.split("/").pop();
-        const oldPhotoPath = path.join(__dirname, "../uploads/", oldPhotoFilename);
-        
-        if (fs.existsSync(oldPhotoPath)) {
-          fs.unlinkSync(oldPhotoPath);
-          console.log(`Deleted old photo: ${oldPhotoPath}`);
+        const publicId = getPublicIdFromUrl(beneficiary.foto);
+        if (publicId) {
+          await cloudinary.uploader.destroy(publicId);
+          console.log(`Deleted old photo from Cloudinary: ${publicId}`);
         }
       } catch (err) {
-        console.warn(`Failed to delete old photo: ${err.message}`);
+        console.warn(`Failed to delete old photo from Cloudinary: ${err.message}`);
       }
     }
 
@@ -87,18 +85,15 @@ exports.deleteBeneficiary = async (id) => {
       throw error;
     }
 
-    // Delete the beneficiary's photo if it exists
     if (beneficiary.foto) {
       try {
-        const photoFilename = beneficiary.foto.split("/").pop();
-        const photoPath = path.join(__dirname, "../uploads/", photoFilename);
-        
-        if (fs.existsSync(photoPath)) {
-          fs.unlinkSync(photoPath);
-          console.log(`Deleted photo: ${photoPath}`);
+        const publicId = getPublicIdFromUrl(beneficiary.foto);
+        if (publicId) {
+          await cloudinary.uploader.destroy(publicId);
+          console.log(`Deleted photo from Cloudinary: ${publicId}`);
         }
       } catch (err) {
-        console.warn(`Failed to delete photo: ${err.message}`);
+        console.warn(`Failed to delete photo from Cloudinary: ${err.message}`);
       }
     }
 
@@ -115,3 +110,21 @@ exports.getBeneficiariesByAktivitas = async (aktivitasId) => {
     throw error;
   }
 };
+
+function getPublicIdFromUrl(url) {
+  if (!url) return null;
+  try {
+    const parts = url.split('/');
+    const uploadIndex = parts.findIndex(part => part === 'upload');
+    if (uploadIndex === -1) return null;
+    
+    const relevantParts = parts.slice(uploadIndex + 2);
+    
+    const publicId = relevantParts.join('/').replace(/\.\w+$/, '');
+    
+    return publicId;
+  } catch (error) {
+    console.error('Error extracting public_id:', error);
+    return null;
+  }
+}
