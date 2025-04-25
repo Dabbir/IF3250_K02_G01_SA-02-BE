@@ -72,14 +72,16 @@ class UserModel {
         short_bio,
         alasan_bergabung,
         foto_profil,
+        dokumen_pendaftaran,
+        dokumen_public_id,
         auth_provider,
         auth_provider_id,
       } = userData;
 
       const [result] = await pool.query(
         `INSERT INTO pengguna 
-        (nama, email, password, masjid_id, short_bio, alasan_bergabung, foto_profil, auth_provider, auth_provider_id) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (nama, email, password, masjid_id, short_bio, alasan_bergabung, foto_profil, dokumen_pendaftaran, dokumen_public_id, auth_provider, auth_provider_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           nama,
           email,
@@ -88,6 +90,8 @@ class UserModel {
           short_bio,
           alasan_bergabung,
           foto_profil,
+          dokumen_pendaftaran,
+          dokumen_public_id,
           auth_provider,
           auth_provider_id,
         ]
@@ -109,6 +113,8 @@ class UserModel {
         short_bio,
         alasan_bergabung,
         foto_profil,
+        dokumen_pendaftaran,
+        dokumen_public_id,
         auth_provider,
         auth_provider_id,
       } = userData;
@@ -121,6 +127,8 @@ class UserModel {
             short_bio = ?, 
             alasan_bergabung = ?, 
             foto_profil = ?, 
+            dokumen_pendaftaran = ?,
+            dokumen_public_id = ?, 
             masjid_id = ?, 
             auth_provider = ?, 
             auth_provider_id = ?
@@ -131,6 +139,8 @@ class UserModel {
           short_bio,
           alasan_bergabung,
           foto_profil,
+          dokumen_pendaftaran,
+          dokumen_public_id,
           masjid_id,
           auth_provider,
           auth_provider_id,
@@ -162,7 +172,21 @@ class UserModel {
   async update(id, userData) {
     try {
         console.log(userData);
-        const { nama, email, short_bio, alasan_bergabung, foto_profil, nama_masjid, masjid_id, auth_provider, auth_provider_id, deleteProfileImage } = userData;
+        const { 
+          nama, 
+          email, 
+          short_bio, 
+          alasan_bergabung, 
+          foto_profil, 
+          dokumen_pendaftaran,
+          dokumen_public_id,
+          nama_masjid, 
+          masjid_id, 
+          auth_provider, 
+          auth_provider_id, 
+          deleteProfileImage,
+          deleteDocument 
+        } = userData;
 
         let updates = [];
         let params = [];
@@ -205,6 +229,19 @@ class UserModel {
         } else if (deleteProfileImage == 'true') {
             updates.push(`foto_profil = ?`);
             params.push(null);
+        }
+
+        if (dokumen_pendaftaran) {
+          updates.push(`dokumen_pendaftaran = ?`);
+          params.push(dokumen_pendaftaran);
+        }
+
+        if (dokumen_public_id) {
+          updates.push(`dokumen_public_id = ?`);
+          params.push(dokumen_public_id);
+        } else if (deleteDocument === 'true') {
+          updates.push(`dokumen_pendaftaran = ?, dokumen_public_id = ?`);
+          params.push(null, null);
         }
 
         // updates.push(`status = 'Approved'`) //sementara langsung di approve

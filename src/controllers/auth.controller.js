@@ -15,8 +15,13 @@ exports.register = async (req, res) => {
     }
 
     const userData = req.body;
-    if (req.file) {
-      userData.foto = req.file.filename;
+    if (req.file && req.file.fieldname === 'fotoProfil') {
+      userData.foto_profil = req.file.path;
+    }
+
+    if (req.file && req.file.fieldname === 'dokumenPendaftaran') {
+      userData.dokumen_pendaftaran = req.file.path;
+      userData.dokumen_public_id = req.file.filename || req.file.public_id;
     }
     
     const { user, token } = await authService.register(userData);
