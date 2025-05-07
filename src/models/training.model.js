@@ -1,8 +1,7 @@
 const { pool } = require('../config/db.config');
 
 class TrainingModel {
-  // Get all trainings with pagination
-  static async getAllTrainings(page = 1, limit = 10, search = '', status = '', masjidId = null) {
+  static async getAllTrainings(page = 1, limit = 10, search = '', status = '', masjidId = null, userId = null, trainingRegistration = false) {
     try {
       let offset = (page - 1) * limit;
       let params = [];
@@ -13,22 +12,41 @@ class TrainingModel {
         params.push(`%${search}%`, `%${search}%`);
       }
       
-      if (status) {
-        whereClause += ' AND status = ?';
-        params.push(status);
+      
+      if (trainingRegistration) {
+        console.log("Masuk true")
+        if (userId) {
+          whereClause += ' AND created_by != ?';
+          params.push(userId); 
+        }
+
+        if (status) {
+          whereClause += ' AND status = ?';
+          params.push(status);
+        } else {
+          whereClause += " AND status IN ('Ongoing', 'Upcoming') ";
+        }
+      } else {
+        console.log("Masuk false")
+        if (userId) {
+          whereClause += ' AND created_by = ?';
+          params.push(userId);
+        }
+        if (masjidId) {
+          whereClause += ' AND masjid_id = ?';
+          params.push(masjidId);
+        }
+        if (status) {
+          whereClause += ' AND status = ?';
+          params.push(status);
+        }
       }
       
-      if (masjidId) {
-        whereClause += ' AND masjid_id = ?';
-        params.push(masjidId);
-      }
-      
-      // Get total count
+      console.log(params);
       const countQuery = `SELECT COUNT(*) as total FROM pelatihan ${whereClause}`;
       const [countResult] = await pool.query(countQuery, params);
       const total = countResult[0].total;
       
-      // Get paginated data
       const query = `
         SELECT p.*, m.nama_masjid 
         FROM pelatihan p

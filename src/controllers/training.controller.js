@@ -4,14 +4,19 @@ class TrainingController {
   // Get all trainings with pagination
   static async getAllTrainings(req, res) {
     try {
-      const { page = 1, limit = 10, search = '', status = '', masjid_id } = req.query;
+      const { page = 1, limit = 10, search = '', status = '', trainingRegistration = "false"} = req.query;
+      const user_id = req.user.id;
+      const masjid_id = req.user.masjid_id;
+      const isTrainingRegistration = trainingRegistration === "true" || trainingRegistration === true;
       
       const result = await trainingService.getAllTrainings(
         page, 
         limit, 
         search, 
         status, 
-        masjid_id
+        masjid_id,
+        user_id,
+        isTrainingRegistration
       );
       
       res.status(200).json({
@@ -63,6 +68,7 @@ class TrainingController {
     try {
       const trainingData = {
         ...req.body,
+        masjid_id: req.user.masjid_id,
         created_by: req.user.id
       };
       

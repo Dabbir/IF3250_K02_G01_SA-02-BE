@@ -4,10 +4,10 @@ class TrainingService {
   /**
    * Get all trainings with pagination and filtering
    */
-  async getAllTrainings(page = 1, limit = 10, search = '', status = '', masjidId = null) {
+  async getAllTrainings(page = 1, limit = 10, search = '', status = '', masjidId = null, userId = null, trainingRegistration = false) {
     try {
       // Use the model to fetch data
-      return await TrainingModel.getAllTrainings(page, limit, search, status, masjidId);
+      return await TrainingModel.getAllTrainings(page, limit, search, status, masjidId, userId, trainingRegistration);
     } catch (error) {
       throw error;
     }

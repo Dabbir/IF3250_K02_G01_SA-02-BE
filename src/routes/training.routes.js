@@ -157,7 +157,7 @@ const trainingMiddleware = require('../middlewares/training.middleware');
  *       500:
  *         description: Server error
  */
-router.get('/', TrainingController.getAllTrainings);
+router.get('/', verifyToken, TrainingController.getAllTrainings);
 
 /**
  * @swagger
