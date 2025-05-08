@@ -229,6 +229,209 @@ async function seedDatabase() {
         ('Dinas WLeoeoe', 'Individu', '083456789012', 'dinaswlelel@example.com', 'https://example.com/foto3.jpg', 2, 3)
       `);
 
+    
+
+    console.log("Seeding training data...");
+
+    const trainings = [
+      {
+        nama_pelatihan: 'Dasar-dasar Tajwid dan Tahsin',
+        deskripsi: 'Pelatihan membaca Al-Quran dengan tajwid yang benar untuk pemula. Peserta akan mempelajari hukum-hukum tajwid dasar dan praktik membaca dengan benar.',
+        waktu_mulai: '2025-06-01 09:00:00',
+        waktu_akhir: '2025-06-01 12:00:00',
+        lokasi: 'Aula Masjid Al-Huda Lantai 2',
+        kuota: 30,
+        status: 'Upcoming',
+        masjid_id: 1,
+        created_by: 2
+      },
+      {
+        nama_pelatihan: 'Manajemen Keuangan Masjid',
+        deskripsi: 'Pelatihan pengelolaan keuangan masjid yang transparan dan akuntabel, menggunakan sistem digital dan pelaporan keuangan modern.',
+        waktu_mulai: '2025-05-15 08:00:00',
+        waktu_akhir: '2025-05-15 16:00:00',
+        lokasi: 'Ruang Pertemuan Masjid Al-Huda',
+        kuota: 20,
+        status: 'Upcoming',
+        masjid_id: 1,
+        created_by: 2
+      },
+      {
+        nama_pelatihan: 'Kursus Bahasa Arab untuk Pemula',
+        deskripsi: 'Kursus bahasa Arab dasar untuk memahami Al-Quran dan literatur Islam. Metode pembelajaran interaktif dengan fokus pada percakapan sehari-hari.',
+        waktu_mulai: '2025-04-20 13:00:00',
+        waktu_akhir: '2025-04-20 15:00:00',
+        lokasi: 'Kelas 1 Masjid Al-Huda',
+        kuota: 25,
+        status: 'Ongoing',
+        masjid_id: 1,
+        created_by: 2
+      },
+      {
+        nama_pelatihan: 'Pelatihan Pengurusan Jenazah',
+        deskripsi: 'Pelatihan komprehensif tentang tata cara pengurusan jenazah sesuai syariat Islam, dari memandikan hingga menguburkan.',
+        waktu_mulai: '2025-03-10 08:00:00',
+        waktu_akhir: '2025-03-10 17:00:00',
+        lokasi: 'Aula Utama Masjid Al-Huda',
+        kuota: 40,
+        status: 'Completed',
+        masjid_id: 1,
+        created_by: 2
+      },
+      {
+        nama_pelatihan: 'Workshop Dakwah Media Sosial',
+        deskripsi: 'Workshop tentang cara berdakwah efektif melalui media sosial dengan konten yang menarik dan sesuai nilai-nilai Islam.',
+        waktu_mulai: '2025-02-25 09:00:00',
+        waktu_akhir: '2025-02-25 16:00:00',
+        lokasi: 'Ruang Multimedia Masjid Al-Huda',
+        kuota: 35,
+        status: 'Cancelled',
+        masjid_id: 1,
+        created_by: 2
+      },
+
+      {
+        nama_pelatihan: 'Kelas Tahfidz Al-Quran',
+        deskripsi: 'Program tahfidz Al-Quran untuk anak-anak dan remaja dengan metode mutqin dan muraja\'ah intensif.',
+        waktu_mulai: '2025-06-05 16:00:00',
+        waktu_akhir: '2025-06-05 18:00:00',
+        lokasi: 'Ruang Tahfidz Masjid Al-Ikhlas',
+        kuota: 20,
+        status: 'Upcoming',
+        masjid_id: 2,
+        created_by: 3
+      },
+      {
+        nama_pelatihan: 'Pelatihan Khatib Jumat',
+        deskripsi: 'Pelatihan untuk calon khatib Jumat meliputi adab khutbah, penyusunan materi, dan teknik penyampaian yang efektif.',
+        waktu_mulai: '2025-05-20 13:30:00',
+        waktu_akhir: '2025-05-20 16:30:00',
+        lokasi: 'Aula Masjid Al-Ikhlas',
+        kuota: 15,
+        status: 'Upcoming',
+        masjid_id: 2,
+        created_by: 3
+      },
+      {
+        nama_pelatihan: 'Workshop Keluarga Sakinah',
+        deskripsi: 'Workshop membangun keluarga sakinah, mawaddah, warahmah dengan pembahasan fiqh keluarga dan tips praktis rumah tangga Islami.',
+        waktu_mulai: '2025-04-12 09:00:00',
+        waktu_akhir: '2025-04-12 15:00:00',
+        lokasi: 'Ruang Pertemuan Masjid Al-Ikhlas',
+        kuota: 50,
+        status: 'Ongoing',
+        masjid_id: 2,
+        created_by: 3
+      },
+
+      {
+        nama_pelatihan: 'Kursus Haji dan Umrah',
+        deskripsi: 'Persiapan ibadah haji dan umrah meliputi manasik, doa-doa, dan tips perjalanan ke tanah suci.',
+        waktu_mulai: '2025-07-01 08:00:00',
+        waktu_akhir: '2025-07-01 17:00:00',
+        lokasi: 'Aula Utama Masjid At-Taqwa',
+        kuota: 60,
+        status: 'Upcoming',
+        masjid_id: 3,
+        created_by: 4
+      },
+      {
+        nama_pelatihan: 'Pelatihan Zakat dan Wakaf',
+        deskripsi: 'Pemahaman mendalam tentang zakat dan wakaf, perhitungan zakat, dan pengelolaan wakaf produktif.',
+        waktu_mulai: '2025-05-25 09:00:00',
+        waktu_akhir: '2025-05-25 12:00:00',
+        lokasi: 'Ruang Kelas Masjid At-Taqwa',
+        kuota: 30,
+        status: 'Upcoming',
+        masjid_id: 3,
+        created_by: 4
+      },
+
+      {
+        nama_pelatihan: 'Sekolah Pra-Nikah',
+        deskripsi: 'Program persiapan pernikahan untuk calon pengantin, meliputi fiqh nikah, psikologi keluarga, dan manajemen keuangan rumah tangga.',
+        waktu_mulai: '2025-06-10 08:00:00',
+        waktu_akhir: '2025-06-11 17:00:00',
+        lokasi: 'Gedung Pertemuan Masjid Muhajirin',
+        kuota: 40,
+        status: 'Upcoming',
+        masjid_id: 4,
+        created_by: 5
+      },
+      {
+        nama_pelatihan: 'Pelatihan Mubaligh Muda',
+        deskripsi: 'Program pembinaan da\'i muda dengan materi retorika, public speaking, dan metodologi dakwah kontemporer.',
+        waktu_mulai: '2025-04-05 13:00:00',
+        waktu_akhir: '2025-04-05 17:00:00',
+        lokasi: 'Aula Masjid Muhajirin',
+        kuota: 25,
+        status: 'Completed',
+        masjid_id: 4,
+        created_by: 5
+      }
+    ];
+
+    for (const training of trainings) {
+      await connection.query(
+        `INSERT INTO pelatihan 
+        (nama_pelatihan, deskripsi, waktu_mulai, waktu_akhir, lokasi, kuota, status, masjid_id, created_by) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          training.nama_pelatihan,
+          training.deskripsi,
+          training.waktu_mulai,
+          training.waktu_akhir,
+          training.lokasi,
+          training.kuota,
+          training.status,
+          training.masjid_id,
+          training.created_by
+        ]
+      );
+    }
+
+    console.log("Trainings seeded successfully!");
+
+    console.log("Seeding training participants...");
+
+    const participants = [
+      { pelatihan_id: 1, pengguna_id: 3, status_pendaftaran: 'Approved', masjid_id: 1, catatan: 'Saya pemula, ingin belajar dari dasar' },
+      { pelatihan_id: 1, pengguna_id: 4, status_pendaftaran: 'Pending', masjid_id: 1, catatan: 'Tertarik untuk meningkatkan bacaan Al-Quran' },
+      { pelatihan_id: 1, pengguna_id: 5, status_pendaftaran: 'Approved', masjid_id: 1, catatan: null },
+      
+      { pelatihan_id: 2, pengguna_id: 6, status_pendaftaran: 'Approved', masjid_id: 1, catatan: 'Saya bendahara masjid, ingin belajar sistem digital' },
+      { pelatihan_id: 2, pengguna_id: 3, status_pendaftaran: 'Rejected', masjid_id: 1, catatan: 'Kuota sudah penuh' },
+      
+      { pelatihan_id: 3, pengguna_id: 4, status_pendaftaran: 'Approved', masjid_id: 1, catatan: 'Sudah mulai mengikuti kelas' },
+      { pelatihan_id: 3, pengguna_id: 5, status_pendaftaran: 'Approved', masjid_id: 1, catatan: null },
+      { pelatihan_id: 3, pengguna_id: 6, status_pendaftaran: 'Approved', masjid_id: 1, catatan: 'Antusias belajar bahasa Arab' },
+      
+      { pelatihan_id: 4, pengguna_id: 3, status_pendaftaran: 'Attended', masjid_id: 1, catatan: 'Hadir penuh dan lulus ujian praktik' },
+      { pelatihan_id: 4, pengguna_id: 4, status_pendaftaran: 'Attended', masjid_id: 1, catatan: 'Sangat bermanfaat' },
+      { pelatihan_id: 4, pengguna_id: 5, status_pendaftaran: 'Approved', masjid_id: 1, catatan: 'Berhalangan hadir karena sakit' },
+      
+      { pelatihan_id: 6, pengguna_id: 3, status_pendaftaran: 'Pending', masjid_id: 2, catatan: 'Ingin menghafal juz 30' },
+      
+      { pelatihan_id: 12, pengguna_id: 3, status_pendaftaran: 'Attended', masjid_id: 4, catatan: 'Mendapat sertifikat kelulusan' },
+      { pelatihan_id: 12, pengguna_id: 4, status_pendaftaran: 'Attended', masjid_id: 4, catatan: 'Materi sangat aplikatif' }
+    ];
+
+    for (const participant of participants) {
+      await connection.query(
+        `INSERT INTO pendaftar_pelatihan 
+        (pelatihan_id, pengguna_id, status_pendaftaran, masjid_id, catatan) 
+        VALUES (?, ?, ?, ?, ?)`,
+        [
+          participant.pelatihan_id,
+          participant.pengguna_id,
+          participant.status_pendaftaran,
+          participant.masjid_id,
+          participant.catatan
+        ]
+      );
+    }
+
+    console.log("Training participants seeded successfully!");
 
     await connection.commit();
     console.log("DB seeded successfully!");
