@@ -38,83 +38,8 @@ const { uploadFile } = require('../middlewares/cloud.middleware');
  *         description: Internal Server Error
  */
 router.get('/getactivity/:id', verifyToken, activityController.getByIdActivity);
-
-/**
- * @swagger
- * /api/activity/getactivity/:
- *   get:
- *     summary: Mendapatkan semua aktivitas
- *     tags: [Activity]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Data aktivitas berhasil diambil
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Activity'
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden
- *       500:
- *         description: Internal Server Error
- */
 router.get('/getactivity/', verifyToken, activityController.getAllActivity);
-
-/**
- * @swagger
- * /api/activity/idprogram/:
- *   get:
- *     summary: Mendapatkan ID program
- *     tags: [Activity]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: ID program berhasil diambil
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: integer
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden
- *       500:
- *         description: Internal Server Error
- */
 router.get('/idprogram/', verifyToken, activityController.getIdProgram);
-
-/**
- * @swagger
- * /api/activity/idactivity/:
- *   get:
- *     summary: Mendapatkan ID aktivitas
- *     tags: [Activity]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: ID aktivitas berhasil diambil
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: integer
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden
- *       500:
- *         description: Internal Server Error
- */
 router.get('/idactivity/', verifyToken, activityController.getIdAktivitas);
 
 /**
@@ -366,34 +291,6 @@ router.put('/update/:id', [
   validate
 ], activityController.updateActivity);
 
-/**
- * @swagger
- * /api/activity/add/sheet:
- *   post:
- *     summary: Menambahkan sheet aktivitas baru
- *     tags: [Activity]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               file:
- *                 type: string
- *                 format: binary
- *     responses:
- *       201:
- *         description: Sheet aktivitas berhasil ditambahkan
- *       400:
- *         description: Bad request (validasi gagal)
- *       401:
- *         description: Unauthorized
- *       500:
- *         description: Internal Server Error
- */
 router.post('/add/sheet', verifyToken, activityController.addActivitySheet);
 
 module.exports = router;

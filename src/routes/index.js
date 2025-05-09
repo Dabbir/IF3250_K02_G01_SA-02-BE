@@ -12,7 +12,6 @@ const stakeholderRoutes = require('./stakeholder.routes');
 const beneficiaryRoutes = require('./beneficiary.routes');
 const galleryRoutes = require('./gallery.routes');
 const employeeRoutes = require('./employee.routes');
-const trainingRoutes = require('./training.routes');
 
 router.use('/users', userRoutes);
 router.use('/auth', authRoutes);
@@ -25,6 +24,5 @@ router.use('/stakeholder', stakeholderRoutes);
 router.use('/beneficiary', beneficiaryRoutes);
 router.use('/gallery', galleryRoutes);
 router.use('/employee', employeeRoutes);
-router.use('/trainings', trainingRoutes);
 
 module.exports = router;

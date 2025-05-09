@@ -1,12 +1,8 @@
 const activityModel = require('../models/activity.model');
-const activityStakeholderModel = require('../models/activitystakeholder.model');
-const activityEmployeeModel = require('../models/activityemployee.model');
-const activityBeneficiaryModel = require('../models/activitybeneficiary.model');
 const userModel = require('../models/user.model');
-const { deleteCloudinaryImage } = require('../utils/upload.utils');
-const activitystakeholderModel = require('../models/activitystakeholder.model');
+const { deleteCloudinaryImage } = require('../utils/upload.utils')
 
-exports.getByIdActivity = async (activityId, masjidId) => {
+exports.getByIdActivity = async (userId, activityId) => {
     try {
         const activity = await activityModel.findByIdActivity(activityId);
 
@@ -16,17 +12,16 @@ exports.getByIdActivity = async (activityId, masjidId) => {
             throw error;
         }
 
-        if (activity.masjid_id !== masjidId) {
+        const activityMasjid = await userModel.findMasjidUser(activity.created_by);
+        const userMasjid = await userModel.findMasjidUser(userId);
+
+        if (userMasjid.masjid_id !== activityMasjid.masjid_id) {
             const error = new Error("You are not allowed to access this resource")
             error.statusCode = 403;
             throw error;
         }
 
-        const stakeholder = await activityStakeholderModel.findStakeholder(activityId);
-        const employee = await activityEmployeeModel.findEmployee(activityId);
-        const beneficiary = await activityBeneficiaryModel.findBeneficiary(activityId);
-
-        return { activity, stakeholder, employee, beneficiary };
+        return activity;
     } catch (error) {
         throw error;
     }
@@ -97,14 +92,7 @@ exports.getByIdProgram = async (userId, programId) => {
 
 exports.addActivity = async (activityData) => {
     try {
-        const id =  await activityModel.create(activityData);
-        if (id) {
-            activitystakeholderModel.create(id, activityData.stakeholders)
-            activityBeneficiaryModel.create(id, activityData.beneficiaries)
-            activityEmployeeModel.create(id, activityData.employees)
-        }
-
-        return id;
+        return await activityModel.create(activityData);
     } catch (error) {
         throw error;
     }
@@ -150,7 +138,7 @@ const formatDate = (isoDateString) => {
     return date.toISOString().slice(0, 19).replace("T", " ");
 };
 
-exports.updateActivity = async (masjidId, activityId, activityData) => {
+exports.updateActivity = async (userId, activityId, activityData) => {
     try {
         const activity = await activityModel.findByIdActivity(activityId);
 
@@ -160,7 +148,10 @@ exports.updateActivity = async (masjidId, activityId, activityData) => {
             throw error;
         }
 
-        if (activity.masjid_id !== masjidId) {
+        const activityMasjid = await userModel.findMasjidUser(activity.created_by);
+        const userMasjid = await userModel.findMasjidUser(userId);
+
+        if (userMasjid.masjid_id !== activityMasjid.masjid_id) {
             const error = new Error("You are not allowed to update this resource");
             error.statusCode = 403;
             throw error;
@@ -168,11 +159,6 @@ exports.updateActivity = async (masjidId, activityId, activityData) => {
 
         activityData.tanggal_mulai = formatDate(activityData.tanggal_mulai);
         activityData.tanggal_selesai = formatDate(activityData.tanggal_selesai);
-
-        const updatedActivity = await activityModel.update(activityId, activityData);
-        await activityStakeholderModel.createUpdate(activityId, activityData.stakeholders);
-        await activityBeneficiaryModel.createUpdate(activityId, activityData.beneficiaries);
-        await activityEmployeeModel.createUpdate(activityId, activityData.employees);
 
         if (Array.isArray(activityData.deleted_images)) {
             await Promise.all(
@@ -190,6 +176,8 @@ exports.updateActivity = async (masjidId, activityId, activityData) => {
                 })
             );
         }
+
+        const updatedActivity = await activityModel.update(activityId, activityData);
 
         return updatedActivity;
     } catch (error) {
@@ -220,7 +208,7 @@ exports.addActivitySheet = async (userId, masjid_id, activityData) => {
         return await activityModel.createSheet(activities);
     } catch (error) {
         console.error("Error inserting data:", error);
-        throw error; 
+        throw error; // Biarkan controller yang menangani response
     }
 };
 
