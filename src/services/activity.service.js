@@ -3,7 +3,8 @@ const activityStakeholderModel = require('../models/activitystakeholder.model');
 const activityEmployeeModel = require('../models/activityemployee.model');
 const activityBeneficiaryModel = require('../models/activitybeneficiary.model');
 const userModel = require('../models/user.model');
-const { deleteCloudinaryImage } = require('../utils/upload.utils')
+const { deleteCloudinaryImage } = require('../utils/upload.utils');
+const activitystakeholderModel = require('../models/activitystakeholder.model');
 
 exports.getByIdActivity = async (activityId, masjidId) => {
     try {
@@ -96,7 +97,14 @@ exports.getByIdProgram = async (userId, programId) => {
 
 exports.addActivity = async (activityData) => {
     try {
-        return await activityModel.create(activityData);
+        const id =  await activityModel.create(activityData);
+        if (id) {
+            activitystakeholderModel.create(id, activityData.stakeholders)
+            activityBeneficiaryModel.create(id, activityData.beneficiaries)
+            activityEmployeeModel.create(id, activityData.employees)
+        }
+
+        return id;
     } catch (error) {
         throw error;
     }

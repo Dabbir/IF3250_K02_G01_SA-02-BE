@@ -10,15 +10,25 @@ class ActivityBeneficiaryModel {
         }
     }
 
-    async createUpdate(activityId, listBeneficiaryId) {
+    async create(activityId, listBeneficiaryId) {
         try {
-            this.delete(activityId);
             const values = listBeneficiaryId.map(beneficiaryId => [activityId, beneficiaryId]);
             if (values.length === 0) {
                 return null;
             }
             const [result] = await pool.query("INSERT INTO aktivitas_beneficiaries (aktivitas_id, beneficiary_id) VALUES ?", [values]);
-            return result.insertId;
+            return result;
+        } catch (error) {
+            console.error("Error in create:", error);
+            throw error;
+        }
+    }
+
+    async createUpdate(activityId, listBeneficiaryId) {
+        try {
+            this.delete(activityId);
+            const [result] = this.create(activityId, listBeneficiaryId)
+            return result;
         } catch (error) {
             console.error("Error in create:", error);
             throw error;

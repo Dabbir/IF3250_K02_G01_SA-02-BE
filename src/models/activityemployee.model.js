@@ -10,14 +10,24 @@ class ActivityEmployeeModel {
         }
     }
 
-    async createUpdate(activityId, listEmployeeId) {
+    async create(activityId, listEmployeeId) {
         try {
-            this.delete(activityId);
             const values = listEmployeeId.map(employeeId => [activityId, employeeId]);
             if (values.length === 0) {
                 return null;
             }
             const [result] = await pool.query("INSERT INTO aktivitas_employee (aktivitas_id, employee_id) VALUES ?", [values]);
+            return result;
+        } catch (error) {
+            console.error("Error in create:", error);
+            throw error;
+        }
+    }
+
+    async createUpdate(activityId, listEmployeeId) {
+        try {
+            this.delete(activityId);
+            const [result] = this.create(activityId, listEmployeeId)
             return result.insertId;
         } catch (error) {
             console.error("Error in create:", error);
