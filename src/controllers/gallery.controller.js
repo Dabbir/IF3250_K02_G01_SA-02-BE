@@ -74,10 +74,10 @@ exports.getGalleryPaginated = async (req, res) => {
 
 exports.getGalleryByAktivitasId = async (req, res) => {
     try {
+        const userId      = req.user.id;
         const aktivitasId = req.params.id;
-        const masjidId    = req.user.masjid_id;
 
-        const activity = await activityService.getByIdActivity(aktivitasId, masjidId);
+        const activity = await activityService.getByIdActivity(userId, aktivitasId);
 
         let photos = [];
         try {

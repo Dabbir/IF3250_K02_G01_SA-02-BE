@@ -29,7 +29,7 @@ async function initializeDatabase() {
     await connection.query(
       `CREATE DATABASE IF NOT EXISTS ${dbConfig.database} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
     );
-    console.log(`Database ${dbConfig.database} created`);
+    console.log(`Database ${dbConfig.database} created or already exists`);
 
     await connection.query(`USE ${dbConfig.database}`);
     console.log(`Using database ${dbConfig.database}`);

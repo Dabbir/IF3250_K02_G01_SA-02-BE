@@ -22,9 +22,6 @@ async function seedDatabase() {
 
     console.log("Connected to MySQL server");
 
-    await connection.beginTransaction();
-    console.log("Transaction started");
-
     await connection.query(`
       INSERT INTO masjid (nama_masjid, alamat) 
       VALUES 
@@ -224,48 +221,12 @@ async function seedDatabase() {
     await connection.query(`
       INSERT INTO stakeholder (nama_stakeholder, jenis, telepon, email, foto, masjid_id, created_by)
       VALUES
-        ('Supriyanto', 'Individu', '081234567890', 'dinasLH@example.com', 'https://example.com/foto1.jpg', 1, 2),
-        ('PT Kesehatan', 'Perusahaan', '082345678901', 'dinasKes@example.com', 'https://example.com/foto2.jpg', 1, 2),
+        ('Dinas Lingkungan Hidup', 'Individu', '081234567890', 'dinasLH@example.com', 'https://example.com/foto1.jpg', 1, 2),
+        ('Dinas Kesehatan', 'Perusahaan', '082345678901', 'dinasKes@example.com', 'https://example.com/foto2.jpg', 1, 2),
         ('Dinas Pendidikan', 'Organisasi', '083456789012', 'dinasPend@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Ormas Adadeh', 'Organisasi', '083456789012', 'dinasadadeh@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('CV Hihihihi', 'Perusahaan', '083456789012', 'dinashihihi@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Ahmad Subarjo', 'Individu', '083456789012', 'dinaswlelel@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Supriyanto', 'Individu', '081234567890', 'dinasLH@example.com', 'https://example.com/foto1.jpg', 1, 2),
-        ('PT Kesehatan', 'Perusahaan', '082345678901', 'dinasKes@example.com', 'https://example.com/foto2.jpg', 1, 2),
-        ('Dinas Pendidikan', 'Organisasi', '083456789012', 'dinasPend@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Ormas Adadeh', 'Organisasi', '083456789012', 'dinasadadeh@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('CV Hihihihi', 'Perusahaan', '083456789012', 'dinashihihi@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Ahmad Subarjo', 'Individu', '083456789012', 'dinaswlelel@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Supriyanto', 'Individu', '081234567890', 'dinasLH@example.com', 'https://example.com/foto1.jpg', 1, 2),
-        ('PT Kesehatan', 'Perusahaan', '082345678901', 'dinasKes@example.com', 'https://example.com/foto2.jpg', 1, 2),
-        ('Dinas Pendidikan', 'Organisasi', '083456789012', 'dinasPend@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Ormas Adadeh', 'Organisasi', '083456789012', 'dinasadadeh@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('CV Hihihihi', 'Perusahaan', '083456789012', 'dinashihihi@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Ahmad Subarjo', 'Individu', '083456789012', 'dinaswlelel@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Supriyanto', 'Individu', '081234567890', 'dinasLH@example.com', 'https://example.com/foto1.jpg', 1, 2),
-        ('PT Kesehatan', 'Perusahaan', '082345678901', 'dinasKes@example.com', 'https://example.com/foto2.jpg', 1, 2),
-        ('Dinas Pendidikan', 'Organisasi', '083456789012', 'dinasPend@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Ormas Adadeh', 'Organisasi', '083456789012', 'dinasadadeh@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('CV Hihihihi', 'Perusahaan', '083456789012', 'dinashihihi@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Ahmad Subarjo', 'Individu', '083456789012', 'dinaswlelel@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Supriyanto', 'Individu', '081234567890', 'dinasLH@example.com', 'https://example.com/foto1.jpg', 1, 2),
-        ('PT Kesehatan', 'Perusahaan', '082345678901', 'dinasKes@example.com', 'https://example.com/foto2.jpg', 1, 2),
-        ('Dinas Pendidikan', 'Organisasi', '083456789012', 'dinasPend@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Ormas Adadeh', 'Organisasi', '083456789012', 'dinasadadeh@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('CV Hihihihi', 'Perusahaan', '083456789012', 'dinashihihi@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Ahmad Subarjo', 'Individu', '083456789012', 'dinaswlelel@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Supriyanto', 'Individu', '081234567890', 'dinasLH@example.com', 'https://example.com/foto1.jpg', 1, 2),
-        ('PT Kesehatan', 'Perusahaan', '082345678901', 'dinasKes@example.com', 'https://example.com/foto2.jpg', 1, 2),
-        ('Dinas Pendidikan', 'Organisasi', '083456789012', 'dinasPend@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Ormas Adadeh', 'Organisasi', '083456789012', 'dinasadadeh@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('CV Hihihihi', 'Perusahaan', '083456789012', 'dinashihihi@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Ahmad Subarjo', 'Individu', '083456789012', 'dinaswlelel@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Supriyanto', 'Individu', '081234567890', 'dinasLH@example.com', 'https://example.com/foto1.jpg', 1, 2),
-        ('PT Kesehatan', 'Perusahaan', '082345678901', 'dinasKes@example.com', 'https://example.com/foto2.jpg', 1, 2),
-        ('Dinas Pendidikan', 'Organisasi', '083456789012', 'dinasPend@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Ormas Adadeh', 'Organisasi', '083456789012', 'dinasadadeh@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('CV Hihihihi', 'Perusahaan', '083456789012', 'dinashihihi@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Ahmad Subarjo', 'Individu', '083456789012', 'dinaswlelel@example.com', 'https://example.com/foto3.jpg', 1, 2)
+        ('Dinas Adadeh', 'Organisasi', '083456789012', 'dinasadadeh@example.com', 'https://example.com/foto3.jpg', 2, 3),
+        ('Dinas Hihihihi', 'Perusahaan', '083456789012', 'dinashihihi@example.com', 'https://example.com/foto3.jpg', 2, 3),
+        ('Dinas WLeoeoe', 'Individu', '083456789012', 'dinaswlelel@example.com', 'https://example.com/foto3.jpg', 2, 3)
       `);
 
     console.log("Stakeholders seeded successfully!");

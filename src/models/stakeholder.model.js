@@ -1,42 +1,13 @@
 const { pool } = require("../config/db.config");
 
 class StakeholderModel {
-    async findAll(masjidId, params = {}) {
+    async findAll(masjidId) {
         try {
-            let baseQuery = "FROM stakeholder WHERE masjid_id = ?";
-            const values = [masjidId];
-
-            if (params.nama_stakeholder) {
-                baseQuery += " AND nama_stakeholder LIKE ?";
-                values.push(`%${params.nama_stakeholder}%`);
-            }
-
-            if (params.jenis && params.jenis.length > 0) {
-                baseQuery += " AND jenis IN (?)";
-                values.push(params.jenis);
-            }
-
-            const countQuery = `SELECT COUNT(*) AS total ${baseQuery}`;
-            const [countRows] = await pool.query(countQuery, values);
-            const totalItems = countRows[0].total;
-
-            const sortColumn = params.sortColumn || "nama_stakeholder";
-            const sortOrder = params.sortOrder || "ASC";
-            const page = params.page || 1;
-            const limit = params.limit || 20;
-            const offset = (page - 1) * limit;
-
-            const dataQuery = `SELECT * ${baseQuery} ORDER BY ${sortColumn} ${sortOrder} LIMIT ? OFFSET ?`;
-            const dataValues = [...values, limit, offset];
-
-            const [dataRows] = await pool.query(dataQuery, dataValues);
-
-            return {
-                data: dataRows,
-                total: totalItems,
-                page,
-                limit,
-            };
+            const [rows] = await pool.query(
+                "SELECT * FROM stakeholder WHERE masjid_id = ?",
+                [masjidId]
+            );
+            return rows;
         } catch (error) {
             throw error;
         }
