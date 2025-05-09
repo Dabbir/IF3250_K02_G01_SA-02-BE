@@ -38,7 +38,7 @@ exports.getGalleryPaginated = async (req, res) => {
         const limit  = parseInt(req.query.limit || 10, 10);
         const offset = (page - 1) * limit;
 
-        let activities = await activityService.getAllActivity(masjidID);
+        let activities = await activityService.getReport(masjidID);
 
         activities.sort((a, b) => new Date(b.tanggal_mulai) - new Date(a.tanggal_mulai));
 
