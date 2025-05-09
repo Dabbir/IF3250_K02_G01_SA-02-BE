@@ -1,8 +1,8 @@
 const stakeholderModel = require('../models/stakeholder.model');
 
-exports.getAllStakeholders = async (masjidId) => {
+exports.getAllStakeholders = async (masjidId, params) => {
     try {
-        const stakeholders = await stakeholderModel.findAll(masjidId);
+        const stakeholders = await stakeholderModel.findAll(masjidId, params);
         return stakeholders;
     } catch (error) {
         console.error('Error in getAllStakeholders:', error);
