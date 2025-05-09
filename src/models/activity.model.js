@@ -1,15 +1,6 @@
 const { pool } = require("../config/db.config");
 
 class ActivityModel {
-    async findAll() {
-        try {
-            const [rows] = await pool.query("SELECT * FROM aktivitas");
-            return rows;
-        } catch (error) {
-            throw error;
-        }
-    }
-
     async findByIdActivity(id) {
         try {
             const [rows] = await pool.query(
