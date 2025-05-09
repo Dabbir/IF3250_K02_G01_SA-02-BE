@@ -23,10 +23,26 @@ exports.getByIdActivity = async (req, res) => {
 
 exports.getAllActivity = async (req, res) => {
     try {
-        const masjidID = req.user.masjid_id;
-        console.log(masjidID)
+        const masjidId = req.user.masjid_id;
+        const {
+            page,
+            limit,
+            nama_aktivitas,
+            status,
+            sortColumn,
+            sortOrder,
+        } = req.query;
 
-        const activity = await activityService.getAllActivity(masjidID);
+        const params = {
+            page: parseInt(page) || 1,
+            limit: parseInt(limit) || 20,
+            nama_aktivitas: nama_aktivitas || undefined,
+            status: status ? (Array.isArray(status) ? status : [status]) : [],
+            sortColumn: sortColumn || "nama_aktivitas",
+            sortOrder: (sortOrder || "ASC").toUpperCase() === "DESC" ? "DESC" : "ASC",
+        };
+
+        const activity = await activityService.getAllActivity(masjidId, params);
 
         res.status(200).json({
             success: true,

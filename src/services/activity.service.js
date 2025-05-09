@@ -32,9 +32,9 @@ exports.getByIdActivity = async (activityId, masjidId) => {
     }
 }
 
-exports.getAllActivity = async (masjidID) => {
+exports.getAllActivity = async (masjidId, params) => {
     try {
-        const activity = await activityModel.findAllActivity(masjidID);
+        const activity = await activityModel.findAll(masjidId, params);
 
         if (!activity) {
             const error = new Error("Actvity not found")
