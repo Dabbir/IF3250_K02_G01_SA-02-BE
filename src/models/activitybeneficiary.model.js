@@ -16,8 +16,7 @@ class ActivityBeneficiaryModel {
             if (values.length === 0) {
                 return null;
             }
-            const [result] = await pool.query("INSERT INTO aktivitas_beneficiaries (aktivitas_id, beneficiary_id) VALUES ?", [values]);
-            return result;
+            await pool.query("INSERT INTO aktivitas_beneficiaries (aktivitas_id, beneficiary_id) VALUES ?", [values]);
         } catch (error) {
             console.error("Error in create:", error);
             throw error;
@@ -26,9 +25,8 @@ class ActivityBeneficiaryModel {
 
     async createUpdate(activityId, listBeneficiaryId) {
         try {
-            this.delete(activityId);
-            const [result] = this.create(activityId, listBeneficiaryId)
-            return result;
+            await this.delete(activityId);
+            await this.create(activityId, listBeneficiaryId)
         } catch (error) {
             console.error("Error in create:", error);
             throw error;
@@ -37,8 +35,7 @@ class ActivityBeneficiaryModel {
 
     async delete(activityId) {
         try {
-            const [result] = await pool.query("DELETE FROM aktivitas_beneficiaries WHERE aktivitas_id = ?", [activityId]);
-            return result.affectedRows > 0;
+            await pool.query("DELETE FROM aktivitas_beneficiaries WHERE aktivitas_id = ?", [activityId]);
         } catch (error) {
             console.error("Error in delete:", error);
             throw error;

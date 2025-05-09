@@ -26,9 +26,8 @@ class ActivityEmployeeModel {
 
     async createUpdate(activityId, listEmployeeId) {
         try {
-            this.delete(activityId);
-            const [result] = this.create(activityId, listEmployeeId)
-            return result.insertId;
+            await this.delete(activityId);
+            await this.create(activityId, listEmployeeId)
         } catch (error) {
             console.error("Error in create:", error);
             throw error;
@@ -37,8 +36,7 @@ class ActivityEmployeeModel {
 
     async delete(activityId) {
         try {
-            const [result] = await pool.query("DELETE FROM aktivitas_employee WHERE aktivitas_id = ?", [activityId]);
-            return result.affectedRows > 0;
+            await pool.query("DELETE FROM aktivitas_employee WHERE aktivitas_id = ?", [activityId]);
         } catch (error) {
             console.error("Error in delete:", error);
             throw error;

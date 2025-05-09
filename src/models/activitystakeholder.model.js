@@ -14,10 +14,9 @@ class ActivityStakeholderModel {
         try {
             const values = listStakeholderId.map(stakeholderId => [activityId, stakeholderId]);
             if (values.length === 0) {
-                return null;
+                return;
             }
-            const [result] = await pool.query("INSERT INTO aktivitas_stakeholder (aktivitas_id, stakeholder_id) VALUES ?", [values]);
-            return result;
+            await pool.query("INSERT INTO aktivitas_stakeholder (aktivitas_id, stakeholder_id) VALUES ?", [values]);
         } catch (error) {
             console.error("Error in create:", error);
             throw error;
@@ -26,24 +25,23 @@ class ActivityStakeholderModel {
 
     async createUpdate(activityId, listStakeholderId) {
         try {
-            this.delete(activityId);
-            const [result] = this.create(activityId, listStakeholderId)
-            return result;
+            await this.delete(activityId); 
+            await this.create(activityId, listStakeholderId); 
         } catch (error) {
-            console.error("Error in create:", error);
+            console.error("Error in createUpdate:", error);
             throw error;
         }
     }
 
     async delete(activityId) {
         try {
-            const [result] = await pool.query("DELETE FROM aktivitas_stakeholder WHERE aktivitas_id = ?", [activityId]);
-            return result.affectedRows > 0;
+            await pool.query("DELETE FROM aktivitas_stakeholder WHERE aktivitas_id = ?", [activityId]);
         } catch (error) {
             console.error("Error in delete:", error);
             throw error;
         }
     }
+
 }
 
 module.exports = new ActivityStakeholderModel();
