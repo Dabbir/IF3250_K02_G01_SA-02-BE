@@ -27,9 +27,9 @@ exports.getByIdActivity = async (userId, activityId) => {
     }
 }
 
-exports.getAllActivity = async (masjidId, params) => {
+exports.getAllActivity = async (masjidID) => {
     try {
-        const activity = await activityModel.findAll(masjidId, params);
+        const activity = await activityModel.findAllActivity(masjidID);
 
         if (!activity) {
             const error = new Error("Actvity not found")
