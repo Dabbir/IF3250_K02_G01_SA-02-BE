@@ -13,10 +13,11 @@ install_dependencies:
   stage: install
   image: node:14
   before_script:
+    - rm -rf node_modules
+    - npm cache clean --force
     - rm -f .git/shallow.lock || true
   script:
     - npm install
-
 # Stage 2: Run tests
 run_tests:
   stage: test
