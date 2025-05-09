@@ -64,19 +64,6 @@ class ActivityModel {
         }
     }
 
-    // async findAllActivity(id) {
-    //     try {
-    //         const [rows] = await pool.query(
-    //             "SELECT a.*, p.nama_program FROM aktivitas a LEFT JOIN program p ON a.program_id = p.id WHERE a.masjid_id = ?",
-    //             [id]
-    //         );
-    //         return rows;
-    //     } catch (error) {
-    //         console.error("Error in findAllActivity:", error);
-    //         throw error;
-    //     }
-    // }
-
     async getIdProgram(id) {
         try {
             const [rows] = await pool.query(
