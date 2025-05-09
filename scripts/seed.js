@@ -433,6 +433,197 @@ async function seedDatabase() {
 
     console.log("Training participants seeded successfully!");
 
+    const beneficiaries = [
+      {
+        nama_instansi: 'Panti Asuhan Yatim Dhuafa',
+        nama_kontak: 'Haji Ahmad',
+        alamat: 'Jl. Cisitu Dalam No. 25, Bandung',
+        telepon: '022-1234567',
+        email: 'yatimdhuafa@email.com',
+        foto: null,
+        created_by: 2, 
+        masjid_id: 1
+      },
+      {
+        nama_instansi: 'Komunitas Kaum Dhuafa Bandung',
+        nama_kontak: 'Ibu Siti',
+        alamat: 'Jl. Dago Bawah No. 12, Bandung',
+        telepon: '022-7654321',
+        email: 'dhuafa.bdg@email.com',
+        foto: null,
+        created_by: 2,
+        masjid_id: 1
+      },
+      {
+        nama_instansi: 'Yayasan Pendidikan Anak Jalanan',
+        nama_kontak: 'Pak Budi',
+        alamat: 'Jl. Dipatiukur No. 35, Bandung',
+        telepon: '022-8901234',
+        email: 'yapenja@email.com',
+        foto: null,
+        created_by: 2,
+        masjid_id: 1
+      },
+      {
+        nama_instansi: 'Yayasan Pembelajaran Al-Quran',
+        nama_kontak: 'Bu Tri',
+        alamat: 'Jl. Cisitu Lama No. 20, Bandung',
+        telepon: '021-8975432',
+        email: 'yaperan@email.com',
+        foto: null,
+        created_by: 1,
+        masjid_id: 1
+      },
+
+      {
+        nama_instansi: 'Panti Jompo Bahagia',
+        nama_kontak: 'Dr. Suryadi',
+        alamat: 'Jl. Dago Asri No. 45, Bandung',
+        telepon: '022-2345678',
+        email: 'pantijompo@email.com',
+        foto: null,
+        created_by: 3, 
+        masjid_id: 2
+      },
+      {
+        nama_instansi: 'Rumah Singgah Anak Terlantar',
+        nama_kontak: 'Ibu Nurjanah',
+        alamat: 'Jl. Tubagus Ismail No. 78, Bandung',
+        telepon: '022-3456789',
+        email: 'rumahsinggah@email.com',
+        foto: null,
+        created_by: 3,
+        masjid_id: 2
+      },
+      
+      {
+        nama_instansi: 'Pesantren Tahfidz Al-Quran',
+        nama_kontak: 'Ustadz Mahmud',
+        alamat: 'Jl. Sadang Serang No. 90, Bandung',
+        telepon: '022-4567890',
+        email: 'tahfidz@email.com',
+        foto: null,
+        created_by: 4, 
+        masjid_id: 3
+      },
+      {
+        nama_instansi: 'Lembaga Pelayanan Difabel',
+        nama_kontak: 'Hj. Fatimah',
+        alamat: 'Jl. Setiabudi No. 123, Bandung',
+        telepon: '022-5678901',
+        email: 'difabel@email.com',
+        foto: null,
+        created_by: 4,
+        masjid_id: 3
+      },
+      {
+        nama_instansi: 'Komunitas Peduli Lingkungan',
+        nama_kontak: 'Ir. Bambang',
+        alamat: 'Jl. Ciumbuleuit No. 56, Bandung',
+        telepon: '022-6789012',
+        email: 'lingkungan@email.com',
+        foto: null,
+        created_by: 4,
+        masjid_id: 3
+      },
+      
+      {
+        nama_instansi: 'Yayasan Beasiswa Pendidikan',
+        nama_kontak: 'Prof. Dr. Harun',
+        alamat: 'Jl. Pajajaran No. 200, Bandung',
+        telepon: '022-7890123',
+        email: 'beasiswa@email.com',
+        foto: null,
+        created_by: 5,
+        masjid_id: 4
+      },
+      {
+        nama_instansi: 'Lembaga Bantuan Hukum Islam',
+        nama_kontak: 'SH. Abdullah',
+        alamat: 'Jl. Merdeka No. 15, Bandung',
+        telepon: '022-8901234',
+        email: 'lbh-islam@email.com',
+        foto: null,
+        created_by: 5,
+        masjid_id: 4
+      },
+      
+      {
+        nama_instansi: 'Baitul Mal Masjid Al-Huda',
+        nama_kontak: 'H. Usman',
+        alamat: 'Jl. Cisitu Lama No. 10A, Bandung',
+        telepon: '022-9012345',
+        email: 'baitulmal@email.com',
+        foto: null,
+        created_by: 2,
+        masjid_id: 1
+      },
+      {
+        nama_instansi: 'Program Sembako Gratis',
+        nama_kontak: 'Ibu Aisyah',
+        alamat: 'Jl. Dago No. 88, Bandung',
+        telepon: '022-0123456',
+        email: 'sembako@email.com',
+        foto: null,
+        created_by: 3,
+        masjid_id: 2
+      }
+    ];
+    
+    for (const beneficiary of beneficiaries) {
+      await connection.query(
+        `INSERT INTO beneficiaries 
+        (nama_instansi, nama_kontak, alamat, telepon, email, foto, created_by) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [
+          beneficiary.nama_instansi,
+          beneficiary.nama_kontak,
+          beneficiary.alamat,
+          beneficiary.telepon,
+          beneficiary.email,
+          beneficiary.foto,
+          beneficiary.created_by
+        ]
+      );
+    }
+    
+    console.log("Beneficiaries seeded successfully!");
+    
+    const aktivitasBeneficiaries = [
+      { aktivitas_id: 1, beneficiary_id: 1, jumlah_penerima: 30, deskripsi_manfaat: 'Pembinaan rohani anak yatim' },
+      { aktivitas_id: 1, beneficiary_id: 2, jumlah_penerima: 20, deskripsi_manfaat: 'Kajian keagamaan untuk kaum dhuafa' },
+      
+      { aktivitas_id: 2, beneficiary_id: 1, jumlah_penerima: 50, deskripsi_manfaat: 'Paket sembako untuk panti asuhan' },
+      { aktivitas_id: 2, beneficiary_id: 2, jumlah_penerima: 100, deskripsi_manfaat: 'Sembako untuk keluarga dhuafa' },
+      { aktivitas_id: 2, beneficiary_id: 3, jumlah_penerima: 30, deskripsi_manfaat: 'Bantuan makanan untuk anak jalanan' },
+      
+      { aktivitas_id: 3, beneficiary_id: 11, jumlah_penerima: 5, deskripsi_manfaat: 'Pelatihan manajemen keuangan' },
+      
+      { aktivitas_id: 16, beneficiary_id: 4, jumlah_penerima: 40, deskripsi_manfaat: 'Program kesehatan untuk lansia' },
+      { aktivitas_id: 17, beneficiary_id: 6, jumlah_penerima: 25, deskripsi_manfaat: 'Program tahfidz untuk santri' },
+      { aktivitas_id: 18, beneficiary_id: 7, jumlah_penerima: 15, deskripsi_manfaat: 'Pemberdayaan ekonomi difabel' },
+
+      { aktivitas_id: 5, beneficiary_id: 1, jumlah_penerima: 25, deskripsi_manfaat: 'Santunan bulanan' },
+      { aktivitas_id: 6, beneficiary_id: 1, jumlah_penerima: 100, deskripsi_manfaat: 'Buka puasa bersama anak yatim' },
+      { aktivitas_id: 6, beneficiary_id: 2, jumlah_penerima: 200, deskripsi_manfaat: 'Buka puasa untuk dhuafa' }
+    ];
+    
+    for (const relation of aktivitasBeneficiaries) {
+      await connection.query(
+        `INSERT INTO aktivitas_beneficiaries 
+        (aktivitas_id, beneficiary_id, jumlah_penerima, deskripsi_manfaat) 
+        VALUES (?, ?, ?, ?)`,
+        [
+          relation.aktivitas_id,
+          relation.beneficiary_id,
+          relation.jumlah_penerima,
+          relation.deskripsi_manfaat
+        ]
+      );
+    }
+    
+    console.log("Aktivitas-Beneficiaries relation seeded successfully!");
+
     await connection.commit();
     console.log("DB seeded successfully!");
 
