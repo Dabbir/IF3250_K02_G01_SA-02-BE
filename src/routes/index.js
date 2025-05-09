@@ -28,5 +28,6 @@ router.use('/beneficiary', beneficiaryRoutes);
 router.use('/gallery', galleryRoutes);
 router.use('/employee', employeeRoutes);
 router.use('/trainings', trainingRoutes);
+router.use('/training', trainingRoutes);
 
 module.exports = router;
