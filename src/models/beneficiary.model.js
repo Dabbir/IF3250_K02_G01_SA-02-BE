@@ -4,7 +4,10 @@ class BeneficiaryModel {
   async findById(id) {
     try {
       const [rows] = await pool.query(
-        'SELECT * FROM beneficiaries WHERE id = ?',
+        `SELECT b.*, p.masjid_id 
+         FROM beneficiaries b
+         LEFT JOIN pengguna p ON b.created_by = p.id
+         WHERE b.id = ?`,
         [id]
       );
       return rows.length > 0 ? rows[0] : null;
@@ -16,13 +19,22 @@ class BeneficiaryModel {
 
   async findAll(params = {}) {
     try {
-      let query = 'SELECT * FROM beneficiaries';
+      let query = `
+        SELECT b.* 
+        FROM beneficiaries b
+        LEFT JOIN pengguna p ON b.created_by = p.id
+      `;
       
       const conditions = [];
       const values = [];
       
+      if (params.masjid_id) {
+        conditions.push('p.masjid_id = ?');
+        values.push(params.masjid_id);
+      }
+      
       if (params.nama_instansi) {
-        conditions.push('nama_instansi LIKE ?');
+        conditions.push('b.nama_instansi LIKE ?');
         values.push(`%${params.nama_instansi}%`);
       }
       
@@ -31,9 +43,9 @@ class BeneficiaryModel {
       }
       
       if (params.orderBy) {
-        query += ` ORDER BY ${params.orderBy} ${params.orderDirection || 'ASC'}`;
+        query += ` ORDER BY b.${params.orderBy} ${params.orderDirection || 'ASC'}`;
       } else {
-        query += ` ORDER BY created_at DESC`;
+        query += ` ORDER BY b.created_at DESC`;
       }
       
       if (params.limit && params.page) {
@@ -52,13 +64,22 @@ class BeneficiaryModel {
 
   async getTotalCount(params = {}) {
     try {
-      let query = 'SELECT COUNT(*) as total FROM beneficiaries';
+      let query = `
+        SELECT COUNT(*) as total 
+        FROM beneficiaries b
+        LEFT JOIN pengguna p ON b.created_by = p.id
+      `;
       
       const conditions = [];
       const values = [];
       
+      if (params.masjid_id) {
+        conditions.push('p.masjid_id = ?');
+        values.push(params.masjid_id);
+      }
+      
       if (params.nama_instansi) {
-        conditions.push('nama_instansi LIKE ?');
+        conditions.push('b.nama_instansi LIKE ?');
         values.push(`%${params.nama_instansi}%`);
       }
       
@@ -199,9 +220,10 @@ class BeneficiaryModel {
   async getByActivities(aktivitasId) {
     try {
       const [rows] = await pool.query(
-        `SELECT b.*, ab.jumlah_penerima, ab.deskripsi_manfaat 
+        `SELECT b.*, ab.jumlah_penerima, ab.deskripsi_manfaat, p.masjid_id
          FROM beneficiaries b
          JOIN aktivitas_beneficiaries ab ON b.id = ab.beneficiary_id
+         LEFT JOIN pengguna p ON b.created_by = p.id
          WHERE ab.aktivitas_id = ?`,
         [aktivitasId]
       );

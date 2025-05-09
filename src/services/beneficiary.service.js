@@ -1,7 +1,7 @@
 const beneficiaryModel = require('../models/beneficiary.model');
 const cloudinary = require('../config/cloudinary.config');
 
-exports.getBeneficiaryById = async (id) => {
+exports.getBeneficiaryById = async (id, userMasjidId) => {
   try {
     const beneficiary = await beneficiaryModel.findById(id);
 
@@ -11,15 +11,23 @@ exports.getBeneficiaryById = async (id) => {
       throw error;
     }
 
+    if (beneficiary.masjid_id !== userMasjidId) {
+      const error = new Error("You are not authorized to view this beneficiary");
+      error.statusCode = 403;
+      throw error;
+    }
+
     return beneficiary;
   } catch (error) {
     throw error;
   }
 };
 
-exports.getAllBeneficiaries = async (params = {}) => {
+exports.getAllBeneficiaries = async (params = {}, userMasjidId) => {
   try {
     if (!params.limit) params.limit = 10;
+    
+    params.masjid_id = userMasjidId;
     
     const beneficiaries = await beneficiaryModel.findAll(params);
     const total = await beneficiaryModel.getTotalCount(params);
@@ -46,13 +54,19 @@ exports.createBeneficiary = async (beneficiaryData) => {
   }
 };
 
-exports.updateBeneficiary = async (id, beneficiaryData) => {
+exports.updateBeneficiary = async (id, beneficiaryData, userMasjidId) => {
   try {
     const beneficiary = await beneficiaryModel.findById(id);
 
     if (!beneficiary) {
       const error = new Error("Beneficiary not found");
       error.statusCode = 404;
+      throw error;
+    }
+
+    if (beneficiary.masjid_id !== userMasjidId) {
+      const error = new Error("You are not authorized to update this beneficiary");
+      error.statusCode = 403;
       throw error;
     }
 
@@ -75,13 +89,19 @@ exports.updateBeneficiary = async (id, beneficiaryData) => {
   }
 };
 
-exports.deleteBeneficiary = async (id) => {
+exports.deleteBeneficiary = async (id, userMasjidId) => {
   try {
     const beneficiary = await beneficiaryModel.findById(id);
 
     if (!beneficiary) {
       const error = new Error("Beneficiary not found");
       error.statusCode = 404;
+      throw error;
+    }
+
+    if (beneficiary.masjid_id !== userMasjidId) {
+      const error = new Error("You are not authorized to delete this beneficiary");
+      error.statusCode = 403;
       throw error;
     }
 
@@ -103,9 +123,13 @@ exports.deleteBeneficiary = async (id) => {
   }
 };
 
-exports.getBeneficiariesByAktivitas = async (aktivitasId) => {
+exports.getBeneficiariesByAktivitas = async (aktivitasId, userMasjidId) => {
   try {
-    return await beneficiaryModel.getByActivities(aktivitasId);
+    const beneficiaries = await beneficiaryModel.getByActivities(aktivitasId);
+    
+    const filteredBeneficiaries = beneficiaries.filter(b => b.masjid_id === userMasjidId);
+    
+    return filteredBeneficiaries;
   } catch (error) {
     throw error;
   }

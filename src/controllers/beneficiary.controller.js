@@ -22,7 +22,7 @@ exports.create = async (req, res) => {
       telepon: req.body.telepon,
       email: req.body.email,
       foto: foto,
-      created_by: req.user ? req.user.id : null
+      created_by: req.user ? req.user.id : null  
     };
 
     const data = await beneficiaryService.createBeneficiary(beneficiaryData);
@@ -52,7 +52,7 @@ exports.findAll = async (req, res) => {
       orderDirection
     };
 
-    const result = await beneficiaryService.getAllBeneficiaries(params);
+    const result = await beneficiaryService.getAllBeneficiaries(params, req.user.masjid_id);
     
     res.status(200).json({
       success: true,
@@ -70,7 +70,7 @@ exports.findAll = async (req, res) => {
 
 exports.findOne = async (req, res) => {
   try {
-    const data = await beneficiaryService.getBeneficiaryById(req.params.id);
+    const data = await beneficiaryService.getBeneficiaryById(req.params.id, req.user.masjid_id);
     
     res.status(200).json({
       success: true,
@@ -103,7 +103,7 @@ exports.update = async (req, res) => {
       beneficiaryData.foto = req.file.path;
     }
 
-    const data = await beneficiaryService.updateBeneficiary(id, beneficiaryData);
+    const data = await beneficiaryService.updateBeneficiary(id, beneficiaryData, req.user.masjid_id);
     
     res.status(200).json({
       success: true,
@@ -123,7 +123,7 @@ exports.delete = async (req, res) => {
   try {
     const id = req.params.id;
     
-    await beneficiaryService.deleteBeneficiary(id);
+    await beneficiaryService.deleteBeneficiary(id, req.user.masjid_id);
     
     res.status(200).json({ 
       success: true,
@@ -141,7 +141,7 @@ exports.delete = async (req, res) => {
 exports.findByAktivitas = async (req, res) => {
   try {
     const aktivitasId = req.params.aktivitasId;
-    const data = await beneficiaryService.getBeneficiariesByAktivitas(aktivitasId);
+    const data = await beneficiaryService.getBeneficiariesByAktivitas(aktivitasId, req.user.masjid_id);
     
     res.status(200).json({
       success: true,
