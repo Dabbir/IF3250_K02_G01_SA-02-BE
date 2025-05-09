@@ -3,12 +3,33 @@ const stakeholderService = require('../services/stakeholder.service');
 exports.getAllStakeholders = async (req, res) => {
     try {
         const masjidId = req.user.masjid_id;
-        const stakeholders = await stakeholderService.getAllStakeholders(masjidId);
+        const {
+            page,
+            limit,
+            nama_stakeholder,
+            jenis, 
+            sortColumn,
+            sortOrder,
+        } = req.query;
+
+        const params = {
+            page: parseInt(page) || 1,
+            limit: parseInt(limit) || 20,
+            nama_stakeholder: nama_stakeholder || undefined,
+            jenis: jenis ? (Array.isArray(jenis) ? jenis : [jenis]) : [],
+            sortColumn: sortColumn || "nama_stakeholder",
+            sortOrder: (sortOrder || "ASC").toUpperCase() === "DESC" ? "DESC" : "ASC",
+        };
+
+        const result = await stakeholderService.getAllStakeholders(masjidId, params);
 
         res.status(200).json({
             success: true,
             message: "Stakeholders found",
-            stakeholders,
+            stakeholders: result.data,
+            total: result.total,
+            page: result.page,
+            limit: result.limit,
         });
     } catch (error) {
         console.error("Get all stakeholders error:", error);
@@ -18,7 +39,8 @@ exports.getAllStakeholders = async (req, res) => {
             message: error.message || "Internal server error",
         });
     }
-}
+};
+
 
 exports.getByIdStakeholder = async (req, res) => {
     try {
