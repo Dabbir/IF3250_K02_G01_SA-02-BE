@@ -47,6 +47,21 @@ exports.getAllActivity = async (masjidId, params) => {
     }
 }
 
+exports.getReport = async (masjidId) => {
+    try {
+        const activity = await activityModel.getReport(masjidId);
+
+        if (!activity) {
+            const error = new Error("Actvity not found")
+            error.statusCode = 404;
+            throw error;
+        }
+        return activity;
+    } catch (error) {
+        throw error;
+    }
+}
+
 exports.getIdProgram = async (masjidID) => {
     try {
         const idProgram = await activityModel.getIdProgram(masjidID);

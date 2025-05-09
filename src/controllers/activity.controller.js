@@ -58,6 +58,27 @@ exports.getAllActivity = async (req, res) => {
     }
 }
 
+
+exports.getReport = async (req, res) => {
+    try {
+        const masjidId = req.user.masjid_id;
+
+        const activity = await activityService.getReport(masjidId);
+
+        res.status(200).json({
+            success: true,
+            message: "Activity found",
+            activity,
+        })
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
+            success: false,
+            message: error.message || "Internal server error",
+        });
+    }
+}
+
 exports.getIdProgram = async (req, res) => {
     try {
         const masjidID = req.user.masjid_id;

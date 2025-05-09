@@ -64,6 +64,7 @@ router.get('/getactivity/:id', verifyToken, activityController.getByIdActivity);
  *         description: Internal Server Error
  */
 router.get('/getactivity/', verifyToken, activityController.getAllActivity);
+router.get('/getreport/', verifyToken, activityController.getReport);
 
 /**
  * @swagger
