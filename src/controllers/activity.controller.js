@@ -108,7 +108,12 @@ exports.addActivity = async (req, res) => {
         const created_by = req.user.id;
         const masjid_id = req.user.masjid_id;
 
-        const data = { ...req.body, created_by, masjid_id };
+        const activityData = req.body;
+        activityData.stakeholders = JSON.parse(req.body.stakeholders || '[]');
+        activityData.beneficiaries = JSON.parse(req.body.beneficiaries || '[]');
+        activityData.employees = JSON.parse(req.body.employees || '[]');
+
+        const data = { ...activityData, created_by, masjid_id };
 
         if (req.fileUrls && req.fileUrls.length > 0) {
             data.dokumentasi = req.fileUrls;
@@ -120,6 +125,7 @@ exports.addActivity = async (req, res) => {
             res.status(200).json({
                 success: true,
                 message: "Activity added successfully",
+                id: result,
             })
         } else {
             return res.status(400).json({
