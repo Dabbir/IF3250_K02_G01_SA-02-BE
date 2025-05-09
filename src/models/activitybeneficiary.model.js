@@ -10,9 +10,14 @@ class ActivityBeneficiaryModel {
         }
     }
 
-    async create(data) {
+    async createUpdate(activityId, listBeneficiaryId) {
         try {
-            const [result] = await pool.query("INSERT INTO aktivitas_beneficiaries SET ?", [data]);
+            this.delete(activityId);
+            const values = listBeneficiaryId.map(beneficiaryId => [activityId, beneficiaryId]);
+            if (values.length === 0) {
+                return null;
+            }
+            const [result] = await pool.query("INSERT INTO aktivitas_beneficiaries (aktivitas_id, beneficiary_id) VALUES ?", [values]);
             return result.insertId;
         } catch (error) {
             console.error("Error in create:", error);
@@ -20,9 +25,9 @@ class ActivityBeneficiaryModel {
         }
     }
 
-    async delete(activityId, beneficiaryId) {
+    async delete(activityId) {
         try {
-            const [result] = await pool.query("DELETE FROM aktivitas_beneficiaries WHERE aktivitas_id = ? AND beneficiary_id = ?", [activityId, beneficiaryId]);
+            const [result] = await pool.query("DELETE FROM aktivitas_beneficiaries WHERE aktivitas_id = ?", [activityId]);
             return result.affectedRows > 0;
         } catch (error) {
             console.error("Error in delete:", error);

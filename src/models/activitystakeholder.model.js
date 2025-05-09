@@ -10,9 +10,14 @@ class ActivityStakeholderModel {
         }
     }
 
-    async create(data) {
+    async createUpdate(activityId, listStakeholderId) {
         try {
-            const [result] = await pool.query("INSERT INTO aktivitas_stakeholder SET ?", [data]);
+            this.delete(activityId);
+            const values = listStakeholderId.map(stakeholderId => [activityId, stakeholderId]);
+            if (values.length === 0) {
+                return null;
+            }
+            const [result] = await pool.query("INSERT INTO aktivitas_stakeholder (aktivitas_id, stakeholder_id) VALUES ?", [values]);
             return result.insertId;
         } catch (error) {
             console.error("Error in create:", error);
@@ -20,9 +25,9 @@ class ActivityStakeholderModel {
         }
     }
 
-    async delete(activityId, stakeholderId) {
+    async delete(activityId) {
         try {
-            const [result] = await pool.query("DELETE FROM aktivitas_stakeholder WHERE aktivitas_id = ? AND stakeholder_id = ?", [activityId, stakeholderId]);
+            const [result] = await pool.query("DELETE FROM aktivitas_stakeholder WHERE aktivitas_id = ?", [activityId]);
             return result.affectedRows > 0;
         } catch (error) {
             console.error("Error in delete:", error);

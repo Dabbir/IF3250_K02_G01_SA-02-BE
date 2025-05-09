@@ -22,6 +22,9 @@ async function seedDatabase() {
 
     console.log("Connected to MySQL server");
 
+    await connection.beginTransaction();
+    console.log("Transaction started");
+
     await connection.query(`
       INSERT INTO masjid (nama_masjid, alamat) 
       VALUES 
@@ -221,14 +224,50 @@ async function seedDatabase() {
     await connection.query(`
       INSERT INTO stakeholder (nama_stakeholder, jenis, telepon, email, foto, masjid_id, created_by)
       VALUES
-        ('Dinas Lingkungan Hidup', 'Individu', '081234567890', 'dinasLH@example.com', 'https://example.com/foto1.jpg', 1, 2),
-        ('Dinas Kesehatan', 'Perusahaan', '082345678901', 'dinasKes@example.com', 'https://example.com/foto2.jpg', 1, 2),
+        ('Supriyanto', 'Individu', '081234567890', 'dinasLH@example.com', 'https://example.com/foto1.jpg', 1, 2),
+        ('PT Kesehatan', 'Perusahaan', '082345678901', 'dinasKes@example.com', 'https://example.com/foto2.jpg', 1, 2),
         ('Dinas Pendidikan', 'Organisasi', '083456789012', 'dinasPend@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Dinas Adadeh', 'Organisasi', '083456789012', 'dinasadadeh@example.com', 'https://example.com/foto3.jpg', 2, 3),
-        ('Dinas Hihihihi', 'Perusahaan', '083456789012', 'dinashihihi@example.com', 'https://example.com/foto3.jpg', 2, 3),
-        ('Dinas WLeoeoe', 'Individu', '083456789012', 'dinaswlelel@example.com', 'https://example.com/foto3.jpg', 2, 3)
+        ('Ormas Adadeh', 'Organisasi', '083456789012', 'dinasadadeh@example.com', 'https://example.com/foto3.jpg', 2, 3),
+        ('CV Hihihihi', 'Perusahaan', '083456789012', 'dinashihihi@example.com', 'https://example.com/foto3.jpg', 2, 3),
+        ('Ahmad Subarjo', 'Individu', '083456789012', 'dinaswlelel@example.com', 'https://example.com/foto3.jpg', 2, 3)
       `);
 
+    console.log("Stakeholders seeded successfully!");
+
+    await connection.query(`
+      INSERT INTO beneficiaries (nama_instansi, nama_kontak, alamat, telepon, email, foto, created_by)  
+      VALUES
+        ('Panti Asuhan Al-Falah', 'Ustadz Ahmad', 'Jl. Kebon Jeruk No.1, Jakarta', '081234567890', 'example@example.com', null, 2),
+        ('Yayasan Pendidikan Islam', 'Ibu Siti', 'Jl. Raya No.2, Bandung', '082345678901', 'example@example.com', null, 2),
+        ('Lembaga Sosial Masyarakat', 'Bapak Joko', 'Jl. Merdeka No.3, Surabaya', '083456789012', 'example@example.com', null, 2),
+        ('Panti Asuhan Harapan Bangsa', 'Ustadzah Fatimah', 'Jl. Cempaka No.4, Yogyakarta', '084567890123', 'example@example.com', null, 2),
+        ('Yayasan Cinta Anak Bangsa', 'Ibu Rina', 'Jl. Melati No.5, Semarang', '085678901234', 'example@example.com', null, 2),
+        ('Lembaga Pendidikan Al-Quran', 'Bapak Ali', 'Jl. Mawar No.6, Medan', '086789012345', 'example@example.com', null, 2),
+        ('Panti Asuhan Kasih Ibu', 'Ustadzah Aisyah', 'Jl. Kenanga No.7, Makassar', '087890123456', 'example@example.com', null, 2),
+        ('Yayasan Peduli Umat', 'Ibu Dewi', 'Jl. Anggrek No.8, Palembang', '088901234567', 'example@example.com', null, 2),
+        ('Lembaga Sosial Al-Maruf', 'Bapak Hasan', 'Jl. Melati No.9, Bali', '089012345678', 'example@example.com', null, 2),
+        ('Panti Asuhan Bina Insani', 'Ustadzah Nur', 'Jl. Flamboyan No.10, Batam', '090123456789', 'example@example.com', null, 2)
+      `);
+
+    console.log("Beneficiaries seeded successfully!");
+
+    // seed employee
+    await connection.query(`
+      INSERT INTO employee (nama, telepon, alamat, email, foto, masjid_id, created_by)  
+      VALUES
+        ('Ahmad Fauzi', '081234567890', 'Jl. Kebon Jeruk No.1, Jakarta', 'example@example.com', null, 1, 2),
+        ('Siti Aminah', '082345678901', 'Jl. Raya No.2, Bandung', 'example@example.com', null, 1, 2),
+        ('Budi Santoso', '083456789012', 'Jl. Merdeka No.3, Surabaya', 'example@example.com', null, 1, 2),
+        ('Mirwan Maizonni', '084567890123', 'Jl. Cempaka No.4, Yogyakarta', 'example@example.com', null, 1, 2),
+        ('Arif Budi', '085678901234', 'Jl. Melati No.5, Semarang', 'example@example.com', null, 1, 2),
+        ('Dewi Lestari', '086789012345', 'Jl. Mawar No.6, Medan', 'example@example.com', null, 1, 2),
+        ('Rudi Hartono', '087890123456', 'Jl. Kenanga No.7, Makassar', 'example@example.com', null, 1, 2),
+        ('Nina Kurniawati', '088901234567', 'Jl. Anggrek No.8, Palembang', 'example@example.com', null, 1, 2),
+        ('Eko Prasetyo', '089012345678', 'Jl. Melati No.9, Bali', 'example@example.com', null, 1, 2),
+        ('Lina Marlina', '090123456789', 'Jl. Flamboyan No.10, Batam', 'example@example.com', null, 1, 2)
+      `);
+
+    console.log("Employees seeded successfully!");
 
     await connection.commit();
     console.log("DB seeded successfully!");

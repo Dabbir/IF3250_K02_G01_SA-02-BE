@@ -10,9 +10,14 @@ class ActivityEmployeeModel {
         }
     }
 
-    async create(data) {
+    async createUpdate(activityId, listEmployeeId) {
         try {
-            const [result] = await pool.query("INSERT INTO aktivitas_employee SET ?", [data]);
+            this.delete(activityId);
+            const values = listEmployeeId.map(employeeId => [activityId, employeeId]);
+            if (values.length === 0) {
+                return null;
+            }
+            const [result] = await pool.query("INSERT INTO aktivitas_employee (aktivitas_id, employee_id) VALUES ?", [values]);
             return result.insertId;
         } catch (error) {
             console.error("Error in create:", error);
@@ -20,9 +25,9 @@ class ActivityEmployeeModel {
         }
     }
 
-    async delete(activityId, employeeId) {
+    async delete(activityId) {
         try {
-            const [result] = await pool.query("DELETE FROM aktivitas_employee WHERE aktivitas_id = ? AND employee_id = ?", [activityId, employeeId]);
+            const [result] = await pool.query("DELETE FROM aktivitas_employee WHERE aktivitas_id = ?", [activityId]);
             return result.affectedRows > 0;
         } catch (error) {
             console.error("Error in delete:", error);
