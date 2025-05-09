@@ -3,24 +3,17 @@ const cloudinary = require('../config/cloudinary.config');
 
 exports.create = async (req, res) => {
   try {
-    if (!req.body.nama_instansi) {
-      return res.status(400).json({
-        success: false,
-        message: "Nama instansi tidak boleh kosong"
-      });
-    }
-
     let foto = null;
     if (req.file) {
       foto = req.file.path; 
     }
 
     const beneficiaryData = {
-      nama_instansi: req.body.nama_instansi,
-      nama_kontak: req.body.nama_kontak,
-      alamat: req.body.alamat,
-      telepon: req.body.telepon,
-      email: req.body.email,
+      nama_instansi: req.body.nama_instansi.trim(),
+      nama_kontak: req.body.nama_kontak.trim(),
+      alamat: req.body.alamat.trim(),
+      telepon: req.body.telepon.trim(),
+      email: req.body.email.trim(),
       foto: foto,
       created_by: req.user ? req.user.id : null  
     };
@@ -88,16 +81,15 @@ exports.findOne = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    if (!req.body.nama_instansi) {
-      return res.status(400).json({
-        success: false,
-        message: "Nama instansi tidak boleh kosong"
-      });
-    }
-
     const id = req.params.id;
     
-    let beneficiaryData = { ...req.body };
+    let beneficiaryData = {
+      nama_instansi: req.body.nama_instansi.trim(),
+      nama_kontak: req.body.nama_kontak.trim(),
+      alamat: req.body.alamat.trim(),
+      telepon: req.body.telepon.trim(),
+      email: req.body.email.trim()
+    };
     
     if (req.file) {
       beneficiaryData.foto = req.file.path;
