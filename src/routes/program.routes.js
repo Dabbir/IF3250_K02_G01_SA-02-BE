@@ -57,7 +57,7 @@ const { authenticate } = require('../middlewares/auth.middleware');
  *       500:
  *         description: Internal Server Error
  */
-router.get('/', authenticate, programController.getAllPrograms);
+router.get('/', verifyToken, authenticate, programController.getAllPrograms);
 router.post('/', verifyToken, authenticate,
     uploadFile('image', 'cover_image', false),
     (req, res, next) => {
@@ -157,7 +157,7 @@ router.post('/', verifyToken, authenticate,
  *         description: Internal Server Error
  */
 router.get('/:id', verifyToken, authenticate, programController.getProgramById);
-router.put('/:id', authenticate, verifyToken,
+router.put('/:id', verifyToken, authenticate,
     uploadFile('image', 'cover_image', false),
     (req, res, next) => {
       if (req.file) req.fileUrl = req.file.path;

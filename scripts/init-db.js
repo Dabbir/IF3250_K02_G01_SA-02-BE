@@ -22,11 +22,17 @@ async function initializeDatabase() {
 
     console.log("Connected to MySQL server");
 
+    // Drop database if it exists (optional, for development purposes)
+    await connection.query(
+      `DROP DATABASE IF EXISTS ${dbConfig.database}`
+    );
+    console.log(`Database ${dbConfig.database} dropped (if it existed)`);
+
     // Create database if it doesn't exist
     await connection.query(
       `CREATE DATABASE IF NOT EXISTS ${dbConfig.database} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
     );
-    console.log(`Database ${dbConfig.database} created or already exists`);
+    console.log(`Database ${dbConfig.database} created`);
 
     // Use the database
     await connection.query(`USE ${dbConfig.database}`);

@@ -1,26 +1,43 @@
 const stakeholderService = require('../services/stakeholder.service');
 
-exports.getAllStakeholders = async (req, res) => {
+exports.getAllStakeholders = async (req, res, next) => {
     try {
         const masjidId = req.user.masjid_id;
-        const stakeholders = await stakeholderService.getAllStakeholders(masjidId);
+        const {
+            page,
+            limit,
+            nama_stakeholder,
+            jenis, 
+            sortColumn,
+            sortOrder,
+        } = req.query;
+
+        const params = {
+            page: parseInt(page) || 1,
+            limit: parseInt(limit) || 20,
+            nama_stakeholder: nama_stakeholder || undefined,
+            jenis: jenis ? (Array.isArray(jenis) ? jenis : [jenis]) : [],
+            sortColumn: sortColumn || "nama_stakeholder",
+            sortOrder: (sortOrder || "ASC").toUpperCase() === "DESC" ? "DESC" : "ASC",
+        };
+
+        const result = await stakeholderService.getAllStakeholders(masjidId, params);
 
         res.status(200).json({
             success: true,
             message: "Stakeholders found",
-            stakeholders,
+            stakeholders: result.data,
+            total: result.total,
+            page: result.page,
+            limit: result.limit,
         });
     } catch (error) {
-        console.error("Get all stakeholders error:", error);
-        const statusCode = error.statusCode || 500;
-        res.status(statusCode).json({
-            success: false,
-            message: error.message || "Internal server error",
-        });
+        next(error);
     }
-}
+};
 
-exports.getByIdStakeholder = async (req, res) => {
+
+exports.getByIdStakeholder = async (req, res, next) => {
     try {
         const masjidId = req.user.masjid_id;
         const stakeholderId = req.params.id;
@@ -32,16 +49,11 @@ exports.getByIdStakeholder = async (req, res) => {
             stakeholder,
         });
     } catch (error) {
-        console.error("Get stakeholder by ID error:", error);
-        const statusCode = error.statusCode || 500;
-        res.status(statusCode).json({
-            success: false,
-            message: error.message || "Internal server error",
-        });
+        next(error);
     }
 }
 
-exports.createStakeholder = async (req, res) => {
+exports.createStakeholder = async (req, res, next) => {
     try {
         const data = req.body;
         data.masjid_id = req.user.masjid_id;
@@ -55,16 +67,11 @@ exports.createStakeholder = async (req, res) => {
             stakeholderId,
         });
     } catch (error) {
-        console.error("Create stakeholder error:", error);
-        const statusCode = error.statusCode || 500;
-        res.status(statusCode).json({
-            success: false,
-            message: error.message || "Internal server error",
-        });
+        next(error);
     }
 }
 
-exports.updateStakeholder = async (req, res) => {
+exports.updateStakeholder = async (req, res, next) => {
     try {
         const stakeholderId = req.params.id;
         const data = req.body;
@@ -78,16 +85,11 @@ exports.updateStakeholder = async (req, res) => {
             data: result,
         });
     } catch (error) {
-        console.error("Update stakeholder error:", error);
-        const statusCode = error.statusCode || 500;
-        res.status(statusCode).json({
-            success: false,
-            message: error.message || "Internal server error",
-        });
+        next(error);
     }
 }
 
-exports.deleteStakeholder = async (req, res) => {
+exports.deleteStakeholder = async (req, res, next) => {
     try {
         const stakeholderId = req.params.id;
         const result = await stakeholderService.delete(stakeholderId);
@@ -98,11 +100,6 @@ exports.deleteStakeholder = async (req, res) => {
             result,
         });
     } catch (error) {
-        console.error("Delete stakeholder error:", error);
-        const statusCode = error.statusCode || 500;
-        res.status(statusCode).json({
-            success: false,
-            message: error.message || "Internal server error",
-        });
+        next(error);
     }
 }
