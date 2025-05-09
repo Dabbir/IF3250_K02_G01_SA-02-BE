@@ -94,6 +94,11 @@ exports.updateUser = async (id, userData) => {
       }
     }
 
+    if (existingUser.dokumen_file_id && userData.dokumen_file_id) {
+      // await deleteFileFromDrive(existingUser.dokumen_file_id);
+      console.log('Updating Google Drive document reference');
+    }
+
     return await userModels.update(id, userData);
   } catch (error) {
     console.error('Error in updating user:', error);

@@ -161,6 +161,7 @@ exports.updateUser = async (req, res) => {
   try {
     const userId = req.params.id
     const userData = req.body;
+    
     const result = await userService.updateUser(userId, userData);
 
     if (!result) {

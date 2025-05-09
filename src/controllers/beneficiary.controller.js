@@ -3,26 +3,19 @@ const cloudinary = require('../config/cloudinary.config');
 
 exports.create = async (req, res) => {
   try {
-    if (!req.body.nama_instansi) {
-      return res.status(400).json({
-        success: false,
-        message: "Nama instansi tidak boleh kosong"
-      });
-    }
-
     let foto = null;
     if (req.file) {
       foto = req.file.path; 
     }
 
     const beneficiaryData = {
-      nama_instansi: req.body.nama_instansi,
-      nama_kontak: req.body.nama_kontak,
-      alamat: req.body.alamat,
-      telepon: req.body.telepon,
-      email: req.body.email,
+      nama_instansi: req.body.nama_instansi.trim(),
+      nama_kontak: req.body.nama_kontak.trim(),
+      alamat: req.body.alamat.trim(),
+      telepon: req.body.telepon.trim(),
+      email: req.body.email.trim(),
       foto: foto,
-      created_by: req.user ? req.user.id : null
+      created_by: req.user ? req.user.id : null  
     };
 
     const data = await beneficiaryService.createBeneficiary(beneficiaryData);
@@ -52,7 +45,7 @@ exports.findAll = async (req, res) => {
       orderDirection
     };
 
-    const result = await beneficiaryService.getAllBeneficiaries(params);
+    const result = await beneficiaryService.getAllBeneficiaries(params, req.user.masjid_id);
     
     res.status(200).json({
       success: true,
@@ -70,7 +63,7 @@ exports.findAll = async (req, res) => {
 
 exports.findOne = async (req, res) => {
   try {
-    const data = await beneficiaryService.getBeneficiaryById(req.params.id);
+    const data = await beneficiaryService.getBeneficiaryById(req.params.id, req.user.masjid_id);
     
     res.status(200).json({
       success: true,
@@ -88,22 +81,21 @@ exports.findOne = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    if (!req.body.nama_instansi) {
-      return res.status(400).json({
-        success: false,
-        message: "Nama instansi tidak boleh kosong"
-      });
-    }
-
     const id = req.params.id;
     
-    let beneficiaryData = { ...req.body };
+    let beneficiaryData = {
+      nama_instansi: req.body.nama_instansi.trim(),
+      nama_kontak: req.body.nama_kontak.trim(),
+      alamat: req.body.alamat.trim(),
+      telepon: req.body.telepon.trim(),
+      email: req.body.email.trim()
+    };
     
     if (req.file) {
       beneficiaryData.foto = req.file.path;
     }
 
-    const data = await beneficiaryService.updateBeneficiary(id, beneficiaryData);
+    const data = await beneficiaryService.updateBeneficiary(id, beneficiaryData, req.user.masjid_id);
     
     res.status(200).json({
       success: true,
@@ -123,7 +115,7 @@ exports.delete = async (req, res) => {
   try {
     const id = req.params.id;
     
-    await beneficiaryService.deleteBeneficiary(id);
+    await beneficiaryService.deleteBeneficiary(id, req.user.masjid_id);
     
     res.status(200).json({ 
       success: true,
@@ -141,7 +133,7 @@ exports.delete = async (req, res) => {
 exports.findByAktivitas = async (req, res) => {
   try {
     const aktivitasId = req.params.aktivitasId;
-    const data = await beneficiaryService.getBeneficiariesByAktivitas(aktivitasId);
+    const data = await beneficiaryService.getBeneficiariesByAktivitas(aktivitasId, req.user.masjid_id);
     
     res.status(200).json({
       success: true,

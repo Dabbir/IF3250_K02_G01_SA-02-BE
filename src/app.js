@@ -40,9 +40,11 @@ app.get("/", (req, res) => {
       users: "/api/users",
       auth: "/api/auth",
       account: "/api/account",
-      publikasi: "/api/publikasi",
+      publication: "/api/publication",
       masjid: "/api/masjid",
       beneficiary: "/api/beneficiary",
+      trainings: "/api/trainings/",
+      files: "/api/files",
     },
   });
 });

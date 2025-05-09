@@ -229,6 +229,436 @@ async function seedDatabase() {
         ('Dinas WLeoeoe', 'Individu', '083456789012', 'dinaswlelel@example.com', 'https://example.com/foto3.jpg', 2, 3)
       `);
 
+    console.log("Stakeholders seeded successfully!");
+
+    await connection.query(`
+      INSERT INTO beneficiaries (nama_instansi, nama_kontak, alamat, telepon, email, foto, created_by)  
+      VALUES
+        ('Panti Asuhan Al-Falah', 'Ustadz Ahmad', 'Jl. Kebon Jeruk No.1, Jakarta', '081234567890', 'example@example.com', null, 2),
+        ('Yayasan Pendidikan Islam', 'Ibu Siti', 'Jl. Raya No.2, Bandung', '082345678901', 'example@example.com', null, 2),
+        ('Lembaga Sosial Masyarakat', 'Bapak Joko', 'Jl. Merdeka No.3, Surabaya', '083456789012', 'example@example.com', null, 2),
+        ('Panti Asuhan Harapan Bangsa', 'Ustadzah Fatimah', 'Jl. Cempaka No.4, Yogyakarta', '084567890123', 'example@example.com', null, 2),
+        ('Yayasan Cinta Anak Bangsa', 'Ibu Rina', 'Jl. Melati No.5, Semarang', '085678901234', 'example@example.com', null, 2),
+        ('Lembaga Pendidikan Al-Quran', 'Bapak Ali', 'Jl. Mawar No.6, Medan', '086789012345', 'example@example.com', null, 2),
+        ('Panti Asuhan Kasih Ibu', 'Ustadzah Aisyah', 'Jl. Kenanga No.7, Makassar', '087890123456', 'example@example.com', null, 2),
+        ('Yayasan Peduli Umat', 'Ibu Dewi', 'Jl. Anggrek No.8, Palembang', '088901234567', 'example@example.com', null, 2),
+        ('Lembaga Sosial Al-Maruf', 'Bapak Hasan', 'Jl. Melati No.9, Bali', '089012345678', 'example@example.com', null, 2),
+        ('Panti Asuhan Bina Insani', 'Ustadzah Nur', 'Jl. Flamboyan No.10, Batam', '090123456789', 'example@example.com', null, 2)
+      `);
+
+    console.log("Beneficiaries seeded successfully!");
+
+    // seed employee
+    await connection.query(`
+      INSERT INTO employee (nama, telepon, alamat, email, foto, masjid_id, created_by)  
+      VALUES
+        ('Ahmad Fauzi', '081234567890', 'Jl. Kebon Jeruk No.1, Jakarta', 'example@example.com', null, 1, 2),
+        ('Siti Aminah', '082345678901', 'Jl. Raya No.2, Bandung', 'example@example.com', null, 1, 2),
+        ('Budi Santoso', '083456789012', 'Jl. Merdeka No.3, Surabaya', 'example@example.com', null, 1, 2),
+        ('Mirwan Maizonni', '084567890123', 'Jl. Cempaka No.4, Yogyakarta', 'example@example.com', null, 1, 2),
+        ('Arif Budi', '085678901234', 'Jl. Melati No.5, Semarang', 'example@example.com', null, 1, 2),
+        ('Dewi Lestari', '086789012345', 'Jl. Mawar No.6, Medan', 'example@example.com', null, 1, 2),
+        ('Rudi Hartono', '087890123456', 'Jl. Kenanga No.7, Makassar', 'example@example.com', null, 1, 2),
+        ('Nina Kurniawati', '088901234567', 'Jl. Anggrek No.8, Palembang', 'example@example.com', null, 1, 2),
+        ('Eko Prasetyo', '089012345678', 'Jl. Melati No.9, Bali', 'example@example.com', null, 1, 2),
+        ('Lina Marlina', '090123456789', 'Jl. Flamboyan No.10, Batam', 'example@example.com', null, 1, 2)
+      `);
+
+    console.log("Employees seeded successfully!");
+    
+
+    console.log("Seeding training data...");
+
+    const trainings = [
+      {
+        nama_pelatihan: 'Dasar-dasar Tajwid dan Tahsin',
+        deskripsi: 'Pelatihan membaca Al-Quran dengan tajwid yang benar untuk pemula. Peserta akan mempelajari hukum-hukum tajwid dasar dan praktik membaca dengan benar.',
+        waktu_mulai: '2025-06-01 09:00:00',
+        waktu_akhir: '2025-06-01 12:00:00',
+        lokasi: 'Aula Masjid Al-Huda Lantai 2',
+        kuota: 30,
+        status: 'Upcoming',
+        masjid_id: 1,
+        created_by: 2
+      },
+      {
+        nama_pelatihan: 'Manajemen Keuangan Masjid',
+        deskripsi: 'Pelatihan pengelolaan keuangan masjid yang transparan dan akuntabel, menggunakan sistem digital dan pelaporan keuangan modern.',
+        waktu_mulai: '2025-05-15 08:00:00',
+        waktu_akhir: '2025-05-15 16:00:00',
+        lokasi: 'Ruang Pertemuan Masjid Al-Huda',
+        kuota: 20,
+        status: 'Upcoming',
+        masjid_id: 1,
+        created_by: 2
+      },
+      {
+        nama_pelatihan: 'Kursus Bahasa Arab untuk Pemula',
+        deskripsi: 'Kursus bahasa Arab dasar untuk memahami Al-Quran dan literatur Islam. Metode pembelajaran interaktif dengan fokus pada percakapan sehari-hari.',
+        waktu_mulai: '2025-04-20 13:00:00',
+        waktu_akhir: '2025-04-20 15:00:00',
+        lokasi: 'Kelas 1 Masjid Al-Huda',
+        kuota: 25,
+        status: 'Ongoing',
+        masjid_id: 1,
+        created_by: 2
+      },
+      {
+        nama_pelatihan: 'Pelatihan Pengurusan Jenazah',
+        deskripsi: 'Pelatihan komprehensif tentang tata cara pengurusan jenazah sesuai syariat Islam, dari memandikan hingga menguburkan.',
+        waktu_mulai: '2025-03-10 08:00:00',
+        waktu_akhir: '2025-03-10 17:00:00',
+        lokasi: 'Aula Utama Masjid Al-Huda',
+        kuota: 40,
+        status: 'Completed',
+        masjid_id: 1,
+        created_by: 2
+      },
+      {
+        nama_pelatihan: 'Workshop Dakwah Media Sosial',
+        deskripsi: 'Workshop tentang cara berdakwah efektif melalui media sosial dengan konten yang menarik dan sesuai nilai-nilai Islam.',
+        waktu_mulai: '2025-02-25 09:00:00',
+        waktu_akhir: '2025-02-25 16:00:00',
+        lokasi: 'Ruang Multimedia Masjid Al-Huda',
+        kuota: 35,
+        status: 'Cancelled',
+        masjid_id: 1,
+        created_by: 2
+      },
+
+      {
+        nama_pelatihan: 'Kelas Tahfidz Al-Quran',
+        deskripsi: 'Program tahfidz Al-Quran untuk anak-anak dan remaja dengan metode mutqin dan muraja\'ah intensif.',
+        waktu_mulai: '2025-06-05 16:00:00',
+        waktu_akhir: '2025-06-05 18:00:00',
+        lokasi: 'Ruang Tahfidz Masjid Al-Ikhlas',
+        kuota: 20,
+        status: 'Upcoming',
+        masjid_id: 2,
+        created_by: 3
+      },
+      {
+        nama_pelatihan: 'Pelatihan Khatib Jumat',
+        deskripsi: 'Pelatihan untuk calon khatib Jumat meliputi adab khutbah, penyusunan materi, dan teknik penyampaian yang efektif.',
+        waktu_mulai: '2025-05-20 13:30:00',
+        waktu_akhir: '2025-05-20 16:30:00',
+        lokasi: 'Aula Masjid Al-Ikhlas',
+        kuota: 15,
+        status: 'Upcoming',
+        masjid_id: 2,
+        created_by: 3
+      },
+      {
+        nama_pelatihan: 'Workshop Keluarga Sakinah',
+        deskripsi: 'Workshop membangun keluarga sakinah, mawaddah, warahmah dengan pembahasan fiqh keluarga dan tips praktis rumah tangga Islami.',
+        waktu_mulai: '2025-04-12 09:00:00',
+        waktu_akhir: '2025-04-12 15:00:00',
+        lokasi: 'Ruang Pertemuan Masjid Al-Ikhlas',
+        kuota: 50,
+        status: 'Ongoing',
+        masjid_id: 2,
+        created_by: 3
+      },
+
+      {
+        nama_pelatihan: 'Kursus Haji dan Umrah',
+        deskripsi: 'Persiapan ibadah haji dan umrah meliputi manasik, doa-doa, dan tips perjalanan ke tanah suci.',
+        waktu_mulai: '2025-07-01 08:00:00',
+        waktu_akhir: '2025-07-01 17:00:00',
+        lokasi: 'Aula Utama Masjid At-Taqwa',
+        kuota: 60,
+        status: 'Upcoming',
+        masjid_id: 3,
+        created_by: 4
+      },
+      {
+        nama_pelatihan: 'Pelatihan Zakat dan Wakaf',
+        deskripsi: 'Pemahaman mendalam tentang zakat dan wakaf, perhitungan zakat, dan pengelolaan wakaf produktif.',
+        waktu_mulai: '2025-05-25 09:00:00',
+        waktu_akhir: '2025-05-25 12:00:00',
+        lokasi: 'Ruang Kelas Masjid At-Taqwa',
+        kuota: 30,
+        status: 'Upcoming',
+        masjid_id: 3,
+        created_by: 4
+      },
+
+      {
+        nama_pelatihan: 'Sekolah Pra-Nikah',
+        deskripsi: 'Program persiapan pernikahan untuk calon pengantin, meliputi fiqh nikah, psikologi keluarga, dan manajemen keuangan rumah tangga.',
+        waktu_mulai: '2025-06-10 08:00:00',
+        waktu_akhir: '2025-06-11 17:00:00',
+        lokasi: 'Gedung Pertemuan Masjid Muhajirin',
+        kuota: 40,
+        status: 'Upcoming',
+        masjid_id: 4,
+        created_by: 5
+      },
+      {
+        nama_pelatihan: 'Pelatihan Mubaligh Muda',
+        deskripsi: 'Program pembinaan da\'i muda dengan materi retorika, public speaking, dan metodologi dakwah kontemporer.',
+        waktu_mulai: '2025-04-05 13:00:00',
+        waktu_akhir: '2025-04-05 17:00:00',
+        lokasi: 'Aula Masjid Muhajirin',
+        kuota: 25,
+        status: 'Completed',
+        masjid_id: 4,
+        created_by: 5
+      }
+    ];
+
+    for (const training of trainings) {
+      await connection.query(
+        `INSERT INTO pelatihan 
+        (nama_pelatihan, deskripsi, waktu_mulai, waktu_akhir, lokasi, kuota, status, masjid_id, created_by) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          training.nama_pelatihan,
+          training.deskripsi,
+          training.waktu_mulai,
+          training.waktu_akhir,
+          training.lokasi,
+          training.kuota,
+          training.status,
+          training.masjid_id,
+          training.created_by
+        ]
+      );
+    }
+
+    console.log("Trainings seeded successfully!");
+
+    console.log("Seeding training participants...");
+
+    const participants = [
+      { pelatihan_id: 1, pengguna_id: 3, status_pendaftaran: 'Approved', masjid_id: 1, catatan: 'Saya pemula, ingin belajar dari dasar' },
+      { pelatihan_id: 1, pengguna_id: 4, status_pendaftaran: 'Pending', masjid_id: 1, catatan: 'Tertarik untuk meningkatkan bacaan Al-Quran' },
+      { pelatihan_id: 1, pengguna_id: 5, status_pendaftaran: 'Approved', masjid_id: 1, catatan: null },
+      
+      { pelatihan_id: 2, pengguna_id: 6, status_pendaftaran: 'Approved', masjid_id: 1, catatan: 'Saya bendahara masjid, ingin belajar sistem digital' },
+      { pelatihan_id: 2, pengguna_id: 3, status_pendaftaran: 'Rejected', masjid_id: 1, catatan: 'Kuota sudah penuh' },
+      
+      { pelatihan_id: 3, pengguna_id: 4, status_pendaftaran: 'Approved', masjid_id: 1, catatan: 'Sudah mulai mengikuti kelas' },
+      { pelatihan_id: 3, pengguna_id: 5, status_pendaftaran: 'Approved', masjid_id: 1, catatan: null },
+      { pelatihan_id: 3, pengguna_id: 6, status_pendaftaran: 'Approved', masjid_id: 1, catatan: 'Antusias belajar bahasa Arab' },
+      
+      { pelatihan_id: 4, pengguna_id: 3, status_pendaftaran: 'Attended', masjid_id: 1, catatan: 'Hadir penuh dan lulus ujian praktik' },
+      { pelatihan_id: 4, pengguna_id: 4, status_pendaftaran: 'Attended', masjid_id: 1, catatan: 'Sangat bermanfaat' },
+      { pelatihan_id: 4, pengguna_id: 5, status_pendaftaran: 'Approved', masjid_id: 1, catatan: 'Berhalangan hadir karena sakit' },
+      
+      { pelatihan_id: 6, pengguna_id: 3, status_pendaftaran: 'Pending', masjid_id: 2, catatan: 'Ingin menghafal juz 30' },
+      
+      { pelatihan_id: 12, pengguna_id: 3, status_pendaftaran: 'Attended', masjid_id: 4, catatan: 'Mendapat sertifikat kelulusan' },
+      { pelatihan_id: 12, pengguna_id: 4, status_pendaftaran: 'Attended', masjid_id: 4, catatan: 'Materi sangat aplikatif' }
+    ];
+
+    for (const participant of participants) {
+      await connection.query(
+        `INSERT INTO pendaftar_pelatihan 
+        (pelatihan_id, pengguna_id, status_pendaftaran, masjid_id, catatan) 
+        VALUES (?, ?, ?, ?, ?)`,
+        [
+          participant.pelatihan_id,
+          participant.pengguna_id,
+          participant.status_pendaftaran,
+          participant.masjid_id,
+          participant.catatan
+        ]
+      );
+    }
+
+    console.log("Training participants seeded successfully!");
+
+    const beneficiaries = [
+      {
+        nama_instansi: 'Panti Asuhan Yatim Dhuafa',
+        nama_kontak: 'Haji Ahmad',
+        alamat: 'Jl. Cisitu Dalam No. 25, Bandung',
+        telepon: '022-1234567',
+        email: 'yatimdhuafa@email.com',
+        foto: null,
+        created_by: 2, 
+        masjid_id: 1
+      },
+      {
+        nama_instansi: 'Komunitas Kaum Dhuafa Bandung',
+        nama_kontak: 'Ibu Siti',
+        alamat: 'Jl. Dago Bawah No. 12, Bandung',
+        telepon: '022-7654321',
+        email: 'dhuafa.bdg@email.com',
+        foto: null,
+        created_by: 2,
+        masjid_id: 1
+      },
+      {
+        nama_instansi: 'Yayasan Pendidikan Anak Jalanan',
+        nama_kontak: 'Pak Budi',
+        alamat: 'Jl. Dipatiukur No. 35, Bandung',
+        telepon: '022-8901234',
+        email: 'yapenja@email.com',
+        foto: null,
+        created_by: 2,
+        masjid_id: 1
+      },
+      {
+        nama_instansi: 'Yayasan Pembelajaran Al-Quran',
+        nama_kontak: 'Bu Tri',
+        alamat: 'Jl. Cisitu Lama No. 20, Bandung',
+        telepon: '021-8975432',
+        email: 'yaperan@email.com',
+        foto: null,
+        created_by: 1,
+        masjid_id: 1
+      },
+
+      {
+        nama_instansi: 'Panti Jompo Bahagia',
+        nama_kontak: 'Dr. Suryadi',
+        alamat: 'Jl. Dago Asri No. 45, Bandung',
+        telepon: '022-2345678',
+        email: 'pantijompo@email.com',
+        foto: null,
+        created_by: 3, 
+        masjid_id: 2
+      },
+      {
+        nama_instansi: 'Rumah Singgah Anak Terlantar',
+        nama_kontak: 'Ibu Nurjanah',
+        alamat: 'Jl. Tubagus Ismail No. 78, Bandung',
+        telepon: '022-3456789',
+        email: 'rumahsinggah@email.com',
+        foto: null,
+        created_by: 3,
+        masjid_id: 2
+      },
+      
+      {
+        nama_instansi: 'Pesantren Tahfidz Al-Quran',
+        nama_kontak: 'Ustadz Mahmud',
+        alamat: 'Jl. Sadang Serang No. 90, Bandung',
+        telepon: '022-4567890',
+        email: 'tahfidz@email.com',
+        foto: null,
+        created_by: 4, 
+        masjid_id: 3
+      },
+      {
+        nama_instansi: 'Lembaga Pelayanan Difabel',
+        nama_kontak: 'Hj. Fatimah',
+        alamat: 'Jl. Setiabudi No. 123, Bandung',
+        telepon: '022-5678901',
+        email: 'difabel@email.com',
+        foto: null,
+        created_by: 4,
+        masjid_id: 3
+      },
+      {
+        nama_instansi: 'Komunitas Peduli Lingkungan',
+        nama_kontak: 'Ir. Bambang',
+        alamat: 'Jl. Ciumbuleuit No. 56, Bandung',
+        telepon: '022-6789012',
+        email: 'lingkungan@email.com',
+        foto: null,
+        created_by: 4,
+        masjid_id: 3
+      },
+      
+      {
+        nama_instansi: 'Yayasan Beasiswa Pendidikan',
+        nama_kontak: 'Prof. Dr. Harun',
+        alamat: 'Jl. Pajajaran No. 200, Bandung',
+        telepon: '022-7890123',
+        email: 'beasiswa@email.com',
+        foto: null,
+        created_by: 5,
+        masjid_id: 4
+      },
+      {
+        nama_instansi: 'Lembaga Bantuan Hukum Islam',
+        nama_kontak: 'SH. Abdullah',
+        alamat: 'Jl. Merdeka No. 15, Bandung',
+        telepon: '022-8901234',
+        email: 'lbh-islam@email.com',
+        foto: null,
+        created_by: 5,
+        masjid_id: 4
+      },
+      
+      {
+        nama_instansi: 'Baitul Mal Masjid Al-Huda',
+        nama_kontak: 'H. Usman',
+        alamat: 'Jl. Cisitu Lama No. 10A, Bandung',
+        telepon: '022-9012345',
+        email: 'baitulmal@email.com',
+        foto: null,
+        created_by: 2,
+        masjid_id: 1
+      },
+      {
+        nama_instansi: 'Program Sembako Gratis',
+        nama_kontak: 'Ibu Aisyah',
+        alamat: 'Jl. Dago No. 88, Bandung',
+        telepon: '022-0123456',
+        email: 'sembako@email.com',
+        foto: null,
+        created_by: 3,
+        masjid_id: 2
+      }
+    ];
+    
+    for (const beneficiary of beneficiaries) {
+      await connection.query(
+        `INSERT INTO beneficiaries 
+        (nama_instansi, nama_kontak, alamat, telepon, email, foto, created_by) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [
+          beneficiary.nama_instansi,
+          beneficiary.nama_kontak,
+          beneficiary.alamat,
+          beneficiary.telepon,
+          beneficiary.email,
+          beneficiary.foto,
+          beneficiary.created_by
+        ]
+      );
+    }
+    
+    console.log("Beneficiaries seeded successfully!");
+    
+    const aktivitasBeneficiaries = [
+      { aktivitas_id: 1, beneficiary_id: 1, jumlah_penerima: 30, deskripsi_manfaat: 'Pembinaan rohani anak yatim' },
+      { aktivitas_id: 1, beneficiary_id: 2, jumlah_penerima: 20, deskripsi_manfaat: 'Kajian keagamaan untuk kaum dhuafa' },
+      
+      { aktivitas_id: 2, beneficiary_id: 1, jumlah_penerima: 50, deskripsi_manfaat: 'Paket sembako untuk panti asuhan' },
+      { aktivitas_id: 2, beneficiary_id: 2, jumlah_penerima: 100, deskripsi_manfaat: 'Sembako untuk keluarga dhuafa' },
+      { aktivitas_id: 2, beneficiary_id: 3, jumlah_penerima: 30, deskripsi_manfaat: 'Bantuan makanan untuk anak jalanan' },
+      
+      { aktivitas_id: 3, beneficiary_id: 11, jumlah_penerima: 5, deskripsi_manfaat: 'Pelatihan manajemen keuangan' },
+      
+      { aktivitas_id: 16, beneficiary_id: 4, jumlah_penerima: 40, deskripsi_manfaat: 'Program kesehatan untuk lansia' },
+      { aktivitas_id: 17, beneficiary_id: 6, jumlah_penerima: 25, deskripsi_manfaat: 'Program tahfidz untuk santri' },
+      { aktivitas_id: 18, beneficiary_id: 7, jumlah_penerima: 15, deskripsi_manfaat: 'Pemberdayaan ekonomi difabel' },
+
+      { aktivitas_id: 5, beneficiary_id: 1, jumlah_penerima: 25, deskripsi_manfaat: 'Santunan bulanan' },
+      { aktivitas_id: 6, beneficiary_id: 1, jumlah_penerima: 100, deskripsi_manfaat: 'Buka puasa bersama anak yatim' },
+      { aktivitas_id: 6, beneficiary_id: 2, jumlah_penerima: 200, deskripsi_manfaat: 'Buka puasa untuk dhuafa' }
+    ];
+    
+    for (const relation of aktivitasBeneficiaries) {
+      await connection.query(
+        `INSERT INTO aktivitas_beneficiaries 
+        (aktivitas_id, beneficiary_id, jumlah_penerima, deskripsi_manfaat) 
+        VALUES (?, ?, ?, ?)`,
+        [
+          relation.aktivitas_id,
+          relation.beneficiary_id,
+          relation.jumlah_penerima,
+          relation.deskripsi_manfaat
+        ]
+      );
+    }
+    
+    console.log("Aktivitas-Beneficiaries relation seeded successfully!");
 
     await connection.commit();
     console.log("DB seeded successfully!");

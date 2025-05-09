@@ -13,7 +13,6 @@ async function initializeDatabase() {
   let connection;
 
   try {
-    // Connect to MySQL server without specifying a database
     connection = await mysql.createConnection({
       host: dbConfig.host,
       user: dbConfig.user,
@@ -22,17 +21,19 @@ async function initializeDatabase() {
 
     console.log("Connected to MySQL server");
 
-    // Create database if it doesn't exist
+    await connection.query(
+      `DROP DATABASE IF EXISTS ${dbConfig.database}`
+    );
+    console.log(`Database ${dbConfig.database} dropped (if it existed)`);
+
     await connection.query(
       `CREATE DATABASE IF NOT EXISTS ${dbConfig.database} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
     );
     console.log(`Database ${dbConfig.database} created or already exists`);
 
-    // Use the database
     await connection.query(`USE ${dbConfig.database}`);
     console.log(`Using database ${dbConfig.database}`);
 
-    // Create Masjid table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS masjid (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -44,7 +45,6 @@ async function initializeDatabase() {
     `);
     console.log("Masjid table created or already exists");
 
-    // Create Pengguna table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS pengguna (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -56,6 +56,10 @@ async function initializeDatabase() {
         short_bio TEXT,
         alasan_bergabung TEXT,
         foto_profil VARCHAR(255),
+        dokumen_pendaftaran VARCHAR(255) NULL,
+        dokumen_file_id VARCHAR(255) NULL,
+        dokumen_file_name VARCHAR(255) NULL,
+        dokumen_file_type VARCHAR(255) NULL,
         masjid_id INT,
         auth_provider VARCHAR(255),
         auth_provider_id VARCHAR(255),
@@ -66,7 +70,6 @@ async function initializeDatabase() {
     `);
     console.log("Pengguna table created or already exists");
 
-    // Create Program table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS program (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -90,7 +93,6 @@ async function initializeDatabase() {
     `);
     console.log("Program table created or already exists");
 
-    // Create Aktivitas table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS aktivitas (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -113,7 +115,6 @@ async function initializeDatabase() {
     `);
     console.log("Aktivitas table created or already exists");
 
-    // Create Publikasi table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS publikasi (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -136,7 +137,6 @@ async function initializeDatabase() {
     `);
     console.log("Publikasi table created or already exists");
 
-    // Create Stakeholder table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS stakeholder (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -155,13 +155,11 @@ async function initializeDatabase() {
     `);
     console.log("Stakeholder table created or already exists");
 
-    // Create Aktivitas_Stakeholder junction table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS aktivitas_stakeholder (
         id INT AUTO_INCREMENT PRIMARY KEY,
         aktivitas_id INT NOT NULL,
         stakeholder_id INT NOT NULL,
-        peran VARCHAR(100),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (aktivitas_id) REFERENCES aktivitas(id) ON DELETE CASCADE,
         FOREIGN KEY (stakeholder_id) REFERENCES stakeholder(id) ON DELETE CASCADE
@@ -169,7 +167,6 @@ async function initializeDatabase() {
     `);
     console.log("Aktivitas_Stakeholder junction table created or already exists");
 
-    // Create Beneficiaries table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS beneficiaries (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -187,7 +184,6 @@ async function initializeDatabase() {
     `);
     console.log("Beneficiaries table created or already exists");
 
-    // Create Aktivitas_Beneficiaries junction table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS aktivitas_beneficiaries (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -202,7 +198,6 @@ async function initializeDatabase() {
     `);
     console.log("Aktivitas_Beneficiaries junction table created or already exists");
 
-    // Create Employee table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS employee (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -221,13 +216,11 @@ async function initializeDatabase() {
     `);
     console.log("Employee table created or already exists");
 
-    // Create Aktivitas_Employee junction table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS aktivitas_employee (
         id INT AUTO_INCREMENT PRIMARY KEY,
         aktivitas_id INT NOT NULL,
         employee_id INT NOT NULL,
-        peran VARCHAR(100),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (aktivitas_id) REFERENCES aktivitas(id) ON DELETE CASCADE,
         FOREIGN KEY (employee_id) REFERENCES employee(id) ON DELETE CASCADE
@@ -235,27 +228,6 @@ async function initializeDatabase() {
     `);
     console.log("Aktivitas_Employee junction table created or already exists");
 
-    // Create Gallery table
-    // await connection.query(`
-    //   CREATE TABLE IF NOT EXISTS gallery (
-    //     id INT AUTO_INCREMENT PRIMARY KEY,
-    //     judul VARCHAR(100),
-    //     deskripsi TEXT,
-    //     file_path VARCHAR(255) NOT NULL,
-    //     file_type ENUM('Image', 'Video', 'Document') DEFAULT 'Image',
-    //     program_id INT,
-    //     aktivitas_id INT,
-    //     created_by INT,
-    //     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    //     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    //     FOREIGN KEY (program_id) REFERENCES program(id) ON DELETE SET NULL,
-    //     FOREIGN KEY (aktivitas_id) REFERENCES aktivitas(id) ON DELETE SET NULL,
-    //     FOREIGN KEY (created_by) REFERENCES pengguna(id) ON DELETE SET NULL
-    //   )
-    // `);
-    // console.log("Gallery table created or already exists");
-
-    // Create Pelatihan table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS pelatihan (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -276,7 +248,6 @@ async function initializeDatabase() {
     `);
     console.log("Pelatihan table created or already exists");
 
-    // Create Pendaftar_Pelatihan table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS pendaftar_pelatihan (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -294,7 +265,6 @@ async function initializeDatabase() {
     `);
     console.log("Pendaftar_Pelatihan table created or already exists");
 
-    // Create ViewerAccess table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS viewer_access (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -312,14 +282,11 @@ async function initializeDatabase() {
     `);
     console.log("ViewerAccess table created or already exists");
 
-    // SAMPLE DATA
-    // Check if we need to create a sample admin user and masjid
     const [masjids] = await connection.query(
       "SELECT COUNT(*) as count FROM masjid"
     );
 
     if (masjids[0].count === 0) {
-      // Insert sample masjid
       const [masjidResult] = await connection.query(`
         INSERT INTO masjid (nama_masjid, alamat) 
         VALUES ('Masjid Salman ITB', 'Jl. Ganesha No.10, Lb. Siliwangi, Kecamatan Coblong, Kota Bandung, Jawa Barat 40132')
@@ -328,7 +295,6 @@ async function initializeDatabase() {
       const masjidId = masjidResult.insertId;
       console.log(`Sample masjid created with ID: ${masjidId}`);
 
-      // Insert admin user
       const hashedPassword = await bcrypt.hash('admin123', 10);
       await connection.query(`
             INSERT INTO pengguna (
