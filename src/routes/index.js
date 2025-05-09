@@ -28,4 +28,5 @@ router.use('/beneficiary', beneficiaryRoutes);
 router.use('/gallery', galleryRoutes);
 router.use('/employee', employeeRoutes);
 
+
 module.exports = router;
