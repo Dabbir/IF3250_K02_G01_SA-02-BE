@@ -22,7 +22,7 @@ run_tests:
   stage: test
   image: node:14
   script:
-    - npm test
+    - npm run test
   only:
     - develop  
 
