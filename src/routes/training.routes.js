@@ -497,4 +497,51 @@ router.get('/:id/availability',
   TrainingController.getTrainingAvailability
 );
 
+/**
+ * @swagger
+ * /api/trainings/user/registrations:
+ *   get:
+ *     summary: Get training registrations for the current user
+ *     tags: [Trainings]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of user's training registrations
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       pelatihan_id:
+ *                         type: integer
+ *                       status_pendaftaran:
+ *                         type: string
+ *                       catatan:
+ *                         type: string
+ *                       created_at:
+ *                         type: string
+ *                         format: date-time
+ *                       nama_pelatihan:
+ *                         type: string
+ *                       nama_masjid:
+ *                         type: string
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
+router.get('/user/registrations', verifyToken, TrainingController.getUserRegistrations);
+
 module.exports = router;

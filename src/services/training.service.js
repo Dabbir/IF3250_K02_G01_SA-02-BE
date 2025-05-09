@@ -1,21 +1,14 @@
 const TrainingModel = require('../models/training.model');
 
 class TrainingService {
-  /**
-   * Get all trainings with pagination and filtering
-   */
   async getAllTrainings(page = 1, limit = 10, search = '', status = '', masjidId = null, userId = null, trainingRegistration = false) {
     try {
-      // Use the model to fetch data
       return await TrainingModel.getAllTrainings(page, limit, search, status, masjidId, userId, trainingRegistration);
     } catch (error) {
       throw error;
     }
   }
 
-  /**
-   * Get a single training by ID
-   */
   async getTrainingById(id) {
     try {
       return await TrainingModel.getTrainingById(id);
@@ -24,9 +17,6 @@ class TrainingService {
     }
   }
 
-  /**
-   * Create a new training
-   */
   async createTraining(trainingData) {
     try {
       return await TrainingModel.createTraining(trainingData);
@@ -35,9 +25,6 @@ class TrainingService {
     }
   }
 
-  /**
-   * Update an existing training
-   */
   async updateTraining(id, trainingData) {
     try {
       return await TrainingModel.updateTraining(id, trainingData);
@@ -46,9 +33,6 @@ class TrainingService {
     }
   }
 
-  /**
-   * Delete a training
-   */
   async deleteTraining(id) {
     try {
       return await TrainingModel.deleteTraining(id);
@@ -57,9 +41,6 @@ class TrainingService {
     }
   }
 
-  /**
-   * Get participants for a training
-   */
   async getTrainingParticipants(trainingId, page = 1, limit = 10, status = '') {
     try {
       return await TrainingModel.getTrainingParticipants(trainingId, page, limit, status);
@@ -68,9 +49,6 @@ class TrainingService {
     }
   }
 
-  /**
-   * Register a participant for a training
-   */
   async registerParticipant(registrationData) {
     try {
       return await TrainingModel.registerParticipant(registrationData);
@@ -79,9 +57,6 @@ class TrainingService {
     }
   }
 
-  /**
-   * Update participant status
-   */
   async updateParticipantStatus(id, status, catatan) {
     try {
       return await TrainingModel.updateParticipantStatus(id, status, catatan);
@@ -90,12 +65,17 @@ class TrainingService {
     }
   }
 
-  /**
-   * Get training availability information
-   */
   async getTrainingAvailability(trainingId) {
     try {
       return await TrainingModel.getTrainingAvailability(trainingId);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getUserRegistrations(userId) {
+    try {
+      return await TrainingModel.getUserRegistrations(userId);
     } catch (error) {
       throw error;
     }

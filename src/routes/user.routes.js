@@ -7,7 +7,6 @@ const {
   validate,
   userUpdateValidation,
 } = require("../middlewares/validate.middleware");
-// const upload = require("../middlewares/upload.middleware");
 const { uploadFile } = require("../middlewares/cloud.middleware");
 
 router.get("/getall", verifyToken, isAdmin, userController.getAllUsers);

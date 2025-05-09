@@ -1,7 +1,6 @@
 const trainingService = require('../services/training.service');
 
 class TrainingController {
-  // Get all trainings with pagination
   static async getAllTrainings(req, res) {
     try {
       const { page = 1, limit = 10, search = '', status = '', trainingRegistration = "false"} = req.query;
@@ -34,7 +33,6 @@ class TrainingController {
     }
   }
 
-  // Get training by ID
   static async getTrainingById(req, res) {
     try {
       const { id } = req.params;
@@ -63,7 +61,6 @@ class TrainingController {
     }
   }
 
-  // Create new training
   static async createTraining(req, res) {
     try {
       const trainingData = {
@@ -89,12 +86,10 @@ class TrainingController {
     }
   }
 
-  // Update training
   static async updateTraining(req, res) {
     try {
       const { id } = req.params;
       
-      // Check if training exists
       const existingTraining = await trainingService.getTrainingById(id);
       if (!existingTraining) {
         return res.status(404).json({
@@ -126,12 +121,10 @@ class TrainingController {
     }
   }
 
-  // Delete training
   static async deleteTraining(req, res) {
     try {
       const { id } = req.params;
       
-      // Check if training exists
       const existingTraining = await trainingService.getTrainingById(id);
       if (!existingTraining) {
         return res.status(404).json({
@@ -163,13 +156,11 @@ class TrainingController {
     }
   }
 
-  // Get participants for a training
   static async getTrainingParticipants(req, res) {
     try {
       const { id } = req.params;
       const { page = 1, limit = 10, status = '' } = req.query;
       
-      // Check if training exists
       const existingTraining = await trainingService.getTrainingById(id);
       if (!existingTraining) {
         return res.status(404).json({
@@ -199,12 +190,10 @@ class TrainingController {
     }
   }
 
-  // Register for a training
   static async registerForTraining(req, res) {
     try {
       const { id } = req.params;
       
-      // Check if training exists
       const existingTraining = await trainingService.getTrainingById(id);
       if (!existingTraining) {
         return res.status(404).json({
@@ -213,7 +202,6 @@ class TrainingController {
         });
       }
       
-      // Check if training is in the past
       const trainingStartDate = new Date(existingTraining.waktu_mulai);
       if (trainingStartDate < new Date()) {
         return res.status(400).json({
@@ -222,7 +210,6 @@ class TrainingController {
         });
       }
       
-      // Check if training is cancelled
       if (existingTraining.status === 'Cancelled') {
         return res.status(400).json({
           success: false,
@@ -230,7 +217,6 @@ class TrainingController {
         });
       }
       
-      // Check availability
       const availability = await trainingService.getTrainingAvailability(id);
       if (availability.available_slots <= 0) {
         return res.status(400).json({
@@ -257,7 +243,6 @@ class TrainingController {
     } catch (error) {
       console.error('Error registering for training:', error);
       
-      // Handle specific errors
       if (error.message === 'User is already registered for this training') {
         return res.status(400).json({
           success: false,
@@ -280,7 +265,6 @@ class TrainingController {
     }
   }
 
-  // Update participant status
   static async updateParticipantStatus(req, res) {
     try {
       const { id, participantId } = req.params;
@@ -293,7 +277,6 @@ class TrainingController {
         });
       }
       
-      // Check if training exists
       const existingTraining = await trainingService.getTrainingById(id);
       if (!existingTraining) {
         return res.status(404).json({
@@ -329,12 +312,10 @@ class TrainingController {
     }
   }
 
-  // Get training availability
   static async getTrainingAvailability(req, res) {
     try {
       const { id } = req.params;
       
-      // Check if training exists
       const existingTraining = await trainingService.getTrainingById(id);
       if (!existingTraining) {
         return res.status(404).json({
@@ -355,6 +336,27 @@ class TrainingController {
       res.status(500).json({
         success: false,
         message: 'Failed to retrieve training availability',
+        error: error.message
+      });
+    }
+  }
+
+  static async getUserRegistrations(req, res) {
+    try {
+      const userId = req.user.id;
+      
+      const registrations = await trainingService.getUserRegistrations(userId);
+      
+      res.status(200).json({
+        success: true,
+        message: 'User registrations retrieved successfully',
+        data: registrations
+      });
+    } catch (error) {
+      console.error('Error retrieving user registrations:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve user registrations',
         error: error.message
       });
     }

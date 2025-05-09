@@ -73,7 +73,6 @@ class TrainingModel {
     }
   }
 
-  // Get training by ID
   static async getTrainingById(id) {
     try {
       const query = `
@@ -90,7 +89,6 @@ class TrainingModel {
     }
   }
 
-  // Create new training
   static async createTraining(trainingData) {
     try {
       const query = `
@@ -119,7 +117,6 @@ class TrainingModel {
     }
   }
 
-  // Update training
   static async updateTraining(id, trainingData) {
     try {
       const query = `
@@ -154,7 +151,6 @@ class TrainingModel {
     }
   }
 
-  // Delete training
   static async deleteTraining(id) {
     try {
       const query = 'DELETE FROM pelatihan WHERE id = ?';
@@ -165,7 +161,6 @@ class TrainingModel {
     }
   }
 
-  // Get participants for a training
   static async getTrainingParticipants(trainingId, page = 1, limit = 10, status = '') {
     try {
       let offset = (page - 1) * limit;
@@ -177,7 +172,6 @@ class TrainingModel {
         params.push(status);
       }
       
-      // Get total count
       const countQuery = `
         SELECT COUNT(*) as total 
         FROM pendaftar_pelatihan pp
@@ -186,7 +180,6 @@ class TrainingModel {
       const [countResult] = await pool.query(countQuery, params);
       const total = countResult[0].total;
       
-      // Get paginated data
       const query = `
         SELECT pp.*, p.nama AS nama_peserta, p.email
         FROM pendaftar_pelatihan pp
@@ -213,10 +206,8 @@ class TrainingModel {
     }
   }
 
-  // Register participant for a training
   static async registerParticipant(registrationData) {
     try {
-      // Check if user is already registered
       const checkQuery = `
         SELECT * FROM pendaftar_pelatihan
         WHERE pelatihan_id = ? AND pengguna_id = ?
@@ -230,7 +221,6 @@ class TrainingModel {
         throw new Error('User is already registered for this training');
       }
       
-      // Check kuota
       const trainingQuery = 'SELECT kuota FROM pelatihan WHERE id = ?';
       const [trainingData] = await pool.query(trainingQuery, [registrationData.pelatihan_id]);
       
@@ -238,7 +228,6 @@ class TrainingModel {
         throw new Error('Training not found');
       }
       
-      // Count existing participants
       const countQuery = `
         SELECT COUNT(*) as count 
         FROM pendaftar_pelatihan 
@@ -250,7 +239,6 @@ class TrainingModel {
         throw new Error('Training quota has been reached');
       }
       
-      // Insert registration
       const query = `
         INSERT INTO pendaftar_pelatihan (
           pelatihan_id, pengguna_id, status_pendaftaran, masjid_id, catatan
@@ -272,7 +260,6 @@ class TrainingModel {
     }
   }
 
-  // Update participant status
   static async updateParticipantStatus(id, status, catatan) {
     try {
       const query = `
@@ -288,7 +275,6 @@ class TrainingModel {
     }
   }
 
-  // Get available training slots
   static async getTrainingAvailability(trainingId) {
     try {
       const query = `
@@ -304,6 +290,36 @@ class TrainingModel {
       
       const [result] = await pool.query(query, [trainingId]);
       return result[0] || { total_kuota: 0, used_slots: 0, available_slots: 0 };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getUserRegistrations(userId) {
+    try {
+      const query = `
+        SELECT
+          pp.id,
+          pp.pelatihan_id,
+          pp.status_pendaftaran,
+          pp.catatan,
+          pp.created_at,
+          p.nama_pelatihan,
+          p.waktu_mulai,
+          p.waktu_akhir,
+          p.lokasi,
+          p.status as pelatihan_status,
+          m.nama_masjid,
+          m.id as masjid_id
+        FROM pendaftar_pelatihan pp
+        JOIN pelatihan p ON pp.pelatihan_id = p.id
+        LEFT JOIN masjid m ON p.masjid_id = m.id
+        WHERE pp.pengguna_id  = ?
+        ORDER BY pp.created_at DESC
+      `;
+
+      const [rows] = await pool.query(query, [userId]);
+      return rows;
     } catch (error) {
       throw error;
     }
