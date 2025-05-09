@@ -144,6 +144,7 @@ async function initializeDatabase() {
         jenis ENUM('Individu', 'Organisasi', 'Perusahaan') DEFAULT 'Individu',
         telepon VARCHAR(20),
         email VARCHAR(100),
+        foto VARCHAR(255),
         masjid_id INT,
         created_by INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -188,6 +189,8 @@ async function initializeDatabase() {
         id INT AUTO_INCREMENT PRIMARY KEY,
         aktivitas_id INT NOT NULL,
         beneficiary_id INT NOT NULL,
+        jumlah_penerima INT,
+        deskripsi_manfaat TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (aktivitas_id) REFERENCES aktivitas(id) ON DELETE CASCADE,
         FOREIGN KEY (beneficiary_id) REFERENCES beneficiaries(id) ON DELETE CASCADE
