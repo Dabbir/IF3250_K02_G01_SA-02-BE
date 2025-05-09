@@ -23,6 +23,8 @@ run_tests:
   stage: test
   image: node:14
   script:
+    - npm list jest
+    - ls -al node_modules/.bin
     - npm run test
   only:
     - develop  
