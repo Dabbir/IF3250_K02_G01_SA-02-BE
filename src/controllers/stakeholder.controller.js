@@ -1,6 +1,6 @@
 const stakeholderService = require('../services/stakeholder.service');
 
-exports.getAllStakeholders = async (req, res) => {
+exports.getAllStakeholders = async (req, res, next) => {
     try {
         const masjidId = req.user.masjid_id;
         const {
@@ -32,17 +32,12 @@ exports.getAllStakeholders = async (req, res) => {
             limit: result.limit,
         });
     } catch (error) {
-        console.error("Get all stakeholders error:", error);
-        const statusCode = error.statusCode || 500;
-        res.status(statusCode).json({
-            success: false,
-            message: error.message || "Internal server error",
-        });
+        next(error);
     }
 };
 
 
-exports.getByIdStakeholder = async (req, res) => {
+exports.getByIdStakeholder = async (req, res, next) => {
     try {
         const masjidId = req.user.masjid_id;
         const stakeholderId = req.params.id;
@@ -54,16 +49,11 @@ exports.getByIdStakeholder = async (req, res) => {
             stakeholder,
         });
     } catch (error) {
-        console.error("Get stakeholder by ID error:", error);
-        const statusCode = error.statusCode || 500;
-        res.status(statusCode).json({
-            success: false,
-            message: error.message || "Internal server error",
-        });
+        next(error);
     }
 }
 
-exports.createStakeholder = async (req, res) => {
+exports.createStakeholder = async (req, res, next) => {
     try {
         const data = req.body;
         data.masjid_id = req.user.masjid_id;
@@ -77,16 +67,11 @@ exports.createStakeholder = async (req, res) => {
             stakeholderId,
         });
     } catch (error) {
-        console.error("Create stakeholder error:", error);
-        const statusCode = error.statusCode || 500;
-        res.status(statusCode).json({
-            success: false,
-            message: error.message || "Internal server error",
-        });
+        next(error);
     }
 }
 
-exports.updateStakeholder = async (req, res) => {
+exports.updateStakeholder = async (req, res, next) => {
     try {
         const stakeholderId = req.params.id;
         const data = req.body;
@@ -100,16 +85,11 @@ exports.updateStakeholder = async (req, res) => {
             data: result,
         });
     } catch (error) {
-        console.error("Update stakeholder error:", error);
-        const statusCode = error.statusCode || 500;
-        res.status(statusCode).json({
-            success: false,
-            message: error.message || "Internal server error",
-        });
+        next(error);
     }
 }
 
-exports.deleteStakeholder = async (req, res) => {
+exports.deleteStakeholder = async (req, res, next) => {
     try {
         const stakeholderId = req.params.id;
         const result = await stakeholderService.delete(stakeholderId);
@@ -120,11 +100,6 @@ exports.deleteStakeholder = async (req, res) => {
             result,
         });
     } catch (error) {
-        console.error("Delete stakeholder error:", error);
-        const statusCode = error.statusCode || 500;
-        res.status(statusCode).json({
-            success: false,
-            message: error.message || "Internal server error",
-        });
+        next(error);
     }
 }
