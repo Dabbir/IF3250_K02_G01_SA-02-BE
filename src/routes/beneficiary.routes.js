@@ -3,6 +3,7 @@ const router = express.Router();
 const beneficiaryController = require('../controllers/beneficiary.controller');
 const { verifyToken, authenticate } = require('../middlewares/auth.middleware');
 const { uploadFile } = require('../middlewares/cloud.middleware');
+const { validateBeneficiary } = require('../middlewares/beneficiary.middleware');
 
 /**
  * @swagger
@@ -52,7 +53,7 @@ const { uploadFile } = require('../middlewares/cloud.middleware');
  *       500:
  *         description: Internal Server Error
  */
-router.post('/', verifyToken, uploadFile('image', 'foto'), beneficiaryController.create);
+router.post('/', verifyToken, uploadFile('image', 'foto'), validateBeneficiary, beneficiaryController.create);
 router.get('/', authenticate, beneficiaryController.findAll);
 
 /**
@@ -158,7 +159,7 @@ router.get('/aktivitas/:id', verifyToken, beneficiaryController.findByAktivitas)
  *         description: Internal Server Error
  */
 router.get('/:id', verifyToken, beneficiaryController.findOne);
-router.put('/:id', verifyToken, uploadFile('image', 'foto'), beneficiaryController.update);
+router.put('/:id', verifyToken, uploadFile('image', 'foto'), validateBeneficiary, beneficiaryController.update);
 router.delete('/:id', verifyToken, beneficiaryController.delete);
 
 module.exports = router;
