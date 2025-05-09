@@ -18,6 +18,7 @@ install_dependencies:
     - rm -f .git/shallow.lock || true
   script:
     - npm install
+
 # Stage 2: Run tests
 run_tests:
   stage: test
@@ -27,7 +28,7 @@ run_tests:
     - ls -al node_modules/.bin
     - npm run test
   only:
-    - develop  
+    - pipeline  
 
 # build_project:
 #   stage: build
