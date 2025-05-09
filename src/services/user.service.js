@@ -94,12 +94,9 @@ exports.updateUser = async (id, userData) => {
       }
     }
 
-    if (existingUser.dokumen_pendaftaran && existingUser.dokumen_public_id) {
-      if (userData.dokumen_pendaftaran || userData.deleteDocument === 'true') {
-        if (existingUser.dokumen_pendaftaran.includes('cloudinary.com')) {
-          await deleteCloudinaryImage(existingUser.dokumen_pendaftaran);
-        }
-      }
+    if (existingUser.dokumen_file_id && userData.dokumen_file_id) {
+      // await deleteFileFromDrive(existingUser.dokumen_file_id);
+      console.log('Updating Google Drive document reference');
     }
 
     return await userModels.update(id, userData);

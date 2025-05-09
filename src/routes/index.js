@@ -13,12 +13,14 @@ const beneficiaryRoutes = require('./beneficiary.routes');
 const galleryRoutes = require('./gallery.routes');
 const employeeRoutes = require('./employee.routes');
 const trainingRoutes = require('./training.routes');
+const fileRoutes = require('./file.routes');
 
 router.use('/users', userRoutes);
 router.use('/auth', authRoutes);
 router.use('/publikasi', publikasiRoutes); 
 router.use('/activity', activityRoutes);
 router.use('/access', accessRoutes);
+router.use('/files', fileRoutes);
 router.use('/masjid', masjidRoutes);
 router.use('/program', programRoutes);
 router.use('/stakeholder', stakeholderRoutes);

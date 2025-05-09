@@ -34,3 +34,6 @@ src/uploads/
 *.log.*
 src/logs/*.log
 src/logs/*.log.*
+
+/scripts/migrations/*.js
+/scripts/*.json

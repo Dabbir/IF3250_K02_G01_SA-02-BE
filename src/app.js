@@ -44,6 +44,7 @@ app.get("/", (req, res) => {
       masjid: "/api/masjid",
       beneficiary: "/api/beneficiary",
       trainings: "/api/trainings/",
+      files: "/api/files",
     },
   });
 });

@@ -161,12 +161,6 @@ exports.updateUser = async (req, res) => {
   try {
     const userId = req.params.id
     const userData = req.body;
-
-    if (req.file && req.file.fieldname === 'dokumenPendaftaran') {
-      userData.dokumen_pendaftaran = req.file.path;
-      userData.dokumen_public_id = req.file.public_id || req.file.filename;
-      console.log("Dokumen pendaftaran uploaded:", userData.dokumen_pendaftaran);
-    }
     
     const result = await userService.updateUser(userId, userData);
 
