@@ -162,9 +162,9 @@ exports.updateActivity = async (masjidId, activityId, activityData) => {
         activityData.tanggal_selesai = formatDate(activityData.tanggal_selesai);
 
         const updatedActivity = await activityModel.update(activityId, activityData);
-        const updatedStakeholder = await activityStakeholderModel.createUpdate(activityId, activityData.stakeholders);
-        const updatedBeneficiary = await activityBeneficiaryModel.createUpdate(activityId, activityData.beneficiaries);
-        const updatedEmployee = await activityEmployeeModel.createUpdate(activityId, activityData.employees);
+        await activityStakeholderModel.createUpdate(activityId, activityData.stakeholders);
+        await activityBeneficiaryModel.createUpdate(activityId, activityData.beneficiaries);
+        await activityEmployeeModel.createUpdate(activityId, activityData.employees);
 
         if (Array.isArray(activityData.deleted_images)) {
             await Promise.all(
