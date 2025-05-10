@@ -22,6 +22,9 @@ async function seedDatabase() {
 
     console.log("Connected to MySQL server");
 
+    await connection.beginTransaction();
+    console.log("Transaction started");
+
     await connection.query(`
       INSERT INTO masjid (nama_masjid, alamat) 
       VALUES 
@@ -39,7 +42,7 @@ async function seedDatabase() {
       (nama, email, password, peran, status, short_bio, alasan_bergabung, masjid_id)
     VALUES
       ('Ahmad Fauzi', 'ahmad@example.com', ?, 'Editor', 'Approved', 'Penggiat teknologi islami.', 'Ingin membantu digitalisasi masjid.', 1),
-      ('Siti Aminah', 'siti@example.com', ?, 'Editor', 'Pending', 'Aktivis remaja masjid.', 'Mau ikut aktif dalam program dakwah online.', 2),
+      ('Siti Aminah', 'siti@example.com', ?, 'Editor', 'Approved', 'Aktivis remaja masjid.', 'Mau ikut aktif dalam program dakwah online.', 2),
       ('Budi Santoso', 'budi@example.com', ?, 'Editor', 'Pending', 'Suka ikut pengajian online.', 'Pengen tau kegiatan masjid lebih lanjut.', 3),
       ('Mirwan Maizonni', 'mirwan@example.com', ?, 'Editor', 'Rejected', 'Suka ikut pengajian online.', 'Pengen tau kegiatan masjid lebih lanjut.', 4),
       ('Arif Budi', 'arif@example.com', ?, 'Editor', 'Rejected', 'Suka ikut pengajian online.', 'Pengen tau kegiatan masjid lebih lanjut.', 5)
@@ -219,14 +222,50 @@ async function seedDatabase() {
     console.log("Viewer access seeded successfully!");
 
     await connection.query(`
-      INSERT INTO stakeholder (nama_stakeholder, jenis, telepon, email, foto, masjid_id, created_by)
+      INSERT INTO stakeholder (nama_stakeholder, jenis, telepon, email, masjid_id, created_by)
       VALUES
-        ('Dinas Lingkungan Hidup', 'Individu', '081234567890', 'dinasLH@example.com', 'https://example.com/foto1.jpg', 1, 2),
-        ('Dinas Kesehatan', 'Perusahaan', '082345678901', 'dinasKes@example.com', 'https://example.com/foto2.jpg', 1, 2),
-        ('Dinas Pendidikan', 'Organisasi', '083456789012', 'dinasPend@example.com', 'https://example.com/foto3.jpg', 1, 2),
-        ('Dinas Adadeh', 'Organisasi', '083456789012', 'dinasadadeh@example.com', 'https://example.com/foto3.jpg', 2, 3),
-        ('Dinas Hihihihi', 'Perusahaan', '083456789012', 'dinashihihi@example.com', 'https://example.com/foto3.jpg', 2, 3),
-        ('Dinas WLeoeoe', 'Individu', '083456789012', 'dinaswlelel@example.com', 'https://example.com/foto3.jpg', 2, 3)
+        ('Supriyanto', 'Individu', '081234567890', 'dinasLH@example.com', 1, 2),
+        ('PT Kesehatan', 'Perusahaan', '082345678901', 'dinasKes@example.com', 1, 2),
+        ('Dinas Pendidikan', 'Organisasi', '083456789012', 'dinasPend@example.com', 1, 2),
+        ('Ormas Adadeh', 'Organisasi', '083456789012', 'dinasadadeh@example.com', 1, 2),
+        ('CV Hihihihi', 'Perusahaan', '083456789012', 'dinashihihi@example.com', 1, 2),
+        ('Ahmad Subarjo', 'Individu', '083456789012', 'dinaswlelel@example.com', 1, 2),
+        ('Supriyanto', 'Individu', '081234567890', 'dinasLH@example.com', 1, 2),
+        ('PT Kesehatan', 'Perusahaan', '082345678901', 'dinasKes@example.com', 1, 2),
+        ('Dinas Pendidikan', 'Organisasi', '083456789012', 'dinasPend@example.com', 1, 2),
+        ('Ormas Adadeh', 'Organisasi', '083456789012', 'dinasadadeh@example.com', 1, 2),
+        ('CV Hihihihi', 'Perusahaan', '083456789012', 'dinashihihi@example.com', 1, 2),
+        ('Ahmad Subarjo', 'Individu', '083456789012', 'dinaswlelel@example.com', 1, 2),
+        ('Supriyanto', 'Individu', '081234567890', 'dinasLH@example.com', 1, 2),
+        ('PT Kesehatan', 'Perusahaan', '082345678901', 'dinasKes@example.com', 1, 2),
+        ('Dinas Pendidikan', 'Organisasi', '083456789012', 'dinasPend@example.com', 1, 2),
+        ('Ormas Adadeh', 'Organisasi', '083456789012', 'dinasadadeh@example.com', 1, 2),
+        ('CV Hihihihi', 'Perusahaan', '083456789012', 'dinashihihi@example.com', 1, 2),
+        ('Ahmad Subarjo', 'Individu', '083456789012', 'dinaswlelel@example.com', 1, 2),
+        ('Supriyanto', 'Individu', '081234567890', 'dinasLH@example.com', 1, 2),
+        ('PT Kesehatan', 'Perusahaan', '082345678901', 'dinasKes@example.com', 1, 2),
+        ('Dinas Pendidikan', 'Organisasi', '083456789012', 'dinasPend@example.com', 1, 2),
+        ('Ormas Adadeh', 'Organisasi', '083456789012', 'dinasadadeh@example.com', 1, 2),
+        ('CV Hihihihi', 'Perusahaan', '083456789012', 'dinashihihi@example.com', 1, 2),
+        ('Ahmad Subarjo', 'Individu', '083456789012', 'dinaswlelel@example.com', 1, 2),
+        ('Supriyanto', 'Individu', '081234567890', 'dinasLH@example.com', 1, 2),
+        ('PT Kesehatan', 'Perusahaan', '082345678901', 'dinasKes@example.com', 1, 2),
+        ('Dinas Pendidikan', 'Organisasi', '083456789012', 'dinasPend@example.com', 1, 2),
+        ('Ormas Adadeh', 'Organisasi', '083456789012', 'dinasadadeh@example.com', 1, 2),
+        ('CV Hihihihi', 'Perusahaan', '083456789012', 'dinashihihi@example.com', 1, 2),
+        ('Ahmad Subarjo', 'Individu', '083456789012', 'dinaswlelel@example.com', 1, 2),
+        ('Supriyanto', 'Individu', '081234567890', 'dinasLH@example.com', 1, 2),
+        ('PT Kesehatan', 'Perusahaan', '082345678901', 'dinasKes@example.com', 1, 2),
+        ('Dinas Pendidikan', 'Organisasi', '083456789012', 'dinasPend@example.com', 1, 2),
+        ('Ormas Adadeh', 'Organisasi', '083456789012', 'dinasadadeh@example.com', 1, 2),
+        ('CV Hihihihi', 'Perusahaan', '083456789012', 'dinashihihi@example.com', 1, 2),
+        ('Ahmad Subarjo', 'Individu', '083456789012', 'dinaswlelel@example.com', 1, 2),
+        ('Supriyanto', 'Individu', '081234567890', 'dinasLH@example.com', 1, 2),
+        ('PT Kesehatan', 'Perusahaan', '082345678901', 'dinasKes@example.com', 1, 2),
+        ('Dinas Pendidikan', 'Organisasi', '083456789012', 'dinasPend@example.com', 1, 2),
+        ('Ormas Adadeh', 'Organisasi', '083456789012', 'dinasadadeh@example.com', 1, 2),
+        ('CV Hihihihi', 'Perusahaan', '083456789012', 'dinashihihi@example.com', 1, 2),
+        ('Ahmad Subarjo', 'Individu', '083456789012', 'dinaswlelel@example.com', 1, 2)
       `);
 
     console.log("Stakeholders seeded successfully!");
@@ -626,34 +665,32 @@ async function seedDatabase() {
     console.log("Beneficiaries seeded successfully!");
     
     const aktivitasBeneficiaries = [
-      { aktivitas_id: 1, beneficiary_id: 1, jumlah_penerima: 30, deskripsi_manfaat: 'Pembinaan rohani anak yatim' },
-      { aktivitas_id: 1, beneficiary_id: 2, jumlah_penerima: 20, deskripsi_manfaat: 'Kajian keagamaan untuk kaum dhuafa' },
+      { aktivitas_id: 1, beneficiary_id: 1 },
+      { aktivitas_id: 1, beneficiary_id: 2 },
       
-      { aktivitas_id: 2, beneficiary_id: 1, jumlah_penerima: 50, deskripsi_manfaat: 'Paket sembako untuk panti asuhan' },
-      { aktivitas_id: 2, beneficiary_id: 2, jumlah_penerima: 100, deskripsi_manfaat: 'Sembako untuk keluarga dhuafa' },
-      { aktivitas_id: 2, beneficiary_id: 3, jumlah_penerima: 30, deskripsi_manfaat: 'Bantuan makanan untuk anak jalanan' },
+      { aktivitas_id: 2, beneficiary_id: 1 },
+      { aktivitas_id: 2, beneficiary_id: 2 },
+      { aktivitas_id: 2, beneficiary_id: 3 },
       
-      { aktivitas_id: 3, beneficiary_id: 11, jumlah_penerima: 5, deskripsi_manfaat: 'Pelatihan manajemen keuangan' },
+      { aktivitas_id: 3, beneficiary_id: 11 },
       
-      { aktivitas_id: 16, beneficiary_id: 4, jumlah_penerima: 40, deskripsi_manfaat: 'Program kesehatan untuk lansia' },
-      { aktivitas_id: 17, beneficiary_id: 6, jumlah_penerima: 25, deskripsi_manfaat: 'Program tahfidz untuk santri' },
-      { aktivitas_id: 18, beneficiary_id: 7, jumlah_penerima: 15, deskripsi_manfaat: 'Pemberdayaan ekonomi difabel' },
+      { aktivitas_id: 16, beneficiary_id: 4 },
+      { aktivitas_id: 17, beneficiary_id: 6 },
+      { aktivitas_id: 18, beneficiary_id: 7 },
 
-      { aktivitas_id: 5, beneficiary_id: 1, jumlah_penerima: 25, deskripsi_manfaat: 'Santunan bulanan' },
-      { aktivitas_id: 6, beneficiary_id: 1, jumlah_penerima: 100, deskripsi_manfaat: 'Buka puasa bersama anak yatim' },
-      { aktivitas_id: 6, beneficiary_id: 2, jumlah_penerima: 200, deskripsi_manfaat: 'Buka puasa untuk dhuafa' }
+      { aktivitas_id: 5, beneficiary_id: 1 },
+      { aktivitas_id: 6, beneficiary_id: 1 },
+      { aktivitas_id: 6, beneficiary_id: 2 }
     ];
     
     for (const relation of aktivitasBeneficiaries) {
       await connection.query(
         `INSERT INTO aktivitas_beneficiaries 
-        (aktivitas_id, beneficiary_id, jumlah_penerima, deskripsi_manfaat) 
-        VALUES (?, ?, ?, ?)`,
+        (aktivitas_id, beneficiary_id) 
+        VALUES (?, ?)`,
         [
           relation.aktivitas_id,
-          relation.beneficiary_id,
-          relation.jumlah_penerima,
-          relation.deskripsi_manfaat
+          relation.beneficiary_id
         ]
       );
     }

@@ -2,10 +2,47 @@ const activityService = require("../services/activity.service");
 
 exports.getByIdActivity = async (req, res) => {
     try {
-        const userId = req.user.id;
         const activityId = req.params.id;
+        const masjidId = req.user.masjid_id;
 
-        const activity = await activityService.getByIdActivity(userId, activityId);
+        const { activity, stakeholder, beneficiary, employee } = await activityService.getByIdActivity(activityId, masjidId);
+
+        res.status(200).json({
+            success: true,
+            message: "Activity found",
+            activity: activity, stakeholder, beneficiary, employee
+        })
+    } catch (error) {
+        const statusCode = error.statusCode || 500;
+        res.status(statusCode).json({
+            success: false,
+            message: error.message || "Internal server error",
+        });
+    }
+}
+
+exports.getAllActivity = async (req, res) => {
+    try {
+        const masjidId = req.user.masjid_id;
+        const {
+            page,
+            limit,
+            nama_aktivitas,
+            status,
+            sortColumn,
+            sortOrder,
+        } = req.query;
+
+        const params = {
+            page: parseInt(page) || 1,
+            limit: parseInt(limit) || 20,
+            nama_aktivitas: nama_aktivitas || undefined,
+            status: status ? (Array.isArray(status) ? status : [status]) : [],
+            sortColumn: sortColumn || "nama_aktivitas",
+            sortOrder: (sortOrder || "ASC").toUpperCase() === "DESC" ? "DESC" : "ASC",
+        };
+
+        const activity = await activityService.getAllActivity(masjidId, params);
 
         res.status(200).json({
             success: true,
@@ -21,12 +58,12 @@ exports.getByIdActivity = async (req, res) => {
     }
 }
 
-exports.getAllActivity = async (req, res) => {
-    try {
-        const masjidID = req.user.masjid_id;
-        console.log(masjidID)
 
-        const activity = await activityService.getAllActivity(masjidID);
+exports.getReport = async (req, res) => {
+    try {
+        const masjidId = req.user.masjid_id;
+
+        const activity = await activityService.getReport(masjidId);
 
         res.status(200).json({
             success: true,
@@ -107,8 +144,13 @@ exports.addActivity = async (req, res) => {
     try {
         const created_by = req.user.id;
         const masjid_id = req.user.masjid_id;
-        
-        const data = { ...req.body, created_by, masjid_id };
+
+        const activityData = req.body;
+        activityData.stakeholders = JSON.parse(req.body.stakeholders || '[]');
+        activityData.beneficiaries = JSON.parse(req.body.beneficiaries || '[]');
+        activityData.employees = JSON.parse(req.body.employees || '[]');
+
+        const data = { ...activityData, created_by, masjid_id };
 
         if (req.fileUrls && req.fileUrls.length > 0) {
             data.dokumentasi = req.fileUrls;
@@ -120,6 +162,7 @@ exports.addActivity = async (req, res) => {
             res.status(200).json({
                 success: true,
                 message: "Activity added successfully",
+                id: result,
             })
         } else {
             return res.status(400).json({
@@ -162,15 +205,18 @@ exports.deleteActivity = async (req, res) => {
 
 exports.updateActivity = async (req, res) => {
     try {
-        const userId = req.user.id;
+        const masjidId = req.user.masjid_id;
         const activityId = req.params.id;
         const activityData = req.body;
+        activityData.stakeholders = JSON.parse(req.body.stakeholders || '[]');
+        activityData.beneficiaries = JSON.parse(req.body.beneficiaries || '[]');
+        activityData.employees = JSON.parse(req.body.employees || '[]');
 
         if (req.fileUrls && req.fileUrls.length > 0) {
             activityData.dokumentasi = req.fileUrls;
         }
 
-        const result = await activityService.updateActivity(userId, activityId, activityData);
+        const result = await activityService.updateActivity(masjidId, activityId, activityData);
 
         res.status(200).json({
             success: true,

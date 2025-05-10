@@ -1,15 +1,6 @@
 const { pool } = require("../config/db.config");
 
 class ActivityModel {
-    async findAll() {
-        try {
-            const [rows] = await pool.query("SELECT * FROM aktivitas");
-            return rows;
-        } catch (error) {
-            throw error;
-        }
-    }
-
     async findByIdActivity(id) {
         try {
             const [rows] = await pool.query(
@@ -23,7 +14,48 @@ class ActivityModel {
         }
     }
 
-    async findAllActivity(id) {
+    async findAll(masjidId, params = {}) {
+        try {
+            let baseQuery = "FROM aktivitas WHERE masjid_id = ?";
+            const values = [masjidId];
+
+            if (params.nama_aktivitas) {
+                baseQuery += " AND nama_aktivitas LIKE ?";
+                values.push(`%${params.nama_aktivitas}%`);
+            }
+
+            if (params.jenis && params.jenis.length > 0) {
+                baseQuery += " AND jenis IN (?)";
+                values.push(params.jenis);
+            }
+
+            const countQuery = `SELECT COUNT(*) AS total ${baseQuery}`;
+            const [countRows] = await pool.query(countQuery, values);
+            const totalItems = countRows[0].total;
+
+            const sortColumn = params.sortColumn || "nama_aktivitas";
+            const sortOrder = params.sortOrder || "ASC";
+            const page = params.page || 1;
+            const limit = params.limit || 20;
+            const offset = (page - 1) * limit;
+
+            const dataQuery = `SELECT * ${baseQuery} ORDER BY ${sortColumn} ${sortOrder} LIMIT ? OFFSET ?`;
+            const dataValues = [...values, limit, offset];
+
+            const [dataRows] = await pool.query(dataQuery, dataValues);
+
+            return {
+                data: dataRows,
+                total: totalItems,
+                page,
+                limit,
+            };
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getReport(id) {
         try {
             const [rows] = await pool.query(
                 "SELECT a.*, p.nama_program FROM aktivitas a LEFT JOIN program p ON a.program_id = p.id WHERE a.masjid_id = ?",
