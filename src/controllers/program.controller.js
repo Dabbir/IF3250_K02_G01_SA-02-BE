@@ -14,13 +14,19 @@ exports.getAllPrograms = async (req, res, next) => {
     const limit = parseInt(req.query.limit || 15);
     const offset = (page - 1) * limit;
     const search = req.query.search || ""; 
-    const sortBy    = ALLOWED_SORT_FIELDS.includes(req.query.sortBy)? req.query.sortBy : "created_at";
+    const sortBy = ALLOWED_SORT_FIELDS.includes(req.query.sortBy) ? req.query.sortBy : "created_at";
     const sortOrder = req.query.sortOrder === "ASC" ? "ASC" : "DESC";
     const statuses = req.query.status ? req.query.status.split(",") : [];
 
+    let masjid_id = null;
+    
+    if (req.user.peran !== 'Admin') {
+      masjid_id = req.user.masjid_id;
+    }
+
     const [programs, total] = await Promise.all([
-      ProgramService.getAllPrograms(limit, offset, req.user.masjid_id, search, sortBy, sortOrder, statuses),
-      ProgramService.countAllPrograms(req.user.masjid_id, search, statuses)
+      ProgramService.getAllPrograms(limit, offset, masjid_id, search, sortBy, sortOrder, statuses),
+      ProgramService.countAllPrograms(masjid_id, search, statuses)
     ]);
 
     res.json({ data: programs, total });
@@ -31,8 +37,35 @@ exports.getAllPrograms = async (req, res, next) => {
 
 exports.getProgramById = async (req, res, next) => {
   try {
-    const program = await ProgramService.getProgramById(req.params.id, req.user.masjid_id);
-    if (!program) return res.status(404).json({ message: 'Program not found' });
+    const { id } = req.params;
+    
+    if (req.user.peran === 'Admin') {
+      console.log('Admin access');
+      const program = await ProgramService.getProgramByIdAdmin(id);
+      
+      if (!program) {
+        return res.status(404).json({ message: 'Program not found' });
+      }
+      
+      return res.json(program);
+    }
+    
+    const program = await ProgramService.getProgramById(id, req.user.masjid_id);
+    
+    if (!program) {
+      const programFromOtherMasjid = await ProgramService.getProgramByIdAdmin(id);
+      
+      if (programFromOtherMasjid) {
+        const hasViewerAccess = await ProgramService.hasViewerAccess(req.user.id, programFromOtherMasjid.masjid_id);
+        
+        if (hasViewerAccess) {
+          return res.json(programFromOtherMasjid);
+        }
+      }
+      
+      return res.status(404).json({ message: 'Program not found' });
+    }
+    
     res.json(program);
   } catch (error) {
     next(error);

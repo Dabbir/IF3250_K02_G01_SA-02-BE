@@ -13,6 +13,10 @@ class ProgramService {
     return await Program.getById(id, masjid_id);
   }
 
+  static async getProgramByIdAdmin(id) {
+    return await Program.getByIdAdmin(id);
+  }
+
   static async createProgram(data) {
     return await Program.create(data);
   }
@@ -23,6 +27,10 @@ class ProgramService {
 
   static async deleteProgram(id, masjid_id) {
     return await Program.delete(id, masjid_id);
+  }
+
+  static async hasViewerAccess(userId, masjidId) {
+    return await Program.hasViewerAccess(userId, masjidId);
   }
 }
 

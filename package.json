@@ -12,7 +12,7 @@
     "seed": "node scripts/seed.js",
     "migrate": "node scripts/migrations.js",
     "create-migration": "node scripts/migrations.js create",
-    "install": "npm install --omit=dev"
+    "install": "npm install --omit=dev --legacy-peer-deps"
   },
   "repository": {
     "type": "git",

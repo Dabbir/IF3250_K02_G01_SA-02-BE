@@ -1,4 +1,3 @@
-// services/fileService.js atau services/drive.service.js
 const drive = require('../config/drive.config');
 const { Readable } = require('stream');
 
