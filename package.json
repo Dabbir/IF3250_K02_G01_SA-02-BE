@@ -11,7 +11,8 @@
     "init-db": "node scripts/init-db.js",
     "seed": "node scripts/seed.js",
     "migrate": "node scripts/migrations.js",
-    "create-migration": "node scripts/migrations.js create"
+    "create-migration": "node scripts/migrations.js create",
+    "install": "npm install --omit=dev"
   },
   "repository": {
     "type": "git",
