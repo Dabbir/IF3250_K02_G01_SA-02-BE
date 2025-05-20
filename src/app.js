@@ -16,9 +16,10 @@ const app = express();
 app.use(cors({
   origin: [
     'www.salmansustainability.org',
-    'if-3250-k02-g01-sa-02-fe.vercel.app',
-    'if-3250-k02-g01-sa-02-fe-marzuli-suhadas-projects.vercel.app',
-    'if-3250-k02-g01-sa-02-fe-13522070-6684-marzuli-suhadas-projects.vercel.app'
+    'https://if-3250-k02-g01-sa-02-fe.vercel.app',
+    'https://if-3250-k02-g01-sa-02-fe-marzuli-suhadas-projects.vercel.app',
+    'https://if-3250-k02-g01-sa-02-fe-13522070-6684-marzuli-suhadas-projects.vercel.app',
+    'https://if3250k02g01sa-02-be-production.up.railway.app/api/auth/login'
   ],
   methods: "GET, POST, PUT, DELETE, OPTIONS",
   allowedHeaders: "Content-Type, Authorization",
