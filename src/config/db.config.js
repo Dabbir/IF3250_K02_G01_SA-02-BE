@@ -9,6 +9,11 @@ const dbConfig = {
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
+  ssl: process.env.DB_SSL
+    ? {
+        rejectUnauthorized: false,
+      }
+    : false,
 };
 
 const pool = mysql.createPool(dbConfig);
