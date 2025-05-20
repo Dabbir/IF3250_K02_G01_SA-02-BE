@@ -27,7 +27,7 @@ async function startServer() {
       console.log(`Server running on port ${PORT}`);
       
       if (process.env.NODE_ENV === 'production') {
-        console.log(`App running at: ${process.env.BASE_URL || 'Railway URL'}`);
+        console.log(`App running at: ${process.env.BASE_URL}`);
       }
     });
   } catch (error) {
