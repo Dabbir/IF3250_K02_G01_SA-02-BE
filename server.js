@@ -12,8 +12,8 @@ const db = require('./src/config/db.config');
  *     description: Endpoint untuk manajemen data pengguna
  */
 
-const PORT = process.env.PORT || 3000;
-const HOST = process.env.HOST || 'localhost';
+const PORT = process.env.PORT;
+const HOST = process.env.HOST;
 
 async function startServer() {
   try {
