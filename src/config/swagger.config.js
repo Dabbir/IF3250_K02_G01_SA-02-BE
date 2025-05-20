@@ -14,7 +14,7 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3000',
+        url: 'https://if3250k02g01sa-02-be-production.up.railway.app',
         description: 'Development server',
       },
     ],
