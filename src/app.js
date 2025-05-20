@@ -14,7 +14,12 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: process.env.ORIGIN || true,
+  origin: [
+    'www.salmansustainability.org',
+    'if-3250-k02-g01-sa-02-fe.vercel.app',
+    'if-3250-k02-g01-sa-02-fe-marzuli-suhadas-projects.vercel.app',
+    'if-3250-k02-g01-sa-02-fe-13522070-6684-marzuli-suhadas-projects.vercel.app'
+  ],
   methods: "GET, POST, PUT, DELETE, OPTIONS",
   allowedHeaders: "Content-Type, Authorization",
   credentials: true
