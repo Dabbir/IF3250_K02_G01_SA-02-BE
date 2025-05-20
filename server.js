@@ -18,7 +18,7 @@ const HOST = process.env.HOST || 'localhost';
 async function startServer() {
   try {
     await db.testConnection();
-    app.listen(PORT, '0.0.0.0' , () => {
+    app.listen(PORT, () => {
       logger.info(`Server running on port ${PORT}`);
       logger.info(`API documentation available at http://${HOST}:${PORT}/api-docs`);
     });
