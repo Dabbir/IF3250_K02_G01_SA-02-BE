@@ -3,10 +3,17 @@ const mysql = require("mysql2/promise");
 const bcrypt = require('bcryptjs');
 
 const dbConfig = {
-  host: process.env.DB_HOST || "localhost",
-  user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "",
-  database: process.env.DB_NAME || "db",
+  host: process.env.DB_HOST || 'mysql-19069af5-ahmadmudabbir03-3bf2.g.aivencloud.com', // mysql-xxx.aivencloud.com
+  user: process.env.DB_USER || 'avnadmin', // avnadmin
+  password: process.env.DB_PASSWORD || 'AVNS_nMOA-WxvDdw2ZYwsl3A', // aiven password
+  database: process.env.DB_NAME || "defaultdb", // defaultdb
+  port: process.env.DB_PORT || 28717,
+  ssl: {
+    rejectUnauthorized: false // Required for Aiven SSL
+  },
+  timeout: 60000,
+  acquireTimeout: 60000,
+  reconnect: true
 };
 
 async function seedDatabase() {

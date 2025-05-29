@@ -15,6 +15,7 @@ const app = express();
 // Middleware
 app.use(cors({
   origin: [
+    'http://localhost:5173',
     'www.salmansustainability.org',
     'https://if-3250-k02-g01-sa-02-fe.vercel.app',
     'https://if-3250-k02-g01-sa-02-fe-marzuli-suhadas-projects.vercel.app',

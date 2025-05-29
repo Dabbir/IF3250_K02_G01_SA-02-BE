@@ -1,4 +1,7 @@
-require('dotenv').config();
+const path = require('path');
+const envFile = `.env.${process.env.NODE_ENV || 'development'}`;
+require('dotenv').config({ path: path.resolve(__dirname, envFile) });
+
 const app = require('./src/app');
 const { logger } = require('./src/utils/logger');
 const db = require('./src/config/db.config');
@@ -25,7 +28,6 @@ async function startServer() {
     
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
-      
       if (process.env.NODE_ENV === 'production') {
         console.log(`App running at: ${process.env.BASE_URL}`);
       }

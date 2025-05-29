@@ -1,4 +1,11 @@
 const mysql = require("mysql2/promise");
+const dotenv = require("dotenv");
+
+const env = process.env.NODE_ENV || "development";
+
+dotenv.config({
+  path: env === "production" ? ".env.production" : ".env.development",
+});
 
 const dbConfig = {
   host: process.env.DB_HOST,
@@ -9,9 +16,7 @@ const dbConfig = {
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  ssl: env === "production" ? { rejectUnauthorized: false } : undefined,
 };
 
 const pool = mysql.createPool(dbConfig);
@@ -19,11 +24,11 @@ const pool = mysql.createPool(dbConfig);
 async function testConnection() {
   try {
     const connection = await pool.getConnection();
-    console.log("Database connected successfully");
+    console.log(`[${env.toUpperCase()}] Database connected successfully`);
     connection.release();
     return true;
   } catch (error) {
-    console.error("Database connection failed:", error);
+    console.error(`[${env.toUpperCase()}] Database connection failed:`, error);
     throw error;
   }
 }
