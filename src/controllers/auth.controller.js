@@ -79,7 +79,7 @@ exports.callback = async (req, res) => {
       { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
     );
     
-    const redirectUrl = new URL('/auth/callback', process.env.ORIGIN);
+    const redirectUrl = new URL('/auth/google/callback', process.env.ORIGIN);
     redirectUrl.searchParams.append('token', token);
     console.log("redirectUrl", redirectUrl.toString());
     
