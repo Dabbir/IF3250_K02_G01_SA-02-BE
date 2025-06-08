@@ -1,9 +1,9 @@
-const path = require('path');
-const envFile = `.env${process.env.NODE_ENV ? `.${process.env.NODE_ENV}` : ''}`;
-require('dotenv').config({ path: path.resolve(__dirname, envFile) });
+// const path = require('path');
+// const envFile = `.env${process.env.NODE_ENV ? `.${process.env.NODE_ENV}` : ''}`;
+// require('dotenv').config({ path: path.resolve(__dirname, envFile) });
 
 const app = require('./src/app');
-const { logger } = require('./src/utils/logger');
+// const { logger } = require('./src/utils/logger');
 const db = require('./src/config/db.config');
 
 process.on('uncaughtException', (error) => {
@@ -28,9 +28,7 @@ async function startServer() {
 
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server running on port ${PORT}`);
-      if (process.env.NODE_ENV === 'production') {
-        console.log(`App running at: ${process.env.BASE_URL}`);
-      }
+      console.log(`App running at: ${process.env.BASE_URL}`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);
