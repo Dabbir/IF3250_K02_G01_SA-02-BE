@@ -1,0 +1,52 @@
+runtime: nodejs20
+
+env_variable:
+  NODE_ENV: development
+  BASE_URL: https://salman-sustainability-re-41855.et.r.appspot.com
+
+  # Frontend
+  FRONTEND_URL: https://salman-sustainability-re-41855.web.app
+  ORIGIN: https://salman-sustainability-re-41855.web.app
+
+  # Database
+  DB_HOST: 34.101.244.115
+  DB_USER: root
+  DB_PASSWORD: salmansr123
+  DB_NAME: salman_db
+  DB_PORT: 3306
+
+  # JWT
+  JWT_SECRET: 2d87f9c7c90a69e2f715fb14c25a01b572ea5411d5a462e107c07eea84a8bc7ecca44020c75060d5ebadd19867da5296293b3e7c87e89e5fd8bdd3ce2e405fbc
+  JWT_EXPIRES_IN: 1h
+
+  # Google
+  OAUTH_CLIENT_ID: 724516936970-rjpaknfinhtn34s20tdcu55ahk12371e.apps.googleusercontent.com
+  GOOGLE_CLIENT_SECRET: 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
+  GOOGLE_CALLBACK_URL: http://localhost:8080/api/auth/google/callback
+
+  # Google Drive
+  GOOGLE_DRIVE_CLIENT_EMAIL: drive-salman-sustainability-re@salman-sustainability-re-41855.iam.gserviceaccount.com
+  GOOGLE_DRIVE_PRIVATE_KEY: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCeXmL/inVKXJDz\nSwsTSOd8Xok72V9WtyLx5vduzu2g2kTOvWxv0umlKroJKOnN9eKQUSwuciPfNHEY\ndnwaVs+WKmm2uJXLX98Zbz9wUm8h+XOqGISoI721Bj5Zh45DpDJzv6yqwSqPOaNA\noQ1c0ZYpJislhpS0AZxcVNjYL65TTfsGJenDL8btax4L8EL9CGzVqPwWErdcSy/m\n/QcAYpT47FKIyyhmQoe0GZRmfRieuM4LjOBuO98hacGf6zzYXwkZ/woHAPrmqbdj\n3gtxS45bkAlax6NIrqJJ83OHFpjD5ic/te9sQNWukpYOi2z5NcM3PS5/JKRMOCH4\nCZ5eQjbHAgMBAAECggEAAmboFXwiH0icIjSHLHm0mRxN9Ixtd8E7VHPuWM3mqMPm\nu0QAOwn15T1qqOzn7unFz+6LPwEYLjB7bqWNaFDcwShPhifyja0ckyQu0CNP8DH6\nYSASEwLHw9EebPkzXS9GXJ8RnV1kqdtz8G0A6OF8547epKkP5FMJ7hSTXWQLvtOv\n2PNFBard8olKe4M0ZlXnQlpW/oFycSq9wCqPGQmsthDOzM0XpRMwvHcpDvdEVdxr\nHiTcMTP4P+CcPE8ymZDHkc3NfwH8Zvn39/yOgGCZ4aXjfKhh/VAQnvsK1LKniMy7\nTmQDTEPq0eTuJJqj4FaA1VFdWAPMv+e15o1JPM7b4QKBgQDOFkyXOCVy9pGVvF5t\nsGuOWy+Xq3yh9pRBbAXnrfHQ1Uh+wqm4fs0P2vdk+lHZWkN5Vx5HpVBlhuJTd6rf\njTBI+uwIIDGWCtxt45/D3qrUCME1ECOjgRmVjOMrk+9TiIkvfsE7ZsKG9HUleSrf\nO9Ty6NuLrBZNpQWZck1LILTCDwKBgQDEuXoJrIy+vd7voxhLX5fSkLnyXRSNQVp+\neNNBa/7+7SoK/UXkyV5WdLevIel+2SAWv8ULoj8PiMtkphRY+fVIeFi5lIdu6Z0j\n6S+7OkNuBqI9OrTUlyZShYVBUhAIE6H2bztZzxiOIbZpff8T7S8QOTYyscux5m9d\nL+zMQzGXyQKBgHPw66nvdnIU8Zax4NYI+JmgB0hmu7lKxeGAaloK7A42z5Aw59bZ\nz3fqEmCGy2FifK9ZKbnY8UANAGtA2arm/ZExSXTQ19S3y4cvFgTV0nlza27043fq\n+3+9QViU44G1QKitwPwwNaRDB1zLrCjmukjmZA1SBUItYtcPDRkFD2xVAoGBALsh\niBINvjBvItMnfKOuQhh9rTP8EOGxiiiGPMaduYm8BmM/u62/U2rASj5g7uDIH3sk\nXocLhhr70CZkyTQ+SXHvcM7Pl+kMdntDhTD/YkcWLlw6LOuRAFY9Rp31NuTH8Cgg\ndP+gPUZukTtWLD9DPqKbGZAtiosmnUayoPlI7bLpAoGAWrPKpby5nAiP5UzqPNg2\nqLvY+GbVJM1gVRhptljWMnhOifG0COG796zeREb54ewCT8Q54NDYq1EVl3CHFYS9\nPhUHe2ZZhkRCJ0olzrEfKx6YRg3iQ37BAzS2A1+ox/Lfv0Cy1uk2s7+JW+PP/KlH\njvUlm3TOxqugy3snEfWTtHo=\n-----END PRIVATE KEY-----\n"
+  GOOGLE_DRIVE_FOLDER_ID: 1mlIM0BsTQ0-OcuyA4cNqhGJh5T2B4loX
+
+  # Cloudinary
+  CLOUDINARY_CLOUD_NAME: dclrsid45
+  CLOUDINARY_API_KEY: 291438995753164
+  CLOUDINARY_API_SECRET: c6_Xf9piXRWJ6mS6kiaFid_t4uQ
+
+  GOOGLE_TYPE: service_account
+  GOOGLE_PROJECT_ID: salman-sustainability-re-41855
+  GOOGLE_PRIVATE_KEY_ID: 15b183b3a328ac4843f5ed174872066015d4203f
+  GOOGLE_PRIVATE_KEY: "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDLmkOQxMB/xvWg\nrx9X0TNOAVRddBPABjoQtA9bqvrjHy1ZjHQPTw0HpkSwePrvlfPMWDy9s7ZQv10u\navrnmhs7rBst3ttzpbsXiqXfM9zfRvobOfH7ydwtfWQlZJ93YY0Nzlj3jswmw7mP\n+IZpej/7tWUeLSVlkRf8wWxx84xWtdSI+BqtmiRczFBNGj4kWQEQFt3w8NiwWF+8\nTcj/XgoEUaad8gLkDCXtb/YkQhFNYuhLdekM+4MULczcbW/GNfi/6eeXRMwXMdKD\n3IzY9clOZjQK3mCHQP6G6h7iVfge9r5w/DIMkA1FtzDRJsg/Uw6r8HCGwSo65/FY\nD+RFZVgNAgMBAAECggEAH+DhO9lGj6sh+dz5khkoCIpmQHSkhAAllshukCqC+k0/\nH0KByITW1DAJGL10gs9OexwEtKoe/WEdEJ/A9cLYCT2PCt1WLHMSSmMTyhEXf+Ef\n12P4+rS2M+wqYj1xR3KfcH4yyV4TIm2qT/u4Zer1ei6CbNliPdccM5/AYE4jFs89\nf9KQKicOZWmV6uG/sI6RypwR+69KuvC1y/ZatUxlq6sYCXB81ftoxiuoC7bjDRWU\neP44B71t7gmZhmGoxtOQkmQt+9QEzBpe3R40IpCxyYZLqGURIKxLX2d+Y1i+z9UK\nZvo4NG+773qgzyahP9dg6L2FqpMzKE6O3h8NgFJJgQKBgQDlA0PbnC26k8k5OBtm\nSrVKU5CrHesWS47c0F0Su+69/+6kqtwTKbUpOWudHnES4eWPVEoO6C9lwKjxj9E1\nYwLfg7t6P2EiN2cjMh1wiiOyl9tOupudl+Bg2vG4aIlS5xUoRToTT/HNKuufPLPg\nTWLUwXtUZvfNg/UVWXSXMuamgQKBgQDjmHBLP/irwvZrs3MzLZCrbJZZpl1S0cZk\nqU/w+0NdJ6nGPcrkO9cFcg/UvOtZ6xC75vGlt1Ai5ysHa7Dv+Tk2oz4RCODSlJZc\n7ZcWWd1QGEGn2uR5rluoA5qzLt7MKRjI8kSum/zGtR+TG3OTbWw02TBS3Ui/jZkM\nMKefV5gjjQKBgHmCyv16F5VYlrsCdx9GYnymbCsu+65fttSYxdmL17f+VMwQUCbm\nyVWvPtcl8M8ZBumOyqCwN33gxIMvUMzn1P1tcwsBF/PEu7ej/pTY5un6wwU55Bmx\nHP+nC/xRkxNmwwYT/SWEFINM06ow1iwcQ2Upp9t3quHjsyV5ym/zNQiBAoGARr9Y\nCMw17I6KMyhxIvODCQaUJgIE+H2lAh1vcCVq50YxDCKhMxk22cZ/DU48ipL7fK1p\naG33RyI8ye277py2IDnWTU1JNaxioThpwtTkasVfg2ITq497hlq4eAKV1zjfL3e/\nyddLWCltSzk5UBavkC4DS37l4kWN0bA+KtX7wPECgYEArsylKeHMGSKcZLKfp0bw\nftvvQ9M2TCz9/DirsOPBAyKWKk73sFOMxWYVQRqnnDGvV2BB7EaYRT3BnzAxUwC1\n4yMUbClz/ZHLEkAGGv6vmYGGusiOmZI+sP5XFWV3FVanNKJlEswrug353CJxCQjx\ntjdH0lbHSF3uWxuBFpOuh2Q=\n-----END PRIVATE KEY-----\n"
+  GOOGLE_CLIENT_EMAIL: drive-salman-sustainability-re@salman-sustainability-re-41855.iam.gserviceaccount.com
+  GOOGLE_CLIENT_ID: 105380391212014499423
+  GOOGLE_AUTH_URI: https://accounts.google.com/o/oauth2/auth
+  GOOGLE_TOKEN_URI: https://oauth2.googleapis.com/token
+  GOOGLE_AUTH_PROVIDER_CERT_URL: https://www.googleapis.com/oauth2/v1/certs
+  GOOGLE_CLIENT_CERT_URL: https://www.googleapis.com/robot/v1/metadata/x509/drive-salman-sustainability-re%40salman-sustainability-re-41855.iam.gserviceaccount.com
+  UNIVERSE_DOMAIN: googleapis.com
+
+instance_class: F2
+automatic_scaling:
+  min_instances: 0
+  max_instances: 2
