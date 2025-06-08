@@ -3,7 +3,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production
 COPY . .
-COPY .env.development .env.development
 RUN mkdir -p /app/src/logs && chmod -R 777 /app/src/logs
 RUN mkdir -p uploads
 EXPOSE 8080
