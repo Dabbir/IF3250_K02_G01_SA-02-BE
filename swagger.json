@@ -1,0 +1,3796 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Salman Sustainability Report API",
+    "version": "1.0.0",
+    "description": "\n        API documentation for Salman Sustainability Report\n        \n        ## Authentication\n        This API uses JWT Bearer tokens for authentication.\n        \n        ## Rate Limiting\n        API calls are limited to prevent abuse.\n        \n        ## Error Handling\n        All errors return JSON with error message and status code.\n      ",
+    "contact": {
+      "name": "Kelompok 01",
+      "email": "kelompok01@example.com",
+      "url": "https://github.com/kelompok01/sustainability-report"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://if3250k02g01sa-02-be-production.up.railway.app",
+      "description": "Production server"
+    },
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Enter JWT token in format: Bearer <token>"
+      }
+    },
+    "responses": {
+      "UnauthorizedError": {
+        "description": "Access token is missing or invalid",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Unauthorized"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Training": {
+        "type": "object",
+        "required": [
+          "nama_pelatihan",
+          "waktu_mulai",
+          "waktu_akhir",
+          "lokasi",
+          "kuota",
+          "masjid_id"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "The auto-generated ID of the training"
+          },
+          "nama_pelatihan": {
+            "type": "string",
+            "description": "Name of the training"
+          },
+          "deskripsi": {
+            "type": "string",
+            "description": "Description of the training"
+          },
+          "waktu_mulai": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Start time of the training"
+          },
+          "waktu_akhir": {
+            "type": "string",
+            "format": "date-time",
+            "description": "End time of the training"
+          },
+          "lokasi": {
+            "type": "string",
+            "description": "Location of the training"
+          },
+          "kuota": {
+            "type": "integer",
+            "description": "Maximum number of participants"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Upcoming",
+              "Ongoing",
+              "Completed",
+              "Cancelled"
+            ],
+            "description": "Status of the training"
+          },
+          "masjid_id": {
+            "type": "integer",
+            "description": "ID of the associated mosque"
+          },
+          "created_by": {
+            "type": "integer",
+            "description": "ID of the user who created the training"
+          }
+        },
+        "example": {
+          "nama_pelatihan": "Basic Quran Recitation",
+          "deskripsi": "Learn the basics of Quran recitation",
+          "waktu_mulai": "2023-06-01T09:00:00Z",
+          "waktu_akhir": "2023-06-01T12:00:00Z",
+          "lokasi": "Main Hall",
+          "kuota": 30,
+          "status": "Upcoming",
+          "masjid_id": 1
+        }
+      },
+      "TrainingRegistration": {
+        "type": "object",
+        "properties": {
+          "catatan": {
+            "type": "string",
+            "description": "Notes for the registration"
+          }
+        },
+        "example": {
+          "catatan": "I have basic knowledge of tajweed"
+        }
+      },
+      "ParticipantStatusUpdate": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "Pending",
+              "Approved",
+              "Rejected",
+              "Attended"
+            ],
+            "description": "Status of the participant's registration"
+          },
+          "catatan": {
+            "type": "string",
+            "description": "Notes regarding the status update"
+          }
+        },
+        "example": {
+          "status": "Approved",
+          "catatan": "Welcome to the training!"
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "User authentication endpoints"
+    },
+    {
+      "name": "Reports",
+      "description": "Sustainability report management"
+    },
+    {
+      "name": "Users",
+      "description": "User management"
+    },
+    {
+      "name": "Admin Management",
+      "description": "Endpoint untuk manajemen approval editor oleh admin"
+    },
+    {
+      "name": "Viewer Management",
+      "description": "Endpoint untuk manajemen akses viewer oleh editor"
+    },
+    {
+      "name": "Access Requests",
+      "description": "Endpoint untuk mengelola permintaan akses"
+    },
+    {
+      "name": "Access Checks",
+      "description": "Endpoint untuk memeriksa hak akses"
+    },
+    {
+      "name": "Beneficiary",
+      "description": "API untuk mengelola data beneficiary"
+    },
+    {
+      "name": "Trainings",
+      "description": "API endpoints for managing trainings"
+    }
+  ],
+  "paths": {
+    "/api/access/editors/pending": {
+      "get": {
+        "summary": "Mendapatkan daftar editor yang masih pending approval",
+        "tags": [
+          "Admin Management"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar editor berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Pending editors retrieved successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "nama": {
+                            "type": "string"
+                          },
+                          "email": {
+                            "type": "string"
+                          },
+                          "peran": {
+                            "type": "string",
+                            "example": "Editor"
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "Pending"
+                          },
+                          "masjid_id": {
+                            "type": "integer"
+                          },
+                          "nama_masjid": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token tidak valid atau tidak ditemukan"
+          },
+          "403": {
+            "description": "Tidak memiliki hak akses admin"
+          }
+        }
+      }
+    },
+    "/api/access/editors/{editorId}/approve": {
+      "put": {
+        "summary": "Menyetujui editor",
+        "tags": [
+          "Admin Management"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "editorId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID editor yang akan disetujui"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Editor berhasil disetujui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Editor approved successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "nama": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "Approved"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token tidak valid atau tidak ditemukan"
+          },
+          "403": {
+            "description": "Tidak memiliki hak akses admin"
+          },
+          "404": {
+            "description": "Editor tidak ditemukan"
+          }
+        }
+      }
+    },
+    "/api/access/editors/{editorId}/reject": {
+      "put": {
+        "summary": "Menolak editor",
+        "tags": [
+          "Admin Management"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "editorId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID editor yang akan ditolak"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Editor berhasil ditolak",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Editor rejected successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "nama": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "Rejected"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token tidak valid atau tidak ditemukan"
+          },
+          "403": {
+            "description": "Tidak memiliki hak akses admin"
+          },
+          "404": {
+            "description": "Editor tidak ditemukan"
+          }
+        }
+      }
+    },
+    "/api/access/viewers/masjid/{masjidId}": {
+      "get": {
+        "summary": "Mendapatkan daftar viewer yang sudah disetujui untuk suatu masjid",
+        "tags": [
+          "Viewer Management"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "masjidId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID masjid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar viewer berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Approved viewers retrieved successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "viewer_nama": {
+                            "type": "string"
+                          },
+                          "viewer_email": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "Approved"
+                          },
+                          "expires_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token tidak valid atau tidak ditemukan"
+          },
+          "403": {
+            "description": "Tidak memiliki hak akses editor untuk masjid ini"
+          }
+        }
+      }
+    },
+    "/api/access/viewers/pending/masjid/{masjidId}": {
+      "get": {
+        "summary": "Mendapatkan daftar permintaan akses viewer yang pending",
+        "tags": [
+          "Viewer Management"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "masjidId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID masjid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar permintaan akses viewer berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Pending viewer requests retrieved successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "viewer_nama": {
+                            "type": "string"
+                          },
+                          "viewer_email": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "Pending"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token tidak valid atau tidak ditemukan"
+          },
+          "403": {
+            "description": "Tidak memiliki hak akses editor untuk masjid ini"
+          }
+        }
+      }
+    },
+    "/api/access/viewers/{requestId}/approve": {
+      "put": {
+        "summary": "Menyetujui permintaan akses viewer",
+        "tags": [
+          "Viewer Management"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "requestId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID permintaan akses"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Permintaan akses viewer berhasil disetujui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Viewer access request approved successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token tidak valid atau tidak ditemukan"
+          },
+          "403": {
+            "description": "Tidak memiliki hak akses editor untuk masjid ini"
+          },
+          "404": {
+            "description": "Permintaan akses tidak ditemukan"
+          }
+        }
+      }
+    },
+    "/api/access/viewers/{requestId}/reject": {
+      "put": {
+        "summary": "Menolak permintaan akses viewer",
+        "tags": [
+          "Viewer Management"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "requestId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID permintaan akses"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Permintaan akses viewer berhasil ditolak",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Viewer access request rejected successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token tidak valid atau tidak ditemukan"
+          },
+          "403": {
+            "description": "Tidak memiliki hak akses editor untuk masjid ini"
+          },
+          "404": {
+            "description": "Permintaan akses tidak ditemukan"
+          }
+        }
+      }
+    },
+    "/api/access/viewers/{requestId}": {
+      "delete": {
+        "summary": "Menghapus akses viewer",
+        "tags": [
+          "Viewer Management"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "requestId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID akses viewer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Akses viewer berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Viewer access removed successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token tidak valid atau tidak ditemukan"
+          },
+          "403": {
+            "description": "Tidak memiliki hak akses editor untuk masjid ini"
+          },
+          "404": {
+            "description": "Akses viewer tidak ditemukan"
+          }
+        }
+      }
+    },
+    "/api/access/viewers/request": {
+      "post": {
+        "summary": "Meminta akses sebagai viewer ke masjid lain",
+        "tags": [
+          "Access Requests"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "masjidId"
+                ],
+                "properties": {
+                  "masjidId": {
+                    "type": "integer",
+                    "description": "ID masjid yang ingin diakses"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Permintaan akses viewer berhasil dikirim",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Viewer access request submitted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Data yang dikirim tidak valid"
+          },
+          "401": {
+            "description": "Token tidak valid atau tidak ditemukan"
+          },
+          "403": {
+            "description": "Pengguna bukan editor yang sudah disetujui"
+          }
+        }
+      }
+    },
+    "/api/access/masjids": {
+      "get": {
+        "summary": "Mendapatkan daftar masjid yang dapat diakses oleh pengguna",
+        "tags": [
+          "Access Requests"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar masjid berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Accessible masjids retrieved successfully"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "nama_masjid": {
+                            "type": "string"
+                          },
+                          "alamat": {
+                            "type": "string"
+                          },
+                          "access_type": {
+                            "type": "string",
+                            "enum": [
+                              "Editor",
+                              "Viewer"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token tidak valid atau tidak ditemukan"
+          }
+        }
+      }
+    },
+    "/api/access/check/viewer/{masjidId}": {
+      "get": {
+        "summary": "Memeriksa apakah pengguna memiliki akses viewer ke masjid",
+        "tags": [
+          "Access Checks"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "masjidId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID masjid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status akses berhasil diperiksa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "hasAccess": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token tidak valid atau tidak ditemukan"
+          }
+        }
+      }
+    },
+    "/api/access/check/editor/{masjidId}": {
+      "get": {
+        "summary": "Memeriksa apakah pengguna memiliki akses editor ke masjid",
+        "tags": [
+          "Access Checks"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "masjidId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID masjid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status akses berhasil diperiksa",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "hasAccess": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token tidak valid atau tidak ditemukan"
+          }
+        }
+      }
+    },
+    "/api/activity/getactivity/{id}": {
+      "get": {
+        "summary": "Mendapatkan data aktivitas berdasarkan ID aktivitas",
+        "tags": [
+          "Activity"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID aktivitas"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data aktivitas berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Activity"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Aktivitas tidak ditemukan"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/activity/getactivity/": {
+      "get": {
+        "summary": "Mendapatkan semua aktivitas",
+        "tags": [
+          "Activity"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data aktivitas berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Activity"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/activity/idprogram/": {
+      "get": {
+        "summary": "Mendapatkan ID program",
+        "tags": [
+          "Activity"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ID program berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/activity/idactivity/": {
+      "get": {
+        "summary": "Mendapatkan ID aktivitas",
+        "tags": [
+          "Activity"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ID aktivitas berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/activity/program/{id}": {
+      "get": {
+        "summary": "Mendapatkan list aktivitas berdasarkan ID program",
+        "tags": [
+          "Activity"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID aktivitas"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data aktivitas berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Activity"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Aktivitas tidak ditemukan"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/activity/add": {
+      "post": {
+        "summary": "Menambahkan aktivitas baru",
+        "tags": [
+          "Activity"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nama_aktivitas": {
+                    "type": "string",
+                    "example": "Pelatihan Keterampilan Digital"
+                  },
+                  "deskripsi": {
+                    "type": "string",
+                    "example": "Program ini bertujuan untuk meningkatkan keterampilan digital peserta."
+                  },
+                  "dokumentasi": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Array of image URLs for documentation",
+                    "example": [
+                      "http://localhost:8080/uploads/dokumentasi1.jpg",
+                      "http://localhost:8080/uploads/dokumentasi2.jpg"
+                    ]
+                  },
+                  "tanggal_mulai": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2025-04-01"
+                  },
+                  "tanggal_selesai": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2025-04-10"
+                  },
+                  "biaya_implementasi": {
+                    "type": "number",
+                    "example": 5000000
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "Unstarted",
+                      "Ongoing",
+                      "Finished"
+                    ],
+                    "example": "Ongoing"
+                  },
+                  "program_id": {
+                    "type": "integer",
+                    "example": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Aktivitas berhasil ditambahkan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Aktivitas berhasil ditambahkan"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 10
+                        },
+                        "nama_aktivitas": {
+                          "type": "string",
+                          "example": "Pelatihan Keterampilan Digital"
+                        },
+                        "deskripsi": {
+                          "type": "string",
+                          "example": "Program ini bertujuan untuk meningkatkan keterampilan digital peserta."
+                        },
+                        "dokumentasi": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "example": [
+                            "http://localhost:8080/uploads/dokumentasi1.jpg",
+                            "http://localhost:8080/uploads/dokumentasi2.jpg"
+                          ]
+                        },
+                        "tanggal_mulai": {
+                          "type": "string",
+                          "format": "date",
+                          "example": "2025-04-01"
+                        },
+                        "tanggal_selesai": {
+                          "type": "string",
+                          "format": "date",
+                          "example": "2025-04-10"
+                        },
+                        "biaya_implementasi": {
+                          "type": "number",
+                          "example": 5000000
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "Ongoing"
+                        },
+                        "program_id": {
+                          "type": "integer",
+                          "example": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (validasi gagal)"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/activity/delete/{id}": {
+      "delete": {
+        "summary": "Menghapus aktivitas berdasarkan ID",
+        "tags": [
+          "Activity"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID aktivitas yang akan dihapus"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Aktivitas berhasil dihapus",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Activity deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Pengguna tidak diizinkan untuk menghapus aktivitas ini"
+          },
+          "404": {
+            "description": "Aktivitas tidak ditemukan"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/activity/update/{id}": {
+      "put": {
+        "summary": "Update an activity by ID",
+        "tags": [
+          "Activity"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the activity to update"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nama_aktivitas": {
+                    "type": "string"
+                  },
+                  "deskripsi": {
+                    "type": "string"
+                  },
+                  "tanggal_mulai": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "tanggal_selesai": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "biaya_implementasi": {
+                    "type": "number"
+                  },
+                  "status": {
+                    "type": "string"
+                  },
+                  "program_id": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Activity updated successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Activity not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/activity/add/sheet": {
+      "post": {
+        "summary": "Menambahkan sheet aktivitas baru",
+        "tags": [
+          "Activity"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Sheet aktivitas berhasil ditambahkan"
+          },
+          "400": {
+            "description": "Bad request (validasi gagal)"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "summary": "Mendaftarkan pengguna baru",
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Pengguna berhasil terdaftar"
+          },
+          "400": {
+            "description": "Data yang dikirim tidak valid"
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Login pengguna",
+        "tags": [
+          "Authentication"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    },
+                    "user": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Email atau password tidak valid"
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "summary": "Logout pengguna",
+        "tags": [
+          "Authentication"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Logout berhasil"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/beneficiary": {
+      "post": {
+        "summary": "Menambahkan beneficiary baru",
+        "tags": [
+          "Beneficiary"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Beneficiary berhasil ditambahkan"
+          },
+          "400": {
+            "description": "Data tidak valid"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "summary": "Mendapatkan daftar semua beneficiary",
+        "tags": [
+          "Beneficiary"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar beneficiary berhasil diambil"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/beneficiary/aktivitas/{aktivitasId}": {
+      "get": {
+        "summary": "Mendapatkan beneficiary berdasarkan ID aktivitas",
+        "tags": [
+          "Beneficiary"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "aktivitasId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data beneficiary berhasil ditemukan"
+          },
+          "404": {
+            "description": "Data tidak ditemukan"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/beneficiary/{id}": {
+      "get": {
+        "summary": "Mendapatkan beneficiary berdasarkan ID",
+        "tags": [
+          "Beneficiary"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Beneficiary ditemukan"
+          },
+          "404": {
+            "description": "Beneficiary tidak ditemukan"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Memperbarui data beneficiary berdasarkan ID",
+        "tags": [
+          "Beneficiary"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Data beneficiary berhasil diperbarui"
+          },
+          "400": {
+            "description": "Data tidak valid"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Beneficiary tidak ditemukan"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Menghapus beneficiary berdasarkan ID",
+        "tags": [
+          "Beneficiary"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Beneficiary berhasil dihapus"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Beneficiary tidak ditemukan"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/employee": {
+      "get": {
+        "summary": "Mendapatkan daftar karyawan",
+        "tags": [
+          "Employee"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar karyawan berhasil diambil"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Menambahkan karyawan baru",
+        "tags": [
+          "Employee"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nama": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "telepon": {
+                    "type": "string"
+                  },
+                  "alamat": {
+                    "type": "string"
+                  },
+                  "foto": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Karyawan berhasil ditambahkan"
+          },
+          "400": {
+            "description": "Data tidak valid"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/employee/activity/{id}": {
+      "get": {
+        "summary": "Mendapatkan aktivitas karyawan berdasarkan ID",
+        "tags": [
+          "Employee"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID unik karyawan"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Aktivitas karyawan berhasil diambil"
+          },
+          "404": {
+            "description": "Karyawan tidak ditemukan"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/employee/{id}": {
+      "get": {
+        "summary": "Mendapatkan karyawan berdasarkan ID",
+        "tags": [
+          "Employee"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Karyawan berhasil ditemukan"
+          },
+          "404": {
+            "description": "Karyawan tidak ditemukan"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Memperbarui karyawan berdasarkan ID",
+        "tags": [
+          "Employee"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nama": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "telepon": {
+                    "type": "string"
+                  },
+                  "alamat": {
+                    "type": "string"
+                  },
+                  "foto": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Karyawan berhasil diperbarui"
+          },
+          "400": {
+            "description": "Data tidak valid"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Karyawan tidak ditemukan"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Menghapus karyawan berdasarkan ID",
+        "tags": [
+          "Employee"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Karyawan berhasil dihapus"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Karyawan tidak ditemukan"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/gallery": {
+      "get": {
+        "summary": "Mendapatkan semua foto galeri dari semua aktivitas",
+        "tags": [
+          "Gallery"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Galeri berhasil diambil"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/gallery/paginated": {
+      "get": {
+        "summary": "Mendapatkan foto galeri dengan paginasi",
+        "tags": [
+          "Gallery"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Galeri (paginated) berhasil diambil"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/gallery/{id}": {
+      "get": {
+        "summary": "Mendapatkan foto galeri berdasarkan ID aktivitas",
+        "tags": [
+          "Gallery"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Foto galeri aktivitas berhasil diambil"
+          },
+          "404": {
+            "description": "Aktivitas tidak ditemukan"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/masjid": {
+      "get": {
+        "summary": "Get all masjids",
+        "tags": [
+          "Masjid"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved all masjids"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new masjid",
+        "tags": [
+          "Masjid"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "nama_masjid",
+                  "alamat"
+                ],
+                "properties": {
+                  "nama_masjid": {
+                    "type": "string"
+                  },
+                  "alamat": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Masjid created successfully"
+          },
+          "400": {
+            "description": "Required fields missing"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/masjid/search": {
+      "get": {
+        "summary": "Search masjids by name",
+        "tags": [
+          "Masjid"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "name",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Name of the masjid to search for"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved masjids"
+          },
+          "400": {
+            "description": "Name parameter is required"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/masjid/{id}": {
+      "get": {
+        "summary": "Get a masjid by ID",
+        "tags": [
+          "Masjid"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the masjid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved masjid"
+          },
+          "404": {
+            "description": "Masjid not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a masjid",
+        "tags": [
+          "Masjid"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the masjid"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nama_masjid": {
+                    "type": "string"
+                  },
+                  "alamat": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Masjid updated successfully"
+          },
+          "400": {
+            "description": "Masjid ID is required"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Masjid not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a masjid",
+        "tags": [
+          "Masjid"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the masjid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Masjid deleted successfully"
+          },
+          "400": {
+            "description": "Masjid ID is required"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Masjid not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/masjid/{id}/editors": {
+      "get": {
+        "summary": "Get all editors of a masjid",
+        "tags": [
+          "Masjid"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "ID of the masjid"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved editors"
+          },
+          "400": {
+            "description": "Masjid ID is required"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/program": {
+      "get": {
+        "summary": "Mendapatkan daftar program",
+        "tags": [
+          "Program"
+        ],
+        "responses": {
+          "200": {
+            "description": "Daftar program berhasil diambil"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Menambahkan program baru",
+        "tags": [
+          "Program"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nama_program": {
+                    "type": "string"
+                  },
+                  "deskripsi_program": {
+                    "type": "string"
+                  },
+                  "pilar_program": {
+                    "type": "string"
+                  },
+                  "waktu_mulai": {
+                    "type": "date"
+                  },
+                  "waktu_selesai": {
+                    "type": "date"
+                  },
+                  "rancangan_anggaran": {
+                    "type": "float"
+                  },
+                  "aktualisasi_anggaran": {
+                    "type": "float"
+                  },
+                  "status_program": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Program berhasil ditambahkan"
+          },
+          "400": {
+            "description": "Data tidak valid"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/program/{id}": {
+      "get": {
+        "summary": "Mendapatkan program berdasarkan ID",
+        "tags": [
+          "Program"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Program berhasil ditemukan"
+          },
+          "404": {
+            "description": "Program tidak ditemukan"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Memperbarui program berdasarkan ID",
+        "tags": [
+          "Program"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nama_program": {
+                    "type": "string"
+                  },
+                  "deskripsi_program": {
+                    "type": "string"
+                  },
+                  "pilar_program": {
+                    "type": "string"
+                  },
+                  "waktu_mulai": {
+                    "type": "date"
+                  },
+                  "waktu_selesai": {
+                    "type": "date"
+                  },
+                  "rancangan_anggaran": {
+                    "type": "float"
+                  },
+                  "aktualisasi_anggaran": {
+                    "type": "float"
+                  },
+                  "status_program": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Program berhasil diperbarui"
+          },
+          "400": {
+            "description": "Data tidak valid"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Program tidak ditemukan"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Menghapus program berdasarkan ID",
+        "tags": [
+          "Program"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Program berhasil dihapus"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Program tidak ditemukan"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/publication": {
+      "get": {
+        "summary": "Get list of publications with pagination, search, and filtering",
+        "tags": [
+          "Publication"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            },
+            "description": "Number of items per page"
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search term for title only"
+          },
+          {
+            "in": "query",
+            "name": "sortBy",
+            "schema": {
+              "type": "string",
+              "default": "tanggal_publikasi"
+            },
+            "description": "Column to sort by"
+          },
+          {
+            "in": "query",
+            "name": "sortOrder",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "desc"
+            },
+            "description": "Sort order"
+          },
+          {
+            "in": "query",
+            "name": "toneFilters",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comma-separated tone values (Positif,Netral,Negatif)"
+          },
+          {
+            "in": "query",
+            "name": "mediaFilters",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comma-separated media types"
+          },
+          {
+            "in": "query",
+            "name": "programFilters",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comma-separated program IDs"
+          },
+          {
+            "in": "query",
+            "name": "activityFilters",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comma-separated activity IDs"
+          },
+          {
+            "in": "query",
+            "name": "dateFrom",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "Start date for date range filter"
+          },
+          {
+            "in": "query",
+            "name": "dateTo",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "End date for date range filter"
+          },
+          {
+            "in": "query",
+            "name": "prValueMin",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Minimum PR value"
+          },
+          {
+            "in": "query",
+            "name": "prValueMax",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Maximum PR value"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of publications"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new publication",
+        "tags": [
+          "Publication"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "judul_publikasi": {
+                    "type": "string"
+                  },
+                  "media_publikasi": {
+                    "type": "string"
+                  },
+                  "nama_perusahaan_media": {
+                    "type": "string"
+                  },
+                  "tanggal_publikasi": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "url_publikasi": {
+                    "type": "string"
+                  },
+                  "pr_value": {
+                    "type": "number"
+                  },
+                  "nama_program": {
+                    "type": "string"
+                  },
+                  "nama_aktivitas": {
+                    "type": "string"
+                  },
+                  "tone": {
+                    "type": "string",
+                    "enum": [
+                      "Positif",
+                      "Netral",
+                      "Negatif"
+                    ]
+                  },
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Publication created successfully"
+          },
+          "400": {
+            "description": "Invalid data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/publication/filter-options": {
+      "get": {
+        "summary": "Get available filter options",
+        "tags": [
+          "Publication"
+        ],
+        "responses": {
+          "200": {
+            "description": "Filter options retrieved successfully"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/publication/{id}": {
+      "get": {
+        "summary": "Get publication by ID",
+        "tags": [
+          "Publication"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Publication found"
+          },
+          "404": {
+            "description": "Publication not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update publication by ID",
+        "tags": [
+          "Publication"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "judul_publikasi": {
+                    "type": "string"
+                  },
+                  "media_publikasi": {
+                    "type": "string"
+                  },
+                  "nama_perusahaan_media": {
+                    "type": "string"
+                  },
+                  "tanggal_publikasi": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "url_publikasi": {
+                    "type": "string"
+                  },
+                  "pr_value": {
+                    "type": "number"
+                  },
+                  "nama_program": {
+                    "type": "string"
+                  },
+                  "nama_aktivitas": {
+                    "type": "string"
+                  },
+                  "tone": {
+                    "type": "string",
+                    "enum": [
+                      "Positif",
+                      "Netral",
+                      "Negatif"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Publication updated successfully"
+          },
+          "400": {
+            "description": "Invalid data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Publication not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete publication by ID",
+        "tags": [
+          "Publication"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Publication deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Publication not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/trainings": {
+      "get": {
+        "summary": "Get all trainings with pagination",
+        "tags": [
+          "Trainings"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Number of items per page"
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search term for training name or description"
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Upcoming",
+                "Ongoing",
+                "Completed",
+                "Cancelled"
+              ]
+            },
+            "description": "Filter by training status"
+          },
+          {
+            "in": "query",
+            "name": "masjid_id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Filter by mosque ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of trainings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Training"
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "page": {
+                          "type": "integer"
+                        },
+                        "limit": {
+                          "type": "integer"
+                        },
+                        "totalPages": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new training",
+        "tags": [
+          "Trainings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Training"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Training created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/trainings/{id}": {
+      "get": {
+        "summary": "Get a training by ID",
+        "tags": [
+          "Trainings"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Training ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Training details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Training"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Training not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a training",
+        "tags": [
+          "Trainings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Training ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Training"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Training updated successfully"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Training not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a training",
+        "tags": [
+          "Trainings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Training ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Training deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Training not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/trainings/{id}/participants": {
+      "get": {
+        "summary": "Get participants for a training",
+        "tags": [
+          "Trainings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Training ID"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Number of items per page"
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Pending",
+                "Approved",
+                "Rejected",
+                "Attended"
+              ]
+            },
+            "description": "Filter by participant status"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of participants"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Training not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/trainings/{id}/register": {
+      "post": {
+        "summary": "Register for a training",
+        "tags": [
+          "Trainings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Training ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrainingRegistration"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Registration successful"
+          },
+          "400": {
+            "description": "Validation error or training is not available"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Training not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/trainings/{id}/participants/{participantId}": {
+      "put": {
+        "summary": "Update participant status",
+        "tags": [
+          "Trainings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Training ID"
+          },
+          {
+            "in": "path",
+            "name": "participantId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Participant ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParticipantStatusUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Participant status updated successfully"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Training or participant not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/trainings/{id}/availability": {
+      "get": {
+        "summary": "Get availability information for a training",
+        "tags": [
+          "Trainings"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Training ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Training availability information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "total_kuota": {
+                          "type": "integer"
+                        },
+                        "used_slots": {
+                          "type": "integer"
+                        },
+                        "available_slots": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Training not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/trainings/user/registrations": {
+      "get": {
+        "summary": "Get training registrations for the current user",
+        "tags": [
+          "Trainings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of user's training registrations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "pelatihan_id": {
+                            "type": "integer"
+                          },
+                          "status_pendaftaran": {
+                            "type": "string"
+                          },
+                          "catatan": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "nama_pelatihan": {
+                            "type": "string"
+                          },
+                          "nama_masjid": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "summary": "Mendapatkan data pengguna berdasarkan ID",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID pengguna"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data pengguna berhasil diambil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Pengguna tidak ditemukan"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Memperbarui data pengguna",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID pengguna"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "short_bio": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "alasan_bergabung": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "fotoProfil": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Foto profil pengguna (opsional)"
+                  },
+                  "deleteProfileImage": {
+                    "type": "boolean",
+                    "description": "Jika true, foto profil akan dihapus"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Data pengguna berhasil diperbarui"
+          },
+          "400": {
+            "description": "Data yang dikirim tidak valid"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Pengguna tidak ditemukan"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/users/photo/{filename}": {
+      "get": {
+        "summary": "Mendapatkan foto profil pengguna",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "filename",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Nama file foto profil pengguna"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Foto profil ditemukan dan dikirim sebagai respons",
+            "content": {
+              "image/*": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Foto tidak ditemukan"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  }
+}
