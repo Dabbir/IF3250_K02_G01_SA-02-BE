@@ -1,0 +1,14 @@
+runtime: nodejs22
+instance_class: F1
+env: standard
+
+env_variable:
+  NODE_ENV: development
+  BASE_URL: https://salman-sustainability-re-41855.et.r.appspot.com
+  FRONTEND_URL: https://salman-sustainability-re-41855.web.app
+  ORIGIN: https://salman-sustainability-re-41855.web.app
+  DB_HOST: 34.101.244.115
+  DB_USER: root
+  DB_PASSWORD: salmansr123
+  DB_NAME: salman_db
+  DB_PORT: 3306

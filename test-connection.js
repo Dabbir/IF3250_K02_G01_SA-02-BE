@@ -1,18 +1,15 @@
-// test-db-connection.js
+const path = require('path');
+const envFile = '.env.development';
+require('dotenv').config({ path: path.resolve(__dirname, envFile) });
 
 const mysql = require('mysql2');
 
 const connection = mysql.createConnection({
-  host: 'mysql-19069af5-ahmadmudabbir03-3bf2.g.aivencloud.com',
-  user: 'avnadmin',
-  password: 'AVNS_nMOA-WxvDdw2ZYwsl3A',
-  database: 'defaultdb',
-  port: 28717,
-  ssl: process.env.DB_SSL
-    ? {
-        rejectUnauthorized: false,
-      }
-    : false,
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
 });
 
 console.log('⏳ Testing database connection...');
@@ -22,7 +19,7 @@ connection.connect((err) => {
     console.error('❌ Connection failed:', err.message);
     process.exit(1);
   } else {
-    console.log('✅ Connected to AivenCloud MySQL successfully!');
+    console.log('✅ Connected to MySQL successfully!');
     connection.end();
   }
 });
