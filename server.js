@@ -25,8 +25,8 @@ async function startServer() {
     console.log('Database Host:', process.env.DB_HOST);
     
     await db.testConnection();
-    
-    app.listen(PORT, () => {
+
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server running on port ${PORT}`);
       if (process.env.NODE_ENV === 'production') {
         console.log(`App running at: ${process.env.BASE_URL}`);
