@@ -21,6 +21,9 @@ app.use(cors({
     'https://if-3250-k02-g01-sa-02-fe-marzuli-suhadas-projects.vercel.app',
     'https://if-3250-k02-g01-sa-02-fe-13522070-6684-marzuli-suhadas-projects.vercel.app',
     'https://if3250k02g01sa-02-be-production.up.railway.app',
+    'https://salman-sustainability-re-41855.web.app',
+    'https://salman-sustainability-re-41855.firebaseapp.com',
+    'https://salmansustainabilityreport.com'
   ],
   methods: "GET, POST, PUT, DELETE, OPTIONS",
   allowedHeaders: "Content-Type, Authorization",
