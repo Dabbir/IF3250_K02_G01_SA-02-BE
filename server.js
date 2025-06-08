@@ -4,7 +4,7 @@
 
 const app = require('./src/app');
 // const { logger } = require('./src/utils/logger');
-const db = require('./src/config/db.config');
+// const db = require('./src/config/db.config');
 
 process.on('uncaughtException', (error) => {
   console.error('Uncaught Exception:', error);
@@ -24,7 +24,7 @@ async function startServer() {
     console.log('Port:', PORT);
     console.log('Database Host:', process.env.DB_HOST);
     
-    await db.testConnection();
+    // await db.testConnection();
 
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server running on port ${PORT}`);
