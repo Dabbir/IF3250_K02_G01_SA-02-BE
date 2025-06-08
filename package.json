@@ -6,8 +6,8 @@
   "scripts": {
     "test": "jest",
     "test:file": "jest --",
-    "start": "cross-env NODE_ENV=production node server.js",
-    "dev": "cross-env NODE_ENV=development nodemon server.js",
+    "start": "node server.js",
+    "dev": "nodemon server.js",
     "init-db": "node scripts/init-db.js",
     "seed": "node scripts/seed.js",
     "migrate": "node scripts/migrations.js",

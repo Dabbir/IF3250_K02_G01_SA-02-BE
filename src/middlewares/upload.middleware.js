@@ -2,7 +2,7 @@ const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
 
-const BASEURL = "http://localhost:3000/";
+const BASEURL = "http://localhost:8080/";
 
 const uploadDir = path.join(__dirname, "../uploads");
 

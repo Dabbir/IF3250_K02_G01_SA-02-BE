@@ -177,7 +177,7 @@ router.get('/program/:id', verifyToken, activityController.getByIdProgram);
  *                 items:
  *                   type: string
  *                 description: Array of image URLs for documentation
- *                 example: ["http://localhost:3000/uploads/dokumentasi1.jpg", "http://localhost:3000/uploads/dokumentasi2.jpg"]
+ *                 example: ["http://localhost:8080/uploads/dokumentasi1.jpg", "http://localhost:8080/uploads/dokumentasi2.jpg"]
  *               tanggal_mulai:
  *                 type: string
  *                 format: date
@@ -223,7 +223,7 @@ router.get('/program/:id', verifyToken, activityController.getByIdProgram);
  *                       type: array
  *                       items:
  *                         type: string
- *                       example: ["http://localhost:3000/uploads/dokumentasi1.jpg", "http://localhost:3000/uploads/dokumentasi2.jpg"]
+ *                       example: ["http://localhost:8080/uploads/dokumentasi1.jpg", "http://localhost:8080/uploads/dokumentasi2.jpg"]
  *                     tanggal_mulai:
  *                       type: string
  *                       format: date
